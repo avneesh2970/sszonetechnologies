@@ -13,10 +13,11 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: [
-      process.env.FRONTEND_URL,                // for local/dev
+      process.env.FRONTEND_URL, // for local/dev
       "https://ss-zone-frontend.onrender.com",
-      "https://sszonetechnologies.com"  // your deployed frontend
+      "https://sszonetechnologies.com", // your deployed frontend
     ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
@@ -36,7 +37,7 @@ const instructorAuthRoutes = require("./routes/instructorRoute");
 const blog_route = require("./routes/blogRoute");
 const instructor_setting = require("./routes/Instructorsetting");
 const course_instructor = require("./routes/CourseRoute-instructor");
-const quiz_route = require('./routes/quizRoute')
+const quiz_route = require("./routes/quizRoute");
 
 const admin_setting = require("./routes/adminSettingRoute");
 const overview_route = require("./routes/OverviewRoute");
@@ -45,7 +46,7 @@ const moduleLesson_route = require("./routes/ModuleRoute");
 const remark_Route = require("./routes/courseRemarkRoute");
 const razorpay_routes = require("./routes/razorpay");
 const studentSetting_route = require("./routes/studentSettingsRoute");
-const studentReview_route = require('./routes/courseReviewRoute')
+const studentReview_route = require("./routes/courseReviewRoute");
 
 app.use("/api/auth", auth_Routes); //student
 app.use("/api/studentSettings", studentSetting_route);
@@ -66,11 +67,11 @@ app.use("/api/course-intro-video", introVideo_route);
 app.use("/api/overview", overview_route);
 app.use("/api/course-structure", moduleLesson_route); //Module and lesson
 app.use("/api/remark", remark_Route);
-app.use('/api/quiz' , quiz_route)
+app.use("/api/quiz", quiz_route);
 
 //razorpay route
 app.use("/api/payment", razorpay_routes);
-app.use('/api/reviews' , studentReview_route);
+app.use("/api/reviews", studentReview_route);
 
 // app.use("/api/additional-info", additionalInfo_route);
 
