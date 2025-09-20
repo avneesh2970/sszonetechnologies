@@ -14,7 +14,8 @@ app.use(
   cors({
     origin: [
       process.env.FRONTEND_URL,                // for local/dev
-      "https://ss-zone-frontend.onrender.com"  // your deployed frontend
+      "https://ss-zone-frontend.onrender.com",
+      "https://sszonetechnologies.com"  // your deployed frontend
     ],
     credentials: true,
   })
