@@ -89,7 +89,11 @@ const port = process.env.PORT || 3999;
 // app.listen(port, () => {
 //   console.log(`Server is running on port ${port}`);
 // });
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, "0.0.0.0", (err) => {
+  if (err) {
+    console.error("Error starting server:", err);
+    process.exit(1);
+  }
   console.log(`Server is running on port ${port}`);
 });
 
