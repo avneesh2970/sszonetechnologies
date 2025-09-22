@@ -16,13 +16,18 @@ app.use(
       process.env.FRONTEND_URL, // for local/dev
       "https://ss-zone-frontend.onrender.com",
       "https://sszonetechnologies.com", // your deployed frontend
+      "https://www.sszonetechnologies.com"
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
 
-console.log("frontend url", process.env.FRONTEND_URL);
+app.use((req, res, next) => {
+  console.log("CORS Origin:", req.headers.origin);
+  next();
+});
+
 
 const cart_route = require("./routes/cartRoute");
 const wishlist_route = require("./routes/wishlistRoute");
