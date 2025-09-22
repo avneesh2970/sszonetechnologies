@@ -10,18 +10,27 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://ss-zone-frontend.onrender.com",
+  "https://sszonetechnologies.com",
+  "https://www.sszonetechnologies.com"
+];
 app.use(
   cors({
-    origin:process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      console.log("CORS Origin Attempt:", origin);
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // allow request
+      } else {
+        callback(new Error("Not allowed by CORS: " + origin));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
-
-app.use((req, res, next) => {
-  console.log("CORS Origin:", req.headers.origin);
-  next();
-});
 
 
 const cart_route = require("./routes/cartRoute");
