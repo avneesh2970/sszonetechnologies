@@ -12,12 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [
-      process.env.FRONTEND_URL, // for local/dev
-      "https://ss-zone-frontend.onrender.com",
-      "https://sszonetechnologies.com", // your deployed frontend
-      "https://www.sszonetechnologies.com"
-    ],
+    origin:process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
