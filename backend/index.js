@@ -11,27 +11,14 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = [
-  "https://sszonetechnologies.com",
-  "https://www.sszonetechnologies.com",
-];
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      console.log("CORS request from:", origin);
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS: " + origin));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
-);
-
-
+app.use(cors({
+  origin: [
+    "https://sszonetechnologies.com",
+    "https://www.sszonetechnologies.com", // if users use www
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 const cart_route = require("./routes/cartRoute");
 const wishlist_route = require("./routes/wishlistRoute");
