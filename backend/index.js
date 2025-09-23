@@ -13,6 +13,7 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: [
+    "http://localhost:5173",
     "https://sszonetechnologies.com",
     "https://www.sszonetechnologies.com", // if users use www
   ],

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ReactPlayer from "react-player";
-import { FaRegStarHalfStroke } from "react-icons/fa6";
+import { FaArrowLeft, FaRegStarHalfStroke } from "react-icons/fa6";
 import {
   FaDribbble,
   FaLinkedin,
@@ -22,6 +22,7 @@ export default function StudentCourseDetail(courseId) {
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
+  const navigate = useNavigate();
 
   // Fetch purchased course by ID
   useEffect(() => {
@@ -174,10 +175,13 @@ export default function StudentCourseDetail(courseId) {
                         {/* Video Toggle */}
                         <button
                           onClick={() => {
-                            setShowVideo((prev) => ({
-                              ...prev,
-                              [lesson._id]: !prev[lesson._id],
-                            }));
+                            setShowVideo(
+                              (prev) => ({
+                                ...prev,
+                                [lesson._id]: !prev[lesson._id],
+                              }),
+                              scrollTo(0, 0)
+                            );
 
                             if (showVideo?.[lesson._id]) {
                               setActiveVideoUrl(
@@ -333,134 +337,239 @@ export default function StudentCourseDetail(courseId) {
 
   return (
     <>
-      {/* Course Banner */}
-      <div className="p-3">
-        {/* <img
-          src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
-          alt="Course Banner"
-          className="h-[50vh] md:h-[70vh] w-full object-contain object-center rounded"
-        /> */}
+      {/* 🎬 Course Banner */}
+      <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-2xl">
         {activeVideoUrl && ReactPlayer.canPlay(activeVideoUrl) ? (
-          <div>
-            <h3 className="text-lg font-semibold mb-2">📽️ Now Playing</h3>
-            <ReactPlayer
-              url={activeVideoUrl}
-              controls
-              width="100%"
-              height="500px"
-            />
+          <div className="">
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-slate-200">
+              <div className="flex items-center gap-3 mb-4 group" onClick={() => navigate(-1)}>
+                <FaArrowLeft className="text-gray-400 group-hover:text-blue-600"/>
+                <h3
+                  className="text-xl font-semibold text-gray-400 group-hover:text-blue-600"
+                  
+                >
+                  Back
+                </h3>
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-md">
+                <ReactPlayer
+                  url={activeVideoUrl}
+                  controls={false}
+                  width="100%"
+                  height="500px"
+                  playing={true}
+                   config={{
+                     youtube: {
+                       playerVars: {
+                         modestbranding: 1,
+                         rel: 0,
+                         showinfo: 0,
+                         autoplay: 1,
+                       },
+                     },
+                   }}
+                />
+              </div>
+            </div>
           </div>
         ) : (
-          <p className="text-red-500">⚠️ No video available</p>
+          <div className="text-center py-16">
+            <div className="w-20 h-20 mx-auto mb-4 bg-slate-200 rounded-full flex items-center justify-center">
+              <span className="text-3xl">🎬</span>
+            </div>
+            <p className="text-slate-500 text-lg">
+              No video available at the moment
+            </p>
+          </div>
         )}
       </div>
 
-      {/* Course Info */}
-      <div className="shadow-lg bg-white p-4 max-w-2xl md:ml-4 mx-auto rounded-xl md:-mt-2">
-        <h1 className="text-2xl font-bold mb-3">{course.title}</h1>
-        <div className="flex flex-wrap md:flex-nowrap gap-6">
-          <div className="flex-1">
-            <h3 className="text-gray-500">Instructor</h3>
-            <p className="font-semibold">{course.instructor?.name}</p>
-          </div>
-          <div className="flex-1">
-            <h3 className="text-gray-500">Category</h3>
-            <p className="font-semibold">{course.categories}</p>
-          </div>
-          <div className="flex-1">
-            <h3 className="text-gray-500">Review</h3>
-            <div className="flex items-center gap-1 text-amber-300">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span key={i}>
-                  {i < Math.round(averageRating) ? "⭐" : ""}
-                </span>
-              ))}
-              ({averageRating})
+      {/* 📘 Course Info */}
+      <div className="p-6">
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 relative overflow-hidden">
+          {/* Decorative Bubble */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full -translate-y-16 translate-x-16 opacity-60"></div>
+
+          <h1 className="text-4xl font-bold text-slate-900 mb-6 leading-tight">
+            {course.title}
+          </h1>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Instructor */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">
+                Instructor
+              </h3>
+              <p className="text-xl font-semibold text-slate-900">
+                {course.instructor?.name}
+              </p>
+            </div>
+
+            {/* Category */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">
+                Category
+              </h3>
+              <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-4 py-2 rounded-full">
+                {course.categories}
+              </span>
+            </div>
+
+            {/* Rating */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">
+                Rating
+              </h3>
+              <div className="flex items-center gap-2">
+  <div className="flex text-amber-400 text-xl">
+    {Array.from({ length: 5 }).map((_, i) => {
+      const starNumber = i + 1;
+      if (averageRating >= starNumber) {
+        return <span key={i}>★</span>; // full star
+      } else if (averageRating >= starNumber - 0.5) {
+        return <span key={i}>⯨</span>; // half star (you can replace with an icon or character)
+      } else {
+        return <span key={i}>☆</span>; // empty star
+      }
+    })}
+  </div>
+  <span className="text-slate-600 font-medium">({averageRating})</span>
+</div>
+
             </div>
           </div>
         </div>
       </div>
 
-      {/* Layout */}
-      <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12 border">
-        {/* Tabs Section */}
-        <div className="flex-1">
-          <div className="flex gap-4 border-b mb-6 overflow-x-auto">
-            {["Overview", "Curriculum", "Instructor", "Review"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-2 md:px-4 px-3 font-medium ${
-                  activeTab === tab
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "border-transparent text-gray-600 hover:text-blue-500"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div>{content[activeTab]}</div>
-        </div>
-
-        {/* Sidebar */}
-        <aside className="w-full md:w-[400px] flex-shrink-0 p-2 border rounded-xl bg-white shadow-lg">
-          {/* {activeVideoUrl && ReactPlayer.canPlay(activeVideoUrl) ? (
-            <div>
-              <h3 className="text-lg font-semibold mb-2">📽️ Now Playing</h3>
-              <ReactPlayer
-                url={activeVideoUrl}
-                controls
-                width="100%"
-                height="360px"
-              />
+      {/* 📑 Main Layout */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Main Tabs */}
+          <div className="flex-1 min-w-0">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8">
+              <div className="flex border-b border-slate-200 overflow-x-auto">
+                {["Overview", "Curriculum", "Instructor", "Review"].map(
+                  (tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`relative px-6 py-4 font-medium text-sm transition-all duration-200 whitespace-nowrap ${
+                        activeTab === tab
+                          ? "text-blue-600 bg-blue-50"
+                          : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      {tab}
+                      {activeTab === tab && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
+                      )}
+                    </button>
+                  )
+                )}
+              </div>
+              <div className="p-8">{content[activeTab]}</div>
             </div>
-          ) : (
-            <p className="text-red-500">⚠️ No video available</p>
-          )} */}
-
-          <div className="flex items-center mt-4">
-            <MdCurrencyRupee className="h-6 w-6" />
-            <h2 className="text-2xl font-bold">{course.discountPrice}</h2>
           </div>
 
-          <p className="text-xl font-semibold mb-2 mt-4">
-            This Course Includes
-          </p>
-          <div className="flex flex-col gap-2 text-gray-600">
-            <p>✅ {course?.overview?.videoHours || 5}hrs on-demand video</p>
-            <p>
-              ✅ Instructor:{" "}
-              {course?.overview?.overviewInstructor || course.instructor?.name}
-            </p>
-            <p>
-              ✅ Language:{" "}
-              {course?.overview?.overviewLanguage || "Hindi,English"}
-            </p>
-            <p>✅ Level: {course?.overview?.courseLevel || "Beginner"}</p>
-            <p>{course?.overview?.certificate ? "✅ " : "❌ "}Certificate</p>
-            <p>
-              {course?.overview?.accessOnMobileAndTV ? "✅ " : "❌ "}Access on
-              Mobile & TV
-            </p>
-          </div>
+          {/* Sidebar */}
+          <aside className="lg:w-96 flex-shrink-0">
+            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 sticky top-8">
+              
 
-          <div className="flex items-center gap-3 mt-6">
-            <h3 className="font-bold">Share:</h3>
-            <a href="#" className="p-2 bg-gray-300 rounded-full">
-              <FaDribbble />
-            </a>
-            <a href="#" className="p-2 bg-gray-300 rounded-full">
-              <FaLinkedin />
-            </a>
-            <a href="#" className="p-2 bg-gray-300 rounded-full">
-              <FaTwitter />
-            </a>
-          </div>
+              {/* Includes */}
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">
+                  This Course Includes
+                </h3>
+                <div className="space-y-4">
+                  {[
+                    {
+                      label: `${
+                        course?.overview?.videoHours || 5
+                      } hours on-demand video`,
+                      condition: true,
+                    },
+                    {
+                      label: `Instructor: ${
+                        course?.overview?.overviewInstructor ||
+                        course.instructor?.name
+                      }`,
+                      condition: true,
+                    },
+                    {
+                      label: `Language: ${
+                        course?.overview?.overviewLanguage || "Hindi, English"
+                      }`,
+                      condition: true,
+                    },
+                    {
+                      label: `Level: ${
+                        course?.overview?.courseLevel || "Beginner"
+                      }`,
+                      condition: true,
+                    },
+                    {
+                      label: "Certificate of Completion",
+                      condition: course?.overview?.certificate,
+                    },
+                    {
+                      label: "Access on Mobile & TV",
+                      condition: course?.overview?.accessOnMobileAndTV,
+                    },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3">
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                          item.condition ? "bg-green-100" : "bg-red-100"
+                        }`}
+                      >
+                        <span
+                          className={`text-sm ${
+                            item.condition ? "text-green-600" : "text-red-600"
+                          }`}
+                        >
+                          {item.condition ? "✓" : "✗"}
+                        </span>
+                      </div>
+                      <p className="text-slate-700 font-medium">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-          <ToastContainer position="top-right" autoClose={2000} />
-        </aside>
+              {/* Share */}
+              <div className="pt-6 border-t border-slate-200">
+                <div className="flex items-center gap-4">
+                  <h4 className="font-semibold text-slate-900">Share:</h4>
+                  <div className="flex gap-3">
+                    <a
+                      href="#"
+                      className="w-10 h-10 bg-slate-100 hover:bg-blue-100 rounded-full flex items-center justify-center transition-colors duration-200 group"
+                    >
+                      <FaDribbble className="text-slate-600 group-hover:text-blue-600" />
+                    </a>
+                    <a
+                      href="#"
+                      className="w-10 h-10 bg-slate-100 hover:bg-blue-100 rounded-full flex items-center justify-center transition-colors duration-200 group"
+                    >
+                      <FaLinkedin className="text-slate-600 group-hover:text-blue-600" />
+                    </a>
+                    <a
+                      href="#"
+                      className="w-10 h-10 bg-slate-100 hover:bg-blue-100 rounded-full flex items-center justify-center transition-colors duration-200 group"
+                    >
+                      <FaTwitter className="text-slate-600 group-hover:text-blue-600" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
+
+      {/* Toast */}
+      <ToastContainer position="top-right" autoClose={1000} />
     </>
   );
 }

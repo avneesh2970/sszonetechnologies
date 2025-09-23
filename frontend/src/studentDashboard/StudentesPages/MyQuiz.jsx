@@ -129,11 +129,11 @@ const StudentQuiz = () => {
         <table className="table-auto w-full border-collapse border border-gray-300">
           <thead className="bg-blue-100 text-left">
             <tr>
-              <th className="px-4 py-2 border ">Quiz Title</th>
-              <th className="px-4 py-2 border">Module Title</th>
-              <th className="px-4 py-2 border">Course Title</th>
-              <th className="px-4 py-2 border">No. of Questions</th>
-              <th className="px-4 py-2 border">Action</th>
+              <th className="px-4 py-2 border border-gray-300 ">Quiz Title</th>
+              <th className="px-4 py-2 border border-gray-300">Module Title</th>
+              <th className="px-4 py-2 border border-gray-300">Course Title</th>
+              <th className="px-4 py-2 border border-gray-300">No. of Questions</th>
+              <th className="px-4 py-2 border border-gray-300">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -144,17 +144,17 @@ const StudentQuiz = () => {
                   index % 2 === 1 ? "" : ""
                 } hover:bg-blue-50`}
               >
-                <td className="px-4 py-2 border">{quiz.title}</td>
-                <td className="px-4 py-2 border">
+                <td className="px-4 py-2 border border-gray-300">{quiz.title}</td>
+                <td className="px-4 py-2 border border-gray-300">
                   {quiz.moduleId?.title || "-"}
                 </td>
-                <td className="px-4 py-2 border">
+                <td className="px-4 py-2 border border-gray-300">
                   {quiz.moduleId?.courseId?.title || "-"}
                 </td>
-                <td className="px-4 py-2 border">
+                <td className="px-4 py-2 border border-gray-300">
                   {quiz.questions?.length || 0}
                 </td>
-                <td className="px-4 py-2 border">
+                <td className="px-4 py-2 border border-gray-300">
                   <button
                     onClick={() => startQuiz(quiz._id)}
                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
@@ -265,44 +265,42 @@ const StudentQuiz = () => {
         {history.length === 0 ? (
           <p>No attempts yet.</p>
         ) : (
-          <table className="min-w-full border-collapse">
+          <table className="min-w-full border-gray-300">
             <thead>
-              <tr className="bg-blue-50">
-                <th className="p-3 text-left">#</th>
-                <th className="p-3 text-left">Quiz Title</th>
-                <th className="p-3 text-left">Module</th>
-                <th className="p-3 text-left">Course</th>
-                <th className="p-3 text-left">Score</th>
-                <th className="p-3 text-left">Attempted At</th>
-                <th className="p-3 text-left">Action</th>
+              <tr className="bg-blue-100 border-gray-300">
+                <th className="p-3 text-left border border-gray-300">#</th>
+                <th className="p-3 text-left border border-gray-300">Quiz Title</th>
+                <th className="p-3 text-left border border-gray-300">Module</th>
+                <th className="p-3 text-left border border-gray-300">Course</th>
+                <th className="p-3 text-left border border-gray-300">Score</th>
+                <th className="p-3 text-left border border-gray-300">Attempted At</th>
+                <th className="p-3 text-left border border-gray-300">Action</th>
               </tr>
             </thead>
             <tbody>
               {history.map((h, index) => (
                 <tr
                   key={h._id}
-                  className={`border-b hover:bg-blue-200 ${
-                    index % 2 === 1 ? "bg-blue-50" : "bg-white"
-                  }`}
+                  className={`border hover:bg-blue-100 bg-white `}
                 >
-                  <td className="p-3">{index + 1}</td>
-                  <td className="p-3 font-semibold">
+                  <td className="p-3 border border-gray-300">{index + 1}</td>
+                  <td className="p-3  border border-gray-300">
                     {h.quizId?.title || "Untitled Quiz"}
                   </td>
-                  <td className="p-3">{h.quizId?.moduleId?.title || "-"}</td>
-                  <td className="p-3">
+                  <td className="p-3 border border-gray-300">{h.quizId?.moduleId?.title || "-"}</td>
+                  <td className="p-3 border border-gray-300">
                     {h.quizId?.moduleId?.courseId?.title || "-"}
                   </td>
-                  <td className="p-3">
+                  <td className="p-3 border border-gray-300">
                     {h.score} / {h.total}
                   </td>
-                  <td className="p-3 text-gray-600 text-sm">
+                  <td className="p-3 border border-gray-300 text-gray-600 text-sm">
                     {new Date(h.attemptedAt).toLocaleString()}
                   </td>
-                  <td className="p-3">
+                  <td className="p-3 border border-gray-300">
                     <button
                       onClick={() => fetchAttemptDetails(h._id)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                      className="bg-blue-600 text-white px-3 py-1 border border-gray-300 rounded hover:bg-blue-700"
                     >
                       View Details
                     </button>

@@ -157,7 +157,7 @@ const Settings = () => {
       : "text-gray-500 hover:text-black";
 
   return (
-    <div className="mx-auto p-6 space-y-6 max-w-4xl">
+    <div className=" p-6 space-y-6 max-w-4xl ">
       <h1 className="text-2xl font-semibold mb-6">Settings</h1>
 
       <div className="grid grid-cols-3 gap-2 border-b mb-6 justify-center">
@@ -275,7 +275,7 @@ const Settings = () => {
       {/* Password Section */}
       {activeTab === "password" && (
         <div className="max-w-md mx-auto mt-10 p-6 shadow-lg rounded-lg bg-white">
-          <h2 className="text-xl font-bold mb-4">Change5555 Password</h2>
+          <h2 className="text-xl font-bold mb-4">Change Password</h2>
 
           {!oldVerified ? (
             <form onSubmit={handleVerifyOldPassword}>
@@ -461,7 +461,7 @@ const Settings = () => {
         </form>
       )}
 
-      <ToastContainer />
+      <ToastContainer onClose={1000} />
     </div>
   );
 };

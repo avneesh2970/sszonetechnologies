@@ -33,9 +33,9 @@ const Dashboard = () => {
     {
       to: "/dashboard/enrollCourse",
       icon: <BiBookBookmark />,
-      label: "Enroll Courses",
+      label: "My Courses",
     },
-    { to: "/dashboard/allCourse", icon: <FaBookOpen />, label: " All Course" },
+    { to: "/dashboard/allCourse", icon: <FaBookOpen />, label: " All Courses" },
     { to: "/dashboard/myQuiz", icon: <MdQuiz />, label: "My Quiz" },
     {
       to: "/dashboard/assignments",

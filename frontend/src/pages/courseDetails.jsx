@@ -58,6 +58,7 @@ const CourseDetails = () => {
 
   const [reviews, setReviews] = useState([]);
 
+  // it is from api but i am fetching error from course 
   const fetchReviews = async () => {
     if (!course?._id) return;
     try {
@@ -227,12 +228,12 @@ const CourseDetails = () => {
     ),
     Review: (
       <div className="px-6 md:px-12 my-6">
-        {reviews.length === 0 && (
+        {course.reviews.length === 0 && (
           <p className="text-gray-500 italic">
             No reviews yet. Be the first to review this course!
           </p>
         )}
-        {reviews.map((review, index) => (
+        {course.reviews.map((review, index) => (
           <div
             key={index}
             className="flex flex-col md:flex-row items-start gap-4 mb-6 p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition"

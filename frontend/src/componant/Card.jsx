@@ -52,7 +52,7 @@ const CourseList = ({}) => {
         );
 
         // ✅ Only include published courses
-        console.log(res.data);
+        
         const publishedCourses = (res.data.courses || []).filter(
           (course) => course.status === "Published"
         );

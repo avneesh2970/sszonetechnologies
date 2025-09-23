@@ -212,7 +212,7 @@ const BlogModalPage = () => {
         `${import.meta.env.VITE_BACKEND_URL}/api/comment/delete/${id}`
       );
       toast.success("Comment deleted");
-      setComments((prev) => prev.filter((c) => c._id !== id));
+      setAllComments((prev) => prev.filter((c) => c._id !== id));
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete comment");
@@ -486,7 +486,7 @@ const BlogModalPage = () => {
                 <th className="p-2 border">Blog Title</th>
                 <th className="p-2 border">Name</th>
                 <th className="p-2 border">Email</th>
-                <th className="p-2 border">Phone</th>
+                {/* <th className="p-2 border">Phone</th> */}
                 <th className="p-2 border">Comment</th>
                 <th className="p-2 border">Date</th>
                 <th className="p-2 border">Action</th>
@@ -501,7 +501,7 @@ const BlogModalPage = () => {
                       {c.firstName} {c.lastName}
                     </td>
                     <td className="p-2 border">{c.email}</td>
-                    <td className="p-2 border">{c.phone}</td>
+                    {/* <td className="p-2 border">{c.phone}</td> */}
                     <td className="p-2 border">{c.comment}</td>
                     <td className="p-2 border">
                       {new Date(c.createdAt).toLocaleDateString()}
@@ -509,7 +509,7 @@ const BlogModalPage = () => {
                     <td className="p-2 border text-center">
                       <button
                         onClick={() => deleteComment(c._id)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 cursor-pointer"
                       >
                         <FaTrash />
                       </button>
@@ -528,7 +528,7 @@ const BlogModalPage = () => {
         </div>
       </div>
 
-      <ToastContainer />
+      <ToastContainer autoClose={1000} />
     </div>
   );
 };

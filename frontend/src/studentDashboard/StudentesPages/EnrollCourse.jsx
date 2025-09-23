@@ -141,7 +141,7 @@ const EnrollCourse = () => {
 
                           <div>
                             <span className="ml-2 text-yellow-500">
-                              {averageRating} ⭐
+                              {/* {averageRating} ⭐ */}
                             </span>
                             {/* <span className="ml-1">
                               ({course.reviews || 10} Reviews)
@@ -166,8 +166,8 @@ const EnrollCourse = () => {
                             {course.additionalInfo?.duration?.minute || 0}m
                           </span>
                           <p>
-                            ₹ {}
-                            {course.discountPrice}
+                            {/* ₹ {} */}
+                            {/* {course.discountPrice} */}
                           </p>
                         </div>
                       </div>
@@ -243,10 +243,10 @@ const EnrollCourse = () => {
                         </div>
                         <div>
                           <span className="ml-2 text-yellow-500">
-                            ★ {course.rating || 4.5}
+                            {/* ★ {course.rating || 4.5} */}
                           </span>
                           <span className="ml-1">
-                            ({course.reviews || 10} Reviews)
+                            {/* ({course.reviews || 10} Reviews) */}
                           </span>
                         </div>
                       </div>

@@ -12,3 +12,18 @@
 body {
   font-family: "Poppins", sans-serif;
 }
+
+/* For Chrome, Edge, Safari */
+.scrollbar-thin-custom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin-custom::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin-custom::-webkit-scrollbar-thumb {
+  background-color: #D1D5DB; /* gray-300 */
+  border-radius: 10px;
+  border: 2px solid transparent;
+}

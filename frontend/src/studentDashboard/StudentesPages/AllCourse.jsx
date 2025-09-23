@@ -57,6 +57,7 @@ export const AllCourse = () => {
         );
 
         setAll_course(publishedCourses);
+        console.log( "pupublishedCourses",publishedCourses)
         fetchWishlist();
       } catch (err) {
         console.error("Error fetching courses", err);
@@ -125,7 +126,7 @@ export const AllCourse = () => {
                   {/* Image Container */}
                   <div className="relative overflow-hidden">
                     <Link
-                      to={`/courseDetailsOverview/${course._id}`}
+                      to={`/dashboard/stuAllCourse/${course._id}`}
                       state={course}
                     >
                       <img
@@ -164,7 +165,7 @@ export const AllCourse = () => {
                   <div className="px-5 py-2 ">
                     {/* Title */}
                     <Link
-                      to={`/courseDetailsOverview/${course._id}`}
+                      to={`/dashboard/stuAllCourse/${course._id}`}
                       state={course}
                     >
                       <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 line-clamp-2 mb-1">
@@ -212,7 +213,7 @@ export const AllCourse = () => {
                       </div>
 
                       <Link
-                        to={`/courseDetailsOverview/${course._id}`}
+                        to={`/dashboard/stuAllCourse/${course._id}`}
                         state={course}
                         className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                       >

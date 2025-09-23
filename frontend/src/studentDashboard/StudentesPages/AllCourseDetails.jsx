@@ -9,11 +9,8 @@ import axios from "axios";
 
 import Card from "../../componant/Card.jsx";
 
-
 import ReactPlayer from "react-player";
 import { useStudentAuth } from "./studentAuth.js";
-
-
 
 const StuAllCourseDetails = () => {
   const { id } = useParams(); // getting from URL
@@ -145,10 +142,13 @@ const StuAllCourseDetails = () => {
                         {/* Video Toggle */}
                         <button
                           onClick={() => {
-                            setShowVideo((prev) => ({
-                              ...prev,
-                              [lesson._id]: !prev[lesson._id],
-                            }));
+                            setShowVideo(
+                              (prev) => ({
+                                ...prev,
+                                [lesson._id]: !prev[lesson._id],
+                              }),
+                              scrollTo(0, 0)
+                            );
 
                             if (showVideo?.[lesson._id]) {
                               setActiveVideoUrl(
@@ -278,136 +278,248 @@ const StuAllCourseDetails = () => {
 
   return (
     <>
-      <div className="p-3">
-        <img
-          src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
-          alt="Course Banner"
-          className="h-[50vh] md:h-[70vh] w-full object-contain object-center rounded"
-        />
+      {/* 🎬 Course Banner */}
+      <div className="relative bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-2xl">
+        {activeVideoUrl && ReactPlayer.canPlay(activeVideoUrl) ? (
+          <div className="">
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-slate-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <h3 className="text-xl font-semibold text-slate-800">
+                  Now Playing
+                </h3>
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-md">
+                <ReactPlayer
+                  url={activeVideoUrl}
+                  controls={false}
+                  width="100%"
+                  height="500px"
+                  playing={true}
+                  config={{
+                    youtube: {
+                      playerVars: {
+                        modestbranding: 1,
+                        rel: 0,
+                        showinfo: 0,
+                        autoplay: 1,
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="w-20 h-20 mx-auto mb-4 bg-slate-200 rounded-full flex items-center justify-center">
+              <span className="text-3xl">🎬</span>
+            </div>
+            <p className="text-slate-500 text-lg">
+              No video available at the moment
+            </p>
+          </div>
+        )}
       </div>
 
-      <div className="relative">
-        <div className="shadow-lg bg-white px-6 py-4 max-w-3xl md:mx-6 mx-auto rounded-xl  md:-mt-10">
-          <h1 className="text-2xl font-bold mb-3">{course.title}</h1>
-          <div className="flex flex-wrap md:flex-nowrap gap-6">
-            <div className="flex-1">
-              <h3 className="text-gray-500">Instructor</h3>
-              <p className="font-semibold">{course.instructor.name}</p>
+      {/* 📘 Course Info */}
+      <div className="p-6">
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 relative overflow-hidden">
+          {/* Decorative Bubble */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full -translate-y-16 translate-x-16 opacity-60"></div>
+
+          <h1 className="text-4xl font-bold text-slate-900 mb-6 leading-tight">
+            {course.title}
+          </h1>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Instructor */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">
+                Instructor
+              </h3>
+              <p className="text-xl font-semibold text-slate-900">
+                {course.instructor?.name}
+              </p>
             </div>
-            <div className="flex-1">
-              <h3 className="text-gray-500">Category</h3>
-              <p className="font-semibold"> {course.categories}</p>
+
+            {/* Category */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">
+                Category
+              </h3>
+              <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-4 py-2 rounded-full">
+                {course.categories}
+              </span>
             </div>
-            <div className="flex-1">
-              <h3 className="text-gray-500">Review</h3>
-              <div className="flex items-center gap-1 text-amber-300">
-                {Array.from({ length: 5 }, (_, i) => {
-                  if (i < Math.floor(course.rating)) return <FaStar key={i} />;
-                  if (i < course.rating) return <FaRegStarHalfStroke key={i} />;
-                  return <FaRegStar key={i} />;
-                })}
+
+            {/* Rating */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider">
+                Rating
+              </h3>
+              <div className="flex items-center gap-2">
+                <div className="flex text-amber-400 text-xl">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i}>
+                      {i < Math.round(course.rating) ? "★" : "☆"}
+                    </span>
+                  ))}
+                </div>
+                <span className="text-slate-600 font-medium">
+                  ({course.rating})
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12">
-        <div className="flex-1">
-          <div className="flex gap-4 border-b mb-6 overflow-x-auto">
-            {["Overview", "Curriculum", "Instructor", "Review"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-2 md:px-4 px-3 font-medium ${
-                  activeTab === tab
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "border-transparent text-gray-600 hover:text-blue-500"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div>{content[activeTab]}</div>
-        </div>
-
-        <aside className="w-full md:w-[400px] flex-shrink-0  p-4 rounded-xl bg-white lg:-mt-43 -mt-10 ">
-          {/* <img src={video} alt="Demo Video" className="rounded-md mb-6" /> */}
-          {activeVideoUrl && ReactPlayer.canPlay(activeVideoUrl) ? (
-            <div>
-              <h3 className="text-lg font-semibold mb-2">📽️ Now Playing</h3>
-              <ReactPlayer
-                url={activeVideoUrl}
-                controls
-                width="100%"
-                height="360px"
-              />
+      {/* 📑 Main Layout */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Main Tabs */}
+          <div className="flex-1 min-w-0">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8">
+              <div className="flex border-b border-slate-200 overflow-x-auto">
+                {["Overview", "Curriculum", "Instructor", "Review"].map(
+                  (tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`relative px-6 py-4 font-medium text-sm transition-all duration-200 whitespace-nowrap ${
+                        activeTab === tab
+                          ? "text-blue-600 bg-blue-50"
+                          : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      {tab}
+                      {activeTab === tab && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
+                      )}
+                    </button>
+                  )
+                )}
+              </div>
+              <div className="p-8">{content[activeTab]}</div>
             </div>
-          ) : (
-            <p className="text-red-500">⚠️ No video available</p>
-          )}
-
-          <div className="flex items-center ">
-            <MdCurrencyRupee className="h-6 w-6" />
-            <h2 className="text-2xl font-bold">{course.discountPrice}</h2>
           </div>
 
-          <button
-            onClick={() => addToCart(course)}
-            className="cursor-pointer w-full bg-blue-700 text-white py-3 rounded-lg mb-6 hover:bg-blue-800"
-          >
-            Add To Cart
-          </button>
+          {/* Sidebar */}
+          <aside className="lg:w-96 flex-shrink-0">
+            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 sticky top-8">
+              {/* Price */}
+              <div className="mb-8">
+                <div className="flex items-baseline gap-2 mb-2">
+                  <MdCurrencyRupee className="h-8 w-8 text-green-600" />
+                  <span className="text-4xl font-bold text-slate-900">
+                    {course.discountPrice}
+                  </span>
+                </div>
+                <p className="text-green-600 font-medium">Limited time offer</p>
+              </div>
 
-          <p className="text-xl font-semibold mb-2"> This Course Includes </p>
-          <div className="flex flex-col gap-2 text-gray-600">
-            <p>✅ {course?.overview?.videoHours || 5}hrs on-demand video</p>
-            <p>
-              ✅ Instructor:{" "}
-              {course?.overview?.overviewInstructor || course.instructor.name}
-            </p>
-            <p>
-              ✅ Language:{" "}
-              {course?.overview?.overviewLanguage || "Hindi,English"}
-            </p>
-            <p>✅ Level:{course?.overview?.courseLevel || "Beginner"}</p>
-            <p>
-              {course?.overview?.certificate ? "✅ " : "❌ "}
-              Certificate
-            </p>
-            <p>
-              {course?.overview?.accessOnMobileAndTV ? "✅ " : "❌ "}
-              Access on Mobile & TV
-            </p>
-          </div>
-          <div className="flex items-center gap-3 mt-6">
-            <h3 className="font-bold">Share:</h3>
-            <a href="#" className="p-2 bg-gray-300 rounded-full">
-              <FaDribbble />
-            </a>
-            <a href="#" className="p-2 bg-gray-300 rounded-full">
-              <FaLinkedin />
-            </a>
-            <a href="#" className="p-2 bg-gray-300 rounded-full">
-              <FaTwitter />
-            </a>
-          </div>
-        </aside>
+              {/* Add to Cart */}
+              <button
+                onClick={() => addToCart(course)}
+                className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-4 rounded-xl transition-colors duration-200 mb-8"
+              >
+                Add To Cart
+              </button>
+
+              {/* Includes */}
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">
+                  This Course Includes
+                </h3>
+                <div className="space-y-4">
+                  {[
+                    {
+                      label: `${
+                        course?.overview?.videoHours || 5
+                      } hours on-demand video`,
+                      condition: true,
+                    },
+                    {
+                      label: `Instructor: ${
+                        course?.overview?.overviewInstructor ||
+                        course.instructor?.name
+                      }`,
+                      condition: true,
+                    },
+                    {
+                      label: `Language: ${
+                        course?.overview?.overviewLanguage || "Hindi, English"
+                      }`,
+                      condition: true,
+                    },
+                    {
+                      label: `Level: ${
+                        course?.overview?.courseLevel || "Beginner"
+                      }`,
+                      condition: true,
+                    },
+                    {
+                      label: "Certificate of Completion",
+                      condition: course?.overview?.certificate,
+                    },
+                    {
+                      label: "Access on Mobile & TV",
+                      condition: course?.overview?.accessOnMobileAndTV,
+                    },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3">
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                          item.condition ? "bg-green-100" : "bg-red-100"
+                        }`}
+                      >
+                        <span
+                          className={`text-sm ${
+                            item.condition ? "text-green-600" : "text-red-600"
+                          }`}
+                        >
+                          {item.condition ? "✓" : "✗"}
+                        </span>
+                      </div>
+                      <p className="text-slate-700 font-medium">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Share */}
+              <div className="pt-6 border-t border-slate-200">
+                <div className="flex items-center gap-4">
+                  <h4 className="font-semibold text-slate-900">Share:</h4>
+                  <div className="flex gap-3">
+                    <a
+                      href="#"
+                      className="w-10 h-10 bg-slate-100 hover:bg-blue-100 rounded-full flex items-center justify-center transition-colors duration-200 group"
+                    >
+                      <FaDribbble className="text-slate-600 group-hover:text-blue-600" />
+                    </a>
+                    <a
+                      href="#"
+                      className="w-10 h-10 bg-slate-100 hover:bg-blue-100 rounded-full flex items-center justify-center transition-colors duration-200 group"
+                    >
+                      <FaLinkedin className="text-slate-600 group-hover:text-blue-600" />
+                    </a>
+                    <a
+                      href="#"
+                      className="w-10 h-10 bg-slate-100 hover:bg-blue-100 rounded-full flex items-center justify-center transition-colors duration-200 group"
+                    >
+                      <FaTwitter className="text-slate-600 group-hover:text-blue-600" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
 
-      <div className="px-6 md:px-12 my-20 text-center">
-        <h2 className="text-blue-500 text-sm">Explore Recommended Courses</h2>
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">
-          You Might Also Like
-        </h1>
-        <p className="text-gray-600 mb-12">
-          Discover personalized course recommendations curated to match your
-          interests and learning goals.
-        </p>
-
-        
-      </div>
+      {/* Toast */}
       <ToastContainer position="top-right" autoClose={1000} />
     </>
   );

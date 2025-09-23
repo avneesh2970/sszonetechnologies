@@ -100,7 +100,7 @@ const router = createBrowserRouter([
       { index: true, element: <Overview /> },
       { path: "profile", element: <Profile /> },
       { path: "allCourse", element: <AllCourse /> },
-      { path: "allCourse/:id", element: <StuAllCourseDetails /> },
+      { path: "stuAllCourse/:id", element: <StuAllCourseDetails /> },
       { path: "enrollCourse", element: <EnrollCourse /> },
       { path: "enrollCourseDetails/:id", element: <StudentCourseDetail /> },
       { path: "wishlist", element: <StuWishlist /> },

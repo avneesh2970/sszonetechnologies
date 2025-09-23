@@ -22,13 +22,13 @@ const Reviews = () => {
   <table className="w-full text-left border border-gray-300 border-collapse">
     <thead>
       <tr className="bg-blue-100">
-        <th className="py-3 px-4 font-medium text-gray-700 border border-gray-300">
+        <th className="py-3 px-4 font-bold text-gray-700 border border-gray-300">
           Course
         </th>
-        <th className="py-3 px-4 font-medium text-gray-700 border border-gray-300">
+        <th className="py-3 px-4 font-bold text-gray-700 border border-gray-300">
           Date
         </th>
-        <th className="py-3 px-4 font-medium text-gray-700 border border-gray-300">
+        <th className="py-3 px-4 font-bold text-gray-700 border border-gray-300">
           Feedback
         </th>
       </tr>

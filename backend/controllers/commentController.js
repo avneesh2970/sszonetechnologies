@@ -3,7 +3,7 @@ const Blog = require("../models/blogModel");
 
 exports.addComment = async (req, res) => {
   const { blogId } = req.params;
-  const { firstName, lastName, phone, email, comment } = req.body;
+  const { firstName,  email, comment } = req.body;
 
   try {
     const blog = await Blog.findById(blogId);
@@ -15,8 +15,6 @@ exports.addComment = async (req, res) => {
     const newComment = new Comment({
       blogId,
       firstName,
-      lastName,
-      phone,
       email,
       comment,
     });

@@ -14,21 +14,21 @@ const OrderHistory = () => {
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-300 rounded-lg">
-            <thead className="bg-blue-100 font-bold">
+            <thead className="bg-blue-100 font-bold ">
               <tr>
-                <th className="p-3 text-left  font-bold text-gray-700 border">
+                <th className="p-3 text-left  font-bold text-gray-700 border border-gray-300 ">
                   Payment ID
                 </th>
-                <th className="p-3 text-left  font-bold text-gray-700 border">
+                <th className="p-3 text-left  font-bold text-gray-700 border border-gray-300">
                   Course Name
                 </th>
-                <th className="p-3 text-left  font-bold text-gray-700 border">
+                <th className="p-3 text-left  font-bold text-gray-700 border border-gray-300">
                   Price (₹)
                 </th>
-                <th className="p-3 text-left  font-bold text-gray-700 border">
+                <th className="p-3 text-left  font-bold text-gray-700 border border-gray-300">
                   Status
                 </th>
-                <th className="p-3 text-left  font-bold text-gray-700 border">
+                <th className="p-3 text-left  font-bold text-gray-700 border border-gray-300">
                   Date
                 </th>
               </tr>
@@ -36,19 +36,19 @@ const OrderHistory = () => {
             <tbody>
               {purchases.map((purchase, index) => (
                 <tr key={index} className="hover:bg-blue-100 bg-white">
-                  <td className="p-3  border">
+                  <td className="p-3  border border-gray-300">
                     {purchase.razorpay.paymentId}
                   </td>
-                  <td className="p-3  border">
+                  <td className="p-3  border border-gray-300">
                     {purchase.product && purchase.product.length > 0
                       ? purchase.product
                           .map((course) => course.title)
                           .join(", ")
                       : "N/A"}
                   </td>
-                  <td className="p-3  border">₹ {purchase.amount}</td>
+                  <td className="p-3  border border-gray-300">₹ {purchase.amount}</td>
                   <td
-                    className={`p-3 text-sm border font-medium ${
+                    className={`p-3 text-sm border border-gray-300 font-medium ${
                       purchase.status === "paid"
                         ? "text-green-600"
                         : "text-red-600"
@@ -56,7 +56,7 @@ const OrderHistory = () => {
                   >
                     {purchase.status}
                   </td>
-                  <td className="p-3 text-sm border">
+                  <td className="p-3 text-sm border border-gray-300">
                     {new Date(purchase.createdAt).toLocaleDateString()}
                   </td>
                 </tr>
