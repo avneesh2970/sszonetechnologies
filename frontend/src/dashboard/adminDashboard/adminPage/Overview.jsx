@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-
-import { FaBook, FaUserGraduate, FaMoneyBillWave } from "react-icons/fa";
 import {
   LineChart,
   Line,
@@ -10,7 +8,12 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import { FaStar, FaUser, FaBookOpen, FaRegCommentDots } from "react-icons/fa";
+import {
+  FaBook,
+  FaChartLine,
+  FaStar,
+  FaTrophy,
+} from "react-icons/fa";
 import { useStudentAuth } from "../../../studentDashboard/StudentesPages/studentAuth";
 import useAdminAuth from "./AdminAuth";
 import { Link } from "react-router-dom";
@@ -30,34 +33,9 @@ const data = [
   { month: "Dec", students: 780 },
 ];
 
-const instructors = Array(6).fill({
-  name: "Sanki Jho",
-  reviews: "25,895 Reviews",
-  courses: "15+ Courses",
-  students: "692 Students",
-  avatar: "https://i.pravatar.cc/40?img=3",
-});
-
-const notifications = [
-  "Account has been created successfully.",
-  "Successfully applied for a job Developer.",
-  "Multi vendor course updated successfully.",
-  "HTML course updated successfully.",
-  "HTML course updated successfully.",
-  "HTML course updated successfully.",
-  "JavaScript course updated successfully.",
-];
-
-const feedbacks = [
-  { name: "JavaScript", enrolled: "1,200", rating: 4.1 },
-  { name: "PHP", enrolled: "1,500", rating: 3.9 },
-  { name: "Graphics Designer", enrolled: "2,500", rating: 4.7 },
-  { name: "Data Science", enrolled: "2,290", rating: 4.5 },
-];
-
 function EnrolledCoursesChart() {
   return (
-    <div className="bg-white p-4 rounded-xl shadow-md w-full ">
+    <div className="bg-white p-4 rounded-xl shadow-md w-full">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-gray-700">
           Courses Enrolled Status
@@ -92,8 +70,18 @@ function EnrolledCoursesChart() {
 }
 
 const AdminOverview = () => {
-  const { allUser, fetchAllUsers } = useStudentAuth();
-  const {totalAmount , fetchPayments ,allCourses , fetchAllCourses , allReviews, fetchAllReviews,} = useAdminAuth()
+  const { allUser = [], fetchAllUsers } = useStudentAuth();
+
+  const {
+    totalAmount = 0,
+    fetchPayments,
+    averageRating = 0,
+    profile,
+    allCourses = [],
+    fetchAllCourses,
+    allReviews = [],
+    fetchAllReviews,
+  } = useAdminAuth();
 
   useEffect(() => {
     fetchAllUsers();
@@ -101,147 +89,132 @@ const AdminOverview = () => {
     fetchAllCourses();
     fetchAllReviews();
   }, []);
-  
-  
+
+  const stats = [
+    {
+      title: "Total Courses",
+      value: allCourses?.length || 0,
+      color: "bg-gradient-to-r from-blue-500 to-blue-600",
+      icon: FaBook,
+      textColor: "text-blue-600",
+      bgColor: "bg-blue-50",
+    },
+    {
+      title: "Total Students",
+      value: allUser?.length || 0,
+      color: "bg-gradient-to-r from-orange-500 to-orange-600",
+      icon: FaChartLine,
+      textColor: "text-orange-600",
+      bgColor: "bg-orange-50",
+    },
+    {
+      title: "Total Earning",
+      value: "₹ " + totalAmount,
+      color: "bg-gradient-to-r from-green-500 to-green-600",
+      icon: FaTrophy,
+      textColor: "text-green-600",
+      bgColor: "bg-green-50",
+    },
+  ];
+
   return (
-    <>
-      <div className="max-w-screen-2xl mx-auto">
-        <p className="font-semibold text-lg mb-2">Summary</p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white p-4 rounded shadow flex items-center space-x-4">
-            <div className="border w-10 h-10 rounded-full flex items-center justify-center bg-[#296AD2]">
-              <FaBook className="text-white text-2xl" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold">{allCourses.length}</h3>
-              <p className="text-gray-500 text-sm">Total Courses</p>
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded shadow flex items-center space-x-4">
-            <div className="border w-10 h-10 rounded-full flex items-center justify-center bg-[#296AD2]">
-              <FaUserGraduate className="text-white text-2xl" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold">{allUser.length}</h3>
-              <p className="text-gray-500 text-sm">Total Students</p>
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded shadow flex items-center space-x-4">
-            <div className="border w-10 h-10 rounded-full flex items-center justify-center bg-[#296AD2]">
-              <FaMoneyBillWave className="text-white text-2xl" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold">₹ {totalAmount}</h3>
-              <p className="text-gray-500 text-sm">Total Earning </p>
-            </div>
-          </div>
+    <div className="p-6">
+      {/* Header */}
+      <div className="md:flex items-center md:gap-20 mb-6">
+        <div>
+          <p className="text-gray-500 text-sm font-medium uppercase tracking-wider mb-2">
+            Admin Dashboard
+          </p>
+          <h1 className="md:text-3xl text-2xl font-bold text-gray-900">
+            Welcome back, {profile?.firstName || "Admin"}
+          </h1>
         </div>
 
-        {/* Courses Enrolled Status (Placeholder) */}
-
-        <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400">
-          <EnrolledCoursesChart />
+        <div className="flex items-center gap-2 text-lg mt-3 md:mt-0">
+          <FaStar className="text-yellow-300" />
+          <span>
+            {averageRating} ({allReviews?.length || 0} Reviews)
+          </span>
         </div>
+      </div>
 
-        <div className="p-6 space-y-6">
-          {/* Top Cards */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-            
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-lg">Popular Instructor</h3>
-                <span className="text-sm text-gray-400 cursor-pointer">
-                  See More...
-                </span>
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {stats.map((item, index) => {
+          const IconComponent = item.icon;
+          return (
+            <div
+              key={index}
+              className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div
+                  className={`p-3 rounded-lg ${item.bgColor} group-hover:scale-110 transition-transform duration-300`}
+                >
+                  <IconComponent className={`w-6 h-6 ${item.textColor}`} />
+                </div>
+                <div className={`h-3 w-3 rounded-full ${item.color}`}></div>
               </div>
-              <div className="space-y-4">
-                {instructors.map((inst, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <img
-                      src={inst.avatar}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="text-sm space-y-1">
-                      <p className="font-semibold">{inst.name}</p>
-                      <div className="flex gap-3 text-gray-500 text-xs items-center">
-                        <span className="flex items-center gap-1">
-                          <FaRegCommentDots /> {inst.reviews}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <FaBookOpen /> {inst.courses}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <FaUser /> {inst.students}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+
+              <div className="space-y-2">
+                <p className="text-gray-500 text-sm font-medium">{item.title}</p>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {item.value}
+                </h3>
               </div>
             </div>
+          );
+        })}
+      </div>
 
-            
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-lg">Notifications</h3>
-                <span className="text-sm text-gray-400 cursor-pointer">
-                  See More...
-                </span>
-              </div>
-              <div className="space-y-3 text-sm text-gray-700">
-                {notifications.map((note, idx) => (
-                  <div key={idx}>
-                    <p>{note}</p>
-                    <span className="text-xs text-gray-400">
-                      {idx + 1} Hour Ago
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div> */}
+      {/* Chart + Feedback */}
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <EnrolledCoursesChart />
 
-          {/* Recent Feedbacks */}
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-lg">Recent Feedbacks</h3>
-              <Link to='/admin/review'>
+        <div className="bg-white rounded-lg shadow-sm border p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold text-lg">Recent Feedbacks</h3>
+            <Link to="/admin/review">
               <span className="text-sm text-gray-400 cursor-pointer">
                 See More...
               </span>
-              </Link>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-blue-50 text-gray-700 text-left">
-                  <tr>
-                    <th className="px-4 py-2">Course Name</th>
-                    <th className="px-4 py-2">Comment</th>
-                    <th className="px-4 py-2">Rating</th>
+            </Link>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-blue-50 text-gray-700 text-left">
+                <tr>
+                  <th className="px-4 py-2">User</th>
+                  <th className="px-4 py-2">Comment</th>
+                  <th className="px-4 py-2">Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allReviews.slice(0, 5).map((review, idx) => (
+                  <tr
+                    key={idx}
+                    className={idx % 2 === 0 ? "bg-white" : "bg-blue-50"}
+                  >
+                    <td className="px-4 py-2">
+                      {review?.userId?.name
+                        ? review.userId.name.charAt(0).toUpperCase() +
+                          review.userId.name.slice(1).toLowerCase()
+                        : "Unknown User"}
+                    </td>
+                    <td className="px-4 py-2">{review?.comment || "-"}</td>
+                    <td className="px-4 py-2 flex items-center gap-1">
+                      <FaStar className="text-yellow-400" />{" "}
+                      {review?.rating || 0}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {allReviews.slice(0,5).map((review, idx) => (
-                    <tr
-                      key={idx}
-                      className={idx % 2 === 0 ? "bg-white" : "bg-blue-50"}
-                    >
-                      <td className="px-4 py-2">{review.userId.name.charAt(0).toUpperCase() + review.userId.name.slice(1).toLowerCase()}</td>
-                      <td className="px-4 py-2">{review.comment}</td>
-                      <td className="px-4 py-2 flex items-center gap-1">
-                        <FaStar className="text-yellow-400" /> {review.rating}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

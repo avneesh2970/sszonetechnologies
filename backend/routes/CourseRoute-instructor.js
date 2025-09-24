@@ -145,7 +145,10 @@ router.get("/", async (req, res) => {
         path: "modules", // populate modules
         populate: { path: "lessons" }, // populate lessons inside each module
       })
-      .populate('reviews');
+      .populate({
+        path : "reviews", 
+        populate : {path : "userId"}
+      });
       
 
     res.status(200).json({ success: true, courses });

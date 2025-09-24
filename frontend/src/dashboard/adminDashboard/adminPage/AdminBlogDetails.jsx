@@ -1,152 +1,159 @@
 import axios from "axios";
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { ArrowLeft } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { FiCalendar } from "react-icons/fi";
-import { useLocation } from "react-router-dom";
-
-
+import { useLocation, useNavigate } from "react-router-dom";
 
 const AdminBlogDetailPage = () => {
   const location = useLocation();
   const blog = location.state;
-  const [recentblog, setrecentBlogs] = useState([]);
+  const [recentBlogs, setRecentBlogs] = useState([]);
+  const navigate = useNavigate()
 
-  const fetchtrcentBlogs = async () => {
+  const fetchRecentBlogs = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/blogs`);
-      setrecentBlogs(res.data);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/blogs`
+      );
+      setRecentBlogs(res.data);
     } catch (error) {
       console.error("Error fetching blogs:", error);
     }
   };
 
   useEffect(() => {
-    fetchtrcentBlogs();
-  });
+    fetchRecentBlogs();
+  }, []);
+
   return (
-    <>
-      <div className="w-full h-72 md:h-[400px] rounded-xl overflow-hidden max-w-4xl mx-auto">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      {/* Banner */}
+      <div className="relative w-full h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden mb-8">
         <img
           src={`${import.meta.env.VITE_BACKEND_URL}/${blog.image}`}
           alt="Blog Banner"
-          className="w-full h-full object-cover "
+          className="w-full h-full object-cover"
         />
+        <button
+      onClick={() => navigate(-1)}
+      className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition"
+    >
+      <ArrowLeft size={18} />
+      <span className="text-sm font-medium">Back</span>
+    </button>
       </div>
-      <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left/Main Blog Content */}
-        <div className="col-span-2 space-y-6">
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left/Main Blog Section */}
+        <div className="lg:col-span-2 space-y-6">
           {/* Title & Metadata */}
-          <div className="bg-white p-4 ">
-            <h1 className="text-2xl font-bold">{blog.title}</h1>
-            <div className="flex justify-between  text-gray-600 mt-2">
-              <p>
-                <span className="font-semibold">Instructors:</span>{" "}
-                {blog.author}
-              </p>
-              <p>
-                <span className="font-semibold">Date:</span>{" "}
-                {new Date(blog.date).toLocaleDateString()}
-              </p>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3 leading-tight text-gray-900">
+              {blog.title}
+            </h1>
+            <div className="flex items-center gap-6 text-sm md:text-base text-gray-600">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <span>{blog.author}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <span>
+                  {new Date(blog.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Content */}
-          <div className="bg-white p-4  text-gray-800">
+          <article className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8">
             <div
-              className="text-md text-gray-700"
+              className="text-gray-700 leading-relaxed prose max-w-none"
               dangerouslySetInnerHTML={{
-                __html: blog.content || "No content",
+                __html: blog.content || "No content available",
               }}
-            ></div>
-          </div>
-
-          {/* Tags & Social */}
-          <div className="bg-white p-4 rounded shadow ">
-            <div className="flex flex-wrap gap-2">
-              <span className="font-semibold">Tags:</span>
-              {blog.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="bg-gray-200 px-2 py-1 rounded text-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <div className="flex items-center gap-3 mt-4">
-              <span className="font-semibold">Social Network:</span>
-              <div className="flex items-center space-x-4 mt-2">
-                {blog.facebook && (
-                  <a
-                    href={blog.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaFacebook className="text-gray-600 hover:text-blue-600 cursor-pointer text-xl" />
-                  </a>
-                )}
-                {blog.twitter && (
-                  <a
-                    href={blog.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaTwitter className="text-gray-600 hover:text-blue-500 cursor-pointer text-xl" />
-                  </a>
-                )}
-                {blog.instagram && (
-                  <a
-                    href={blog.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaInstagram className="text-gray-600 hover:text-pink-500 cursor-pointer text-xl" />
-                  </a>
-                )}
-                {blog.linkedin && (
-                  <a
-                    href={blog.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaLinkedin className="text-gray-600 hover:text-blue-700 cursor-pointer text-xl" />
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-
+            />
+          </article>
         </div>
 
         {/* Right Sidebar */}
-        <div className="bg-white rounded shadow p-4 h-fit">
-          <h2 className="text-xl font-bold mb-4">Recent Posts</h2>
-          {recentblog.slice(0, 2).map((post) => (
-            <div
-              key={post.id}
-              className="flex items-start gap-3 mb-4 border-b pb-3"
-            >
-              <img
-                src={`${import.meta.env.VITE_BACKEND_URL}/${post.image}`}
-                alt={post.title}
-                className="w-16 h-16 object-cover rounded"
-              />
-              <div>
-                <p className="flex items-center text-sm text-gray-500 mb-1">
-                  <FiCalendar className="mr-1" />{" "}
-                  {new Date(blog.date).toLocaleDateString()}
-                </p>
-                <h4 className="text-md font-medium text-gray-800">
-                  {post.title}
-                </h4>
-              </div>
+        <aside className="space-y-6">
+          {/* Tags */}
+          <div className="rounded-2xl border border-gray-300 px-6 py-4 bg-white">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {blog.tags?.map((tag, index) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer"
+                >
+                  #{tag}
+                </span>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* Recent Posts */}
+          <div className="bg-white rounded-2xl shadow p-6">
+            <h2 className="text-xl font-bold mb-4">Recent Posts</h2>
+            {recentBlogs.slice(0, 3).map((post) => (
+              <div
+                key={post._id}
+                className="flex items-start gap-3 mb-4 border-b pb-3 last:border-b-0 last:pb-0"
+              >
+                <img
+                  src={`${import.meta.env.VITE_BACKEND_URL}/${post.image}`}
+                  alt={post.title}
+                  className="w-16 h-16 object-cover rounded"
+                />
+                <div>
+                  <p className="flex items-center text-sm text-gray-500 mb-1">
+                    <FiCalendar className="mr-1" />{" "}
+                    {new Date(post.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+                  <h4 className="text-md font-medium text-gray-800">
+                    {post.title}
+                  </h4>
+                </div>
+              </div>
+            ))}
+          </div>
+        </aside>
       </div>
-    </>
+    </div>
   );
 };
 

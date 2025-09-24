@@ -13,7 +13,7 @@ const AdminLogout = () => {
   };
 
   return (
-    <div>
+    <div className="p-6">
       {/* Logout Button */}
       <div
         onClick={() => setShowConfirm(true)}
@@ -24,8 +24,8 @@ const AdminLogout = () => {
 
       {/* Confirmation Popup */}
       {showConfirm && (
-        <div className="fixed inset-0  flex justify-center items-center z-50">
-          <div className="bg-gray-200 rounded-xl shadow-lg p-6 w-[90%] max-w-sm text-center">
+        <div className="fixed inset-0  flex justify-center items-center bg-black/20 z-50">
+          <div className="bg-gray-100 rounded-xl shadow-lg p-6 w-[90%] max-w-sm text-center">
             <h2 className="text-lg font-semibold mb-4">
               Are you sure you want to logout?
             </h2>

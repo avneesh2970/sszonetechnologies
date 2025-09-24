@@ -123,6 +123,7 @@ router.get('/all-purchases', async (req, res) => {
   try {
     const allPurchase = await Purchase.find().sort({createdAt : -1})
       .populate("user", "name")
+      .populate("product")
       
 
     res.status(200).json({ success: true, allPurchase });

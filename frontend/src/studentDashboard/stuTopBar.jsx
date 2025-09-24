@@ -77,7 +77,7 @@ const StuTopBar = () => {
       {/* Header */}
       <div>
         <p className="text-gray-500 text-base font-bold uppercase tracking-wider">Dashboard</p>
-        <p className="text-2xl font-bold mt-1">Welcome back, {user?.name} 👋</p>
+        <p className="text-2xl font-bold mt-1">Welcome back, {user?.name} </p>
       </div>
 
       {/* Stats Cards */}

@@ -33,7 +33,7 @@ export default function useAdminAuth() {
 
       if (data.success) {
         setPayment(data.allPurchase || []); // ensure fallback
-        toast.success("Payments loaded successfully");
+        // toast.success("Payments loaded successfully");
       } else {
         toast.error("Failed to load payments");
       }

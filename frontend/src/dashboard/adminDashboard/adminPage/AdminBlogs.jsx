@@ -224,18 +224,11 @@ const BlogModalPage = () => {
   }, []);
 
   return (
-    <div className=" min-h-screen">
-      <div className="p-3 text-right">
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-black text-white px-4 py-2 rounded"
-        >
-          Upload Blog
-        </button>
-      </div>
+    <div className=" min-h-screen p-6">
+      
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl relative">
             <button
               onClick={() => {
@@ -393,8 +386,17 @@ const BlogModalPage = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 mb-4">
-        <h2 className="text-3xl font-bold text-center mb-8">Blog Posts</h2>
+      <div className=" mb-4">
+        <div className="flex justify-between mb-4">
+          <h2 className="text-3xl font-bold  ">Blog Posts</h2>
+          <button
+          onClick={() => setShowModal(true)}
+          className="bg-black text-white px-4 py-2 rounded"
+        >
+          Upload Blog
+        </button>
+
+        </div>
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -402,73 +404,83 @@ const BlogModalPage = () => {
         ) : blogs.length === 0 ? (
           <p className="text-center text-gray-500">No blogs available</p>
         ) : (
-          <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
             {blogs.map((blog) => (
               <div
                 key={blog._id}
-                className="bg-[#f5f4ef] rounded-xl shadow-lg overflow-hidden border relative border-gray-200"
+                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 relative"
               >
                 <Link
                   to={`/admin/blogdetail/${blog._id}`}
                   state={blog}
-                  className="block hover:shadow-xl transition-all"
+                  className="block group"
                 >
-                  <span className="inline-block border border-black bg-gray-50 px-4 py-1 rounded-full text-sm absolute top-2 left-2 font-medium">
-                    {blog.tags[0] || "Blog"}
-                  </span>
-                  <div className="w-full h-64 ">
+                  {/* Blog Image */}
+                  <div className="relative overflow-hidden">
                     {blog.image && (
                       <img
                         src={`${import.meta.env.VITE_BACKEND_URL}/${
                           blog.image
                         }`}
                         alt={blog.title}
-                        className="w-full h-full "
+                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                     )}
-                  </div>
-                </Link>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                <div className="">
-                  <div className="px-2 pt-2">
-                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+                    {/* Tag */}
+                    {blog.tags?.length > 0 && (
+                      <span className="absolute top-2 left-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {blog.tags[0]}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Blog Content */}
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {blog.title}
                     </h3>
 
-                    <div
-                      className="text-md text-gray-700"
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          blog.content?.length > 50
-                            ? `${blog.content.slice(0, 50)}...`
-                            : blog.content || "No content",
-                      }}
-                    ></div>
-
-                    <p className="text-sm text-gray-600 mb-1 flex items-center justify-between my-2">
-                      {new Date(blog.date).toLocaleDateString()}
-                      <span className="text-[#296AD2] flex items-center gap-1">
-                        Read More <FaArrowRight />
-                      </span>
+                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+                      {blog.content
+                        ? `${blog.content
+                            .replace(/<[^>]+>/g, "")
+                            .slice(0, 120)}...`
+                        : "No preview available"}
                     </p>
-                  </div>
 
-                  <div className="flex  p-4 justify-end  h-full gap-2 ">
-                    <button
-                      onClick={() => handleEdit(blog)}
-                      className="text-blue-600 hover:text-blue-800"
-                      title="Edit Blog"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(blog._id)}
-                      className="text-red-600 hover:text-red-800"
-                      title="Delete Blog"
-                    >
-                      <FaTrash />
-                    </button>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <time>
+                        {new Date(blog.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </time>
+                      <span className="text-blue-600 font-medium group-hover:underline flex items-center gap-1">
+                        Read More →
+                      </span>
+                    </div>
                   </div>
+                </Link>
+
+                {/* Action Buttons */}
+                <div className="absolute top-2 right-2 flex gap-2 bg-white/80 backdrop-blur-md rounded-full p-1 shadow-md">
+                  <button
+                    onClick={() => handleEdit(blog)}
+                    className="text-blue-600 hover:text-blue-800"
+                    title="Edit Blog"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(blog._id)}
+                    className="text-red-600 hover:text-red-800"
+                    title="Delete Blog"
+                  >
+                    <FaTrash />
+                  </button>
                 </div>
               </div>
             ))}
@@ -482,31 +494,31 @@ const BlogModalPage = () => {
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-300">
             <thead>
-              <tr className="bg-blue-50 text-left">
-                <th className="p-2 border">Blog Title</th>
-                <th className="p-2 border">Name</th>
-                <th className="p-2 border">Email</th>
+              <tr className="bg-blue-100 text-left">
+                <th className="p-2 border border-gray-300">Blog Title</th>
+                <th className="p-2 border border-gray-300">Name</th>
+                <th className="p-2 border border-gray-300">Email</th>
                 {/* <th className="p-2 border">Phone</th> */}
-                <th className="p-2 border">Comment</th>
-                <th className="p-2 border">Date</th>
-                <th className="p-2 border">Action</th>
+                <th className="p-2 border border-gray-300">Comment</th>
+                <th className="p-2 border border-gray-300">Date</th>
+                <th className="p-2 border border-gray-300">Action</th>
               </tr>
             </thead>
             <tbody>
               {allComments.length > 0 ? (
                 allComments.map((c) => (
-                  <tr key={c._id} className="hover:bg-gray-50">
-                    <td className="p-2 border">{c.blogId?.title || "N/A"}</td>
-                    <td className="p-2 border">
+                  <tr key={c._id} className="bg-white hover:bg-blue-100">
+                    <td className="p-2 border border-gray-300 ">{c.blogId?.title || "N/A"}</td>
+                    <td className="p-2 border border-gray-300">
                       {c.firstName} {c.lastName}
                     </td>
-                    <td className="p-2 border">{c.email}</td>
+                    <td className="p-2 border border-gray-300">{c.email}</td>
                     {/* <td className="p-2 border">{c.phone}</td> */}
-                    <td className="p-2 border">{c.comment}</td>
-                    <td className="p-2 border">
+                    <td className="p-2 border border-gray-300">{c.comment}</td>
+                    <td className="p-2 border border-gray-300">
                       {new Date(c.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="p-2 border text-center">
+                    <td className="p-2 border border-gray-300 text-center">
                       <button
                         onClick={() => deleteComment(c._id)}
                         className="text-red-500 hover:text-red-700 cursor-pointer"

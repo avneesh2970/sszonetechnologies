@@ -15,6 +15,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { FiCalendar } from "react-icons/fi";
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
+import { ArrowLeft } from "lucide-react";
 
 const BlogDetails = () => {
   // const { blogData, allBlogs } = location.state || {};
@@ -30,6 +31,7 @@ const BlogDetails = () => {
   const blogId = id;
   const location = useLocation();
   const blog = location.state;
+  const navigate = useNavigate()
   // const [recentblog] = useState([]);
 
   const [recentblogs, setRecentBlogs] = useState([]);
@@ -112,15 +114,21 @@ const BlogDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Hero Banner */}
-        {/* Blog Banner */}
+      
         <div className="relative w-full h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden mb-6">
           <img
             src={`${import.meta.env.VITE_BACKEND_URL}/${blog.image}`}
             alt="Blog Banner"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+          <button
+      onClick={() => navigate(-1)}
+      className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition"
+    >
+      <ArrowLeft size={18} />
+      <span className="text-sm font-medium">Back</span>
+    </button>
+          
         </div>
 
         {/* Title & Info */}
@@ -230,7 +238,7 @@ const BlogDetails = () => {
             </article>
 
             {/* Comments Section */}
-            <section className="bg-white rounded-2xl shadow-xl p-6 md:p-10">
+            <section className="bg-white rounded-2xl  p-6 md:p-10">
               {!user ? (
                 // 🔒 Show login message if not logged in
                 <div className="text-center py-10">

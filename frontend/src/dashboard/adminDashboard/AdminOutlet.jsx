@@ -13,7 +13,6 @@ import {
 import { BiBookBookmark } from "react-icons/bi";
 import { toast } from "react-toastify";
 import logo from "../../assets/image/logo.png";
-import AdminTopBar from "./AdminTopBar";
 
 const AdminOutlet = () => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -155,7 +154,7 @@ const AdminOutlet = () => {
           <span>Blogs</span>
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to="/admin/approveCourses"
           onClick={() => setSidebarOpen(false)}
           className={({ isActive }) =>
@@ -164,7 +163,7 @@ const AdminOutlet = () => {
         >
           <FaCreditCard />
           <span>Approve Courses</span>
-        </NavLink>
+        </NavLink> */}
 
         <hr className="my-4" />
 
@@ -225,7 +224,7 @@ const AdminOutlet = () => {
 
       {/* Logout Confirmation */}
       {showConfirm && (
-        <div className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-30">
+        <div className="fixed inset-0 flex justify-center items-center z-100 bg-black/20 ">
           <div className="rounded-xl shadow-lg p-6 w-[90%] max-w-sm text-center bg-gray-200">
             <h2 className="text-lg font-semibold mb-4">
               Are you sure you want to logout?
@@ -253,8 +252,8 @@ const AdminOutlet = () => {
 
       <div className="flex">
         <Sidebar />
-        <div className="px-2 w-full ">
-          <AdminTopBar />
+        <div className="px-2 w-full bg-[#f3f5f7] min-h-screen ">
+          {/* <AdminTopBar /> */}
           <Outlet />
         </div>
       </div>

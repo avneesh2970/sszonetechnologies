@@ -1,23 +1,16 @@
 import {
   FaBook,
   FaUserGraduate,
-  FaMoneyBillWave,
   FaStar,
   FaChartLine,
   FaTrophy,
+  FaMoneyBillWave,
   FaGraduationCap,
 } from "react-icons/fa";
 import { useEffect } from "react";
 import { useStudentAuth } from "./studentAuth";
 
 // Mock data for demonstration
-const mockUser = { name: "John Doe" };
-const mockPurchases = [
-  { id: 1, course: "JavaScript Fundamentals", progress: 75 },
-  { id: 2, course: "React Development", progress: 45 },
-  { id: 3, course: "Node.js Backend", progress: 90 },
-];
-const mockReviews = [];
 
 const feedbacks = [
   { course: "JavaScript", enrolled: "1,200", rating: 4.1 },
@@ -36,7 +29,7 @@ const Overview = () => {
   // Mock auth hook for demonstration
   // const user = mockUser;
   // const purchases = mockPurchases;
-  const myReviews = mockReviews;
+  
 
   useEffect(() => {
     // fetchReviews();

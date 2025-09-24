@@ -1,4 +1,3 @@
-
 // src/pages/Admin/AdminCourseDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -77,7 +76,9 @@ const AdminCourseDetails = () => {
   const handleStatusChange = async (newStatus) => {
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/instructor-courses/${course._id}/status`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/instructor-courses/${
+          course._id
+        }/status`,
         { status: newStatus },
         {
           withCredentials: true,
@@ -95,7 +96,9 @@ const AdminCourseDetails = () => {
   const handleApprove = async () => {
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/instructor-courses/${course._id}/status`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/instructor-courses/${
+          course._id
+        }/status`,
         { status: "Published" },
         { withCredentials: true } // ✅ if using cookies
       );
@@ -124,12 +127,23 @@ const AdminCourseDetails = () => {
       toast.error("Failed to add remark ");
     }
   };
+
+  const averageRating =
+    course.reviews && course.reviews.length > 0
+      ? (
+          course.reviews.reduce((sum, review) => sum + review.rating, 0) /
+          course.reviews.length
+        ).toFixed(1)
+      : null;
+
   const content = {
     Overview: (
       <div className="px-6 md:px-12 my-6">
         <h1 className="text-xl font-bold mb-4">Description</h1>
         <p className="text-gray-600 mb-6">
-          {course.overview.overviewDescription || course.description}
+          {course?.overview?.overviewDescription ||
+            course.description ||
+            "No Description"}
         </p>
         <div className="flex flex-col gap-4">
           {course?.overview?.whatYouWillLearn ? (
@@ -191,12 +205,6 @@ const AdminCourseDetails = () => {
           >
             <div className="flex items-center justify-between">
               {editModuleId === module._id ? (
-                // <input
-                //   type="text"
-                //   value={editTitle}
-                //   onChange={(e) => setEditTitle(e.target.value)}
-                //   className="border "
-                // />
                 ""
               ) : (
                 <p className="font-semibold ">{module.title}</p>
@@ -245,11 +253,59 @@ const AdminCourseDetails = () => {
         </div>
       </div>
     ),
+
     Review: (
       <div className="px-6 md:px-12 my-6">
-        <p className="text-gray-600">
-          No reviews yet. review added from enroll student
-        </p>
+        {course.reviews.length === 0 && (
+          <p className="text-gray-500 italic">
+            No reviews yet. Be the first to review this course!
+          </p>
+        )}
+        {course.reviews.map((review, index) => (
+          <div
+            key={index}
+            className="flex flex-col md:flex-row items-start gap-4 mb-6 p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition"
+          >
+            {/* Avatar */}
+            <div className="h-12 w-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
+              {review.userId?.name?.[0]?.toUpperCase() || "U"}
+            </div>
+
+            {/* Review Content */}
+            <div className="flex-1">
+              {/* Name + Date */}
+              <div className="flex justify-between items-center">
+                <h1 className="text-lg font-semibold">
+                  {review.userId?.name
+                    ? review.userId.name.charAt(0).toUpperCase() +
+                      review.userId.name.slice(1).toLowerCase()
+                    : "Unknown"}
+                </h1>
+                <p className="text-xs text-gray-500">
+                  {new Date(review.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+
+              {/* Comment */}
+              <p className="mt-2 text-gray-700 leading-relaxed">
+                {review.comment}
+              </p>
+
+              {/* Rating */}
+              <div className="flex gap-1 mt-2 text-yellow-400">
+                {Array.from({ length: 5 }, (_, i) => {
+                  if (i < Math.floor(review.rating)) return <FaStar key={i} />;
+                  if (i < review.rating) return <FaRegStarHalfStroke key={i} />;
+                  return <FaRegStar key={i} />;
+                })}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     ),
   };
@@ -278,12 +334,16 @@ const AdminCourseDetails = () => {
             </div>
             <div className="flex-1">
               <h3 className="text-gray-500">Review</h3>
-              <div className="flex items-center gap-1 text-amber-300">
-                {Array.from({ length: 5 }, (_, i) => {
-                  if (i < Math.floor(course.rating)) return <FaStar key={i} />;
-                  if (i < course.rating) return <FaRegStarHalfStroke key={i} />;
-                  return <FaRegStar key={i} />;
-                })}
+              <div className="flex items-center gap-1">
+                <FaRegStar className="w-3 h-3 text-amber-400" />
+                <span className="text-gray-700 font-medium">
+                  {averageRating || "New"}
+                </span>
+                {course.reviews && course.reviews.length > 0 && (
+                  <span className="text-gray-400 ml-1">
+                    ({course.reviews.length})
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -445,27 +505,6 @@ const AdminCourseDetails = () => {
                 )}
               </>
             )}
-
-            {/* <p className="mt-2 text-gray-600">Status Update</p>
-            <button
-              onClick={() =>
-                handleStatusUpdate(
-                  course._id,
-                  course.status === "Published" ? "Pending" : "Published"
-                )
-              }
-              className=" w-full p-1 border rounded-lg  text-white bg-blue-500 hover:bg-blue-600"
-            >
-              {course.status === "Published" ? "Unpublish" : "Publish"}
-            </button> */}
-
-            {/* {isModalOpen && (
-              <EditCourseModal
-                course={updatedCourse}
-                onClose={() => setIsModalOpen(false)}
-                onUpdated={handleUpdated}
-              />
-            )} */}
           </div>
           <ToastContainer position="top-right" autoClose={2000} />
         </aside>
