@@ -153,7 +153,7 @@ const AdminOutlet = () => {
           <FaCreditCard />
           <span>Blogs</span>
         </NavLink>
-
+ 
         {/* <NavLink
           to="/admin/approveCourses"
           onClick={() => setSidebarOpen(false)}
@@ -163,7 +163,7 @@ const AdminOutlet = () => {
         >
           <FaCreditCard />
           <span>Approve Courses</span>
-        </NavLink> */}
+        </NavLink>  */}
 
         <hr className="my-4" />
 

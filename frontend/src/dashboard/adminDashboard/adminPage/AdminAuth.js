@@ -3,23 +3,22 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function useAdminAuth() {
-   
-    // Get Profile/setting Details 
+  // Get Profile/setting Details
 
-    const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState(null);
 
-   const fetchProfile = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin-setting`);
-        if (res.data.success && res.data.data.length > 0) {
-          setProfile(res.data.data[0]); // Assuming only 1 admin setting
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/admin-setting`
+      );
+      if (res.data.success && res.data.data.length > 0) {
+        setProfile(res.data.data[0]); // Assuming only 1 admin setting
       }
-    };
-
-
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
 
   const [payment, setPayment] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -107,7 +106,7 @@ export default function useAdminAuth() {
     allReviews,
     fetchAllReviews,
     averageRating,
-    profile , fetchProfile
-
+    profile,
+    fetchProfile,
   };
 }

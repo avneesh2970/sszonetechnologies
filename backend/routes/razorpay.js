@@ -132,4 +132,37 @@ router.get('/all-purchases', async (req, res) => {
   }
 });
 
+router.get('/all', async (req, res) => {
+  try {
+    // Aggregate purchases by month
+    const monthlyEnrollments = await Purchase.aggregate([
+      {
+        $group: {
+          _id: { $month: "$createdAt" }, // get month from createdAt
+          count: { $sum: 1 } // count number of purchases
+        }
+      },
+      {
+        $sort: { "_id": 1 } // sort by month ascending
+      }
+    ]);
+    // http://localhost:3999/api/payment/all
+
+    // Optionally, populate user and product info if needed
+    const allPurchase = await Purchase.find()
+      .sort({ createdAt: -1 })
+      .populate("user", "name")
+      .populate("product");
+
+    res.status(200).json({ 
+      success: true, 
+      allPurchase,
+      monthlyEnrollments
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
 module.exports = router;
