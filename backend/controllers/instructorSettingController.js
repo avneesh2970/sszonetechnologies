@@ -42,7 +42,7 @@ const updateProfile = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const profile = await InstructorProfile.findOne({ instructor: req.instructorId })
-      .populate("instructor", "email"); // show email too
+      .populate("instructor",  "name email" , ); // show email too
 
     if (!profile) return res.status(404).json({ message: "Profile not found" });
 

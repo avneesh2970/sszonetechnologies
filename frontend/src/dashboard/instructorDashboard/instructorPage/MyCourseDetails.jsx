@@ -319,9 +319,56 @@ const InstructorCourseDetails = () => {
     ),
     Review: (
       <div className="px-6 md:px-12 my-6">
-        <p className="text-gray-600">
-          No reviews yet. review added from enroll student
-        </p>
+        {course.reviews.length === 0 && (
+          <p className="text-gray-500 italic">
+            No reviews yet. Be the first to review this course!
+          </p>
+        )}
+        {course.reviews.map((review, index) => (
+          <div
+            key={index}
+            className="flex flex-col md:flex-row items-start gap-4 mb-6 p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition"
+          >
+            {/* Avatar */}
+            <div className="h-12 w-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
+              {review.userId?.name?.[0]?.toUpperCase() || "U"}
+            </div>
+
+            {/* Review Content */}
+            <div className="flex-1">
+              {/* Name + Date */}
+              <div className="flex justify-between items-center">
+                <h1 className="text-lg font-semibold">
+                  {review.userId?.name
+                    ? review.userId.name.charAt(0).toUpperCase() +
+                      review.userId.name.slice(1).toLowerCase()
+                    : "Unknown"}
+                </h1>
+                <p className="text-xs text-gray-500">
+                  {new Date(review.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+
+              {/* Comment */}
+              <p className="mt-2 text-gray-700 leading-relaxed">
+                {review.comment}
+              </p>
+
+              {/* Rating */}
+              <div className="flex gap-1 mt-2 text-yellow-400">
+                {Array.from({ length: 5 }, (_, i) => {
+                  if (i < Math.floor(review.rating)) return <FaStar key={i} />;
+                  if (i < review.rating) return <FaRegStarHalfStroke key={i} />;
+                  return <FaRegStar key={i} />;
+                })}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     ),
   };

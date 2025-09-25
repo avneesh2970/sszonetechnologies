@@ -66,7 +66,9 @@ const InstructorAnnouncement = () => {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/ancument/announcement/${editId}`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/ancument/announcement/${editId}`,
         { title, course, date, time }
       );
 
@@ -87,10 +89,13 @@ const InstructorAnnouncement = () => {
 
   // Delete announcement
   const handleDeleteAnnouncement = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this announcement?")) return;
+    if (!window.confirm("Are you sure you want to delete this announcement?"))
+      return;
 
     try {
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/ancument/announcement/${id}`);
+      await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/ancument/announcement/${id}`
+      );
       setAnnouncements((prev) => prev.filter((item) => item._id !== id));
       toast.success("Announcement deleted successfully!");
     } catch (error) {
@@ -121,6 +126,7 @@ const InstructorAnnouncement = () => {
     <div className="p-6 relative">
       <h1 className="text-2xl font-semibold mb-4">Announcement</h1>
 
+      {/* Header Section */}
       <div className="bg-blue-100 p-6 rounded-lg mb-6 flex items-center justify-between">
         <div>
           <p className="text-lg font-semibold">Notify all your students.</p>
@@ -139,52 +145,63 @@ const InstructorAnnouncement = () => {
         </button>
       </div>
 
-      <div className="bg-blue-50 rounded-lg overflow-hidden">
-        <div className="grid grid-cols-3 font-semibold text-gray-700 border-b p-4">
+      {/* Announcement Table */}
+      <div className="overflow-hidden border border-gray-300 rounded-lg">
+        <div className="grid grid-cols-3 bg-blue-100 font-semibold text-gray-700 p-4 border-b border-gray-300">
           <div>Date</div>
           <div>Announcements</div>
           <div>Status</div>
         </div>
 
-        {announcements.length === 0 && (
-          <div className="p-4 text-center text-gray-600">No announcements found.</div>
-        )}
+        <div className="bg-white">
+          {announcements.length === 0 && (
+            <div className="p-4 text-center text-gray-600">
+              No announcements found.
+            </div>
+          )}
 
-        {announcements.map((item, idx) => (
-          <div
-            key={item._id || idx}
-            className="grid grid-cols-3 items-start text-sm text-gray-800 border-b px-4 py-3"
-          >
-            <div>
-              <p>{item.date}</p>
-              <p className="text-gray-500 text-xs">{item.time}</p>
+          {announcements.map((item, idx) => (
+            <div
+              key={item._id || idx}
+              className="grid grid-cols-3 items-start text-sm text-gray-800 px-4 py-3 border-b border-gray-300 hover:bg-blue-50 transition"
+            >
+              {/* Date */}
+              <div>
+                <p>{item.date}</p>
+                <p className="text-gray-500 text-xs">{item.time}</p>
+              </div>
+
+              {/* Title + Course */}
+              <div>
+                <p className="font-medium">{item.title}</p>
+                <p className="text-gray-500 text-xs">Course: {item.course}</p>
+              </div>
+
+              {/* Actions */}
+              <div>
+                <button
+                  className="text-blue-600 hover:underline mr-4"
+                  onClick={() => handleEdit(item)}
+                >
+                  Update
+                </button>
+                <button
+                  className="text-red-500 hover:underline"
+                  onClick={() => handleDeleteAnnouncement(item._id)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-            <div>
-              <p className="font-medium">{item.title}</p>
-              <p className="text-gray-500 text-xs">Course: {item.course}</p>
-            </div>
-            <div>
-              <button
-                className="text-blue-600 hover:underline mr-4"
-                onClick={() => handleEdit(item)}
-              >
-                Update
-              </button>
-              <button
-                className="text-red-500 hover:underline"
-                onClick={() => handleDeleteAnnouncement(item._id)}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Modal */}
       {open && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-[90%] md:w-[600px] p-6 relative">
+            {/* Close Button */}
             <button
               className="absolute top-4 right-4 text-gray-600 hover:text-red-600"
               onClick={() => {
@@ -197,11 +214,18 @@ const InstructorAnnouncement = () => {
               <FaX className="w-5 h-5" />
             </button>
 
+            {/* Modal Title */}
             <h2 className="text-xl font-semibold mb-4">
               {isEditing ? "Update Announcement" : "New Announcement"}
             </h2>
 
-            <form className="grid grid-cols-1 gap-4" onSubmit={isEditing ? handleUpdateAnnouncement : handleAddAnnouncement}>
+            {/* Form */}
+            <form
+              className="grid grid-cols-1 gap-4"
+              onSubmit={
+                isEditing ? handleUpdateAnnouncement : handleAddAnnouncement
+              }
+            >
               <input
                 type="text"
                 placeholder="Title"

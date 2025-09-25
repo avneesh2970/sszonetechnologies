@@ -94,7 +94,7 @@ const InstructorOutlet = () => {
 
       {/* Confirm Logout */}
       {showConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center space-y-4">
             <h3 className="text-lg font-semibold">Confirm Logout</h3>
             <p>Are you sure you want to log out?</p>
@@ -145,8 +145,8 @@ const InstructorOutlet = () => {
         </aside>
 
         {/* Main Content */}
-        <div className="px-2 w-full">
-          <InstructorTopBar />
+        <div className="px-2 w-full bg-[#f2f5f7] min-h-screen ">
+          {/* <InstructorTopBar /> */}
           <Outlet />
         </div>
       </div>

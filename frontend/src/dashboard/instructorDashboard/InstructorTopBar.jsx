@@ -1,6 +1,6 @@
 import React from "react";
 import img1 from "../../assets/image/img.jpg";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaStar } from "react-icons/fa";
 import { PiBookOpenText, PiMedalDuotone } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import useAuth from "./instructorPage/hooks/useAuth";
@@ -14,6 +14,7 @@ const InstructorTopBar = () => {
   };
 
   return (
+    <>
     <div className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-10 rounded-xl flex flex-wrap md:flex-nowrap justify-between items-center gap-6 mb-6">
       {/* Profile Section */}
       <div className="flex items-center gap-5">
@@ -42,6 +43,8 @@ const InstructorTopBar = () => {
         Create a New Course <FaArrowRight />
       </button>
     </div>
+    
+    </>
   );
 };
 

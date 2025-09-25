@@ -9,12 +9,14 @@ import {
   FaGlobe,
   FaGithub,
 } from "react-icons/fa";
+import useAuth from "./hooks/useAuth";
 
 const InstructorSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
+  const { instructor } = useAuth();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  // 🔹 use single "name" instead of firstName/lastName
+  const [name, setName] = useState(instructor?.name || "");
   const [userName, setUserName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [skill, setSkill] = useState("");
@@ -30,31 +32,33 @@ const InstructorSettings = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
+
   const [isOldPasswordValid, setIsOldPasswordValid] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+
 
   const validatePhone = (phoneNumber) => /^[0-9]{10}$/.test(phoneNumber);
 
   const tabs = ["profile", "password", "social"];
-
   const isActive = (tab) =>
     activeTab === tab
       ? "border-b-2 border-blue-500 text-black font-medium"
       : "text-gray-500 hover:text-black";
 
-  // Fetch profile on mount
+  // 🔹 Fetch profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/setting/profile`,
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
         const data = res.data;
-        setFirstName(data.firstName || "");
-        setLastName(data.lastName || "");
+
+        // setName(instructor?.name || ""); // use name
+        setName(data.name || data.instructor?.name || "");
+
         setUserName(data.userName || "");
         setPhoneNumber(data.phoneNumber || "");
         setSkill(data.skill || "");
@@ -71,9 +75,9 @@ const InstructorSettings = () => {
       }
     };
     fetchProfile();
-  }, []);
+  }, [instructor?.name]);
 
-  // Submit updated profile
+  // 🔹 Submit profile
   const profileSubmit = async (e) => {
     e.preventDefault();
 
@@ -86,8 +90,7 @@ const InstructorSettings = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/setting/profile`,
         {
-          firstName,
-          lastName,
+          name, // send single name
           userName,
           phoneNumber,
           skill,
@@ -96,9 +99,9 @@ const InstructorSettings = () => {
         },
         { withCredentials: true }
       );
-      toast.success(res.data.message || "Profile updated successfully ");
+      toast.success(res.data.message || "Profile updated successfully ✅");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update profile ");
+      toast.error(err.response?.data?.message || "Failed to update profile ❌");
     }
   };
 
@@ -133,10 +136,12 @@ const InstructorSettings = () => {
       if (res.status === 200) {
         setIsOldPasswordValid(true);
         setMessage("Old password matched, Now set a new password.");
+        setIsSuccess(true);
       }
     } catch (err) {
       setIsOldPasswordValid(false);
       setMessage("Old password is incorrect ");
+      setIsSuccess(false);
     }
   };
 
@@ -151,7 +156,7 @@ const InstructorSettings = () => {
 
     try {
       const res = await axios.put(
-          `${import.meta.env.VITE_BACKEND_URL}/api/instructor/update-password`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/instructor/update-password`,
         {
           oldPassword,
           newPassword,
@@ -173,7 +178,7 @@ const InstructorSettings = () => {
   };
 
   return (
-    <div className="mx-auto p-6 space-y-6 max-w-6xl">
+    <div className=" p-6 space-y-6 ">
       <h1 className="text-2xl font-semibold mb-6">Settings</h1>
 
       {/* Tabs */}
@@ -199,26 +204,8 @@ const InstructorSettings = () => {
       {activeTab === "profile" && (
         <form className="space-y-6" onSubmit={profileSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className=" mb-1">
-              <label className="mb-1">First Name</label>
-              <input
-                type="text"
-                placeholder="John"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="w-full px-4  py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div>
-            <div className=" mb-1">
-              <label className="mb-1">Last Name</label>
-              <input
-                type="text"
-                placeholder="Don"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div>
+            <input type="hidden" value={name} />
+
             <div className=" mb-1">
               <label className="mb-1">Username</label>
               <input
@@ -274,8 +261,6 @@ const InstructorSettings = () => {
           <button
             type="submit"
             disabled={
-              !firstName ||
-              !lastName ||
               !userName ||
               !phoneNumber ||
               !skill ||
@@ -283,8 +268,6 @@ const InstructorSettings = () => {
               !bio
             }
             className={`px-6 py-2 text-white rounded-md mt-5 ${
-              !firstName ||
-              !lastName ||
               !userName ||
               !phoneNumber ||
               !skill ||
@@ -300,68 +283,90 @@ const InstructorSettings = () => {
       )}
 
       {activeTab === "password" && (
+  <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
+    <h2 className="text-xl font-bold mb-4">Change Password</h2>
+
+    {/* ✅ Success (green) or Error (red) message */}
+    {message && (
+      <p className={isSuccess ? "text-green-600" : "text-red-500"}>
+        {message}
+      </p>
+    )}
+
+    <form onSubmit={handlePasswordUpdate} className="space-y-4">
+      {/* Old Password Input */}
+      <div>
+        <label className="block">Old Password</label>
+        <div className="flex space-x-2">
+          <input
+            type="password"
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
+            className="w-full border rounded p-2"
+            required
+          />
+          <button
+            type="button"
+            onClick={checkOldPassword}
+            className="bg-blue-500 text-white px-3 rounded hover:bg-blue-600"
+          >
+            Verify
+          </button>
+        </div>
+      </div>
+
+      {/* New password fields (only visible if old password is valid) */}
+      {isOldPasswordValid && (
         <>
-          <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
-            <h2 className="text-xl font-bold mb-4">Change Password</h2>
-            {message && <p className="text-red-500">{message}</p>}
+          <div>
+            <label className="block">New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full border rounded p-2"
+              required
+            />
+          </div>
+          <div>
+            <label className="block">Confirm New Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full border rounded p-2"
+              required
+            />
+          </div>
 
-            <form onSubmit={handlePasswordUpdate} className="space-y-4">
-              {/* Old Password Input */}
-              <div>
-                <label className="block">Old Password</label>
-                <div className="flex space-x-2">
-                  <input
-                    type="password"
-                    value={oldPassword}
-                    onChange={(e) => setOldPassword(e.target.value)}
-                    className="w-full border rounded p-2"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={checkOldPassword}
-                    className="bg-blue-500 text-white px-3 rounded hover:bg-blue-600"
-                  >
-                    Verify
-                  </button>
-                </div>
-              </div>
-
-              {/* New password fields (only visible if old password is valid) */}
-              {isOldPasswordValid && (
-                <>
-                  <div>
-                    <label className="block">New Password</label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full border rounded p-2"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block">Confirm New Password</label>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full border rounded p-2"
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                  >
-                    Update Password
-                  </button>
-                </>
-              )}
-            </form>
+          {/* Buttons */}
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              className="flex-1 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            >
+              Update Password
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setOldPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+                setIsOldPasswordValid(false);
+                setMessage("");
+              }}
+              className="flex-1 bg-gray-300 text-gray-700 p-2 rounded hover:bg-gray-400"
+            >
+              Cancel
+            </button>
           </div>
         </>
       )}
+    </form>
+  </div>
+)}
+
 
       {activeTab === "social" && (
         <form
@@ -448,7 +453,7 @@ const InstructorSettings = () => {
           </button>
         </form>
       )}
-      <ToastContainer />
+      <ToastContainer autoClose={1000} />
     </div>
   );
 };

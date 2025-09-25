@@ -2,19 +2,35 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import useAuth from "./hooks/useAuth";
-import { FaChevronDown, FaChevronUp, FaExternalLinkAlt } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaExternalLinkAlt,
+  FaFacebook,
+  FaGithub,
+  FaGlobe,
+  FaInstagram,
+  FaLinkedin,
+  FaTwitter,
+} from "react-icons/fa";
+import { FaEnvelope, FaPhone, FaUserTie, FaCalendarAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const InstructorProfile = () => {
   const [profile, setProfile] = useState(null);
-  const {instructor} = useAuth()
-  const[openSocial , setOpenSocial] = useState(false)
+  const { instructor } = useAuth();
+  const [openSocial, setOpenSocial] = useState(false);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/setting/profile`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/setting/profile`,
+          {
+            withCredentials: true,
+          }
+        );
         setProfile(res.data);
       } catch (err) {
         toast.error("Failed to load profile ❌");
@@ -24,223 +40,185 @@ const InstructorProfile = () => {
   }, []);
 
   if (!profile) {
-    return <div className="p-6 text-gray-600">Loading profile...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <p className="text-lg text-gray-600 mb-4">
+          No profile settings available yet.
+        </p>
+        <button
+          onClick={() => navigate("/instructor/setting")}
+          className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-md 
+                     hover:bg-blue-700 transition-colors"
+        >
+          + Add Setting
+        </button>
+      </div>
+    );
   }
 
+  const infoItems = [
+    { label: "Name", value: profile.name || "Not Provided" },
+    
+    { label: "Username", value: profile.userName || "Not Provided" },
+    {
+      label: "Email",
+      value: instructor.email || "Not Provided",
+      icon: <FaEnvelope className="text-blue-500" />,
+    },
+    {
+      label: "Phone Number",
+      value: profile.phoneNumber || "Not Provided",
+      icon: <FaPhone className="text-green-500" />,
+    },
+    {
+      label: "Expertise",
+      value: profile.skill || "Not Specified",
+      icon: <FaUserTie className="text-purple-500" />,
+    },
+    {
+      label: "Biography",
+      value: profile.bio || "No biography added yet.",
+      icon: <FaUserTie className="text-purple-500" />,
+    },
+    {
+      label: "Registration Date",
+      value: new Date(profile.createdAt).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      icon: <FaCalendarAlt className="text-orange-500" />,
+    },
+  ];
+
+  const socialLinks = [
+    {
+      label: "Facebook",
+      value: profile.facebook,
+      icon: <FaFacebook className="text-blue-600 w-8 h-8" />,
+    },
+    {
+      label: "Instagram",
+      value: profile.instagram,
+      icon: <FaInstagram className="text-pink-500 w-8 h-8" />,
+    },
+    {
+      label: "Twitter",
+      value: profile.twitter,
+      icon: <FaTwitter className="text-sky-500 w-8 h-8" />,
+    },
+    {
+      label: "LinkedIn",
+      value: profile.linkedin,
+      icon: <FaLinkedin className="text-blue-700 w-8 h-8" />,
+    },
+    {
+      label: "Website/Portfolio",
+      value: profile.website,
+      icon: <FaGlobe className="text-green-600 w-8 h-8" />,
+    },
+    {
+      label: "GitHub",
+      value: profile.github,
+      icon: <FaGithub className="text-gray-800 w-8 h-8" />,
+    },
+    
+  ];
+
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-semibold mb-6">Profile Instructor</h2>
+    <>
+      <div className="p-6">
+        <h2 className="text-2xl font-bold mb-2 text-gray-800 ">
+          Admin Profile
+        </h2>
 
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="w-48 font-medium text-gray-600">Registration Date</div>
-          <div className="text-gray-800">{new Date(profile.createdAt).toLocaleString()} </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="w-48 font-medium text-gray-600">First Name</div>
-          <div className="text-gray-800">{profile.firstName || "N/A"}</div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="w-48 font-medium text-gray-600">Last Name</div>
-          <div className="text-gray-800">{profile.lastName || "N/A"}</div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="w-48 font-medium text-gray-600">Username</div>
-          <div className="text-gray-800">{profile.userName || "N/A"}</div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="w-48 font-medium text-gray-600">Email</div>
-          <div className="text-gray-800">{instructor?.email || "N/A"}</div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="w-48 font-medium text-gray-600">Phone Number</div>
-          <div className="text-gray-800">{profile.phoneNumber || "N/A"}</div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-center">
-          <div className="w-48 font-medium text-gray-600">Expert</div>
-          <div className="text-gray-800">{profile.skill || "N/A"}</div>
-        </div>
-
-        <div className="flex flex-col md:flex-row md:items-start ">
-          <div className="w-48 font-medium text-gray-600">Biography</div>
-          <div className="text-gray-800 ">{profile.bio || "No bio available"}</div>
-        </div>
-      </div>
-      
-          <button
-            onClick={() => setOpenSocial(!openSocial)}
-            className="flex justify-between items-center gap-2  bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
-          >
-            <span>Social Links</span>
-            {openSocial ? <FaChevronUp /> : <FaChevronDown />}
-          </button>
-          {openSocial &&  (
-            <div className="mt-2 bg-white md:w-100 border rounded-lg shadow p-4 space-y-3">
-              {[
-                { label: "Facebook", value: profile.facebook },
-                { label: "Instagram", value: profile.instagram },
-                { label: "Twitter", value: profile.twitter },
-                { label: "LinkedIn", value: profile.linkedin },
-                { label: "Website/Portfolio", value: profile.website },
-                { label: "GitHub", value: profile.github },
-              ].map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center">
-                  <span className="font-medium">{item.label}</span>
-                  {item.value ? (
-                    <a
-                      href={item.value}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 flex items-center gap-1 hover:underline"
-                    >
-                      Visit <FaExternalLinkAlt size={12} />
-                    </a>
-                  ) : (
-                    <span>-</span>
-                  )}
-                </div>
-              ))}
+        <div className="bg-white shadow-xl rounded-xl p-6 border border-gray-100">
+          {/* Top Section with Avatar + Name */}
+          <div className="flex flex-col md:flex-row md:items-center md:gap-6 mb-8">
+            <div className="w-18 h-18 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+              {profile.name?.charAt(0).toUpperCase() ||
+                profile.userName?.charAt(0).toUpperCase()}
             </div>
-          )}
-    </div>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900">
+                {profile.name} 
+              </h3>
+              <p className="text-gray-500 text-sm">@{profile.userName}</p>
+            </div>
+          </div>
+
+          {/* Profile Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {infoItems.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-3 bg-gray-50 hover:bg-gray-100 transition rounded-lg p-3 shadow-sm"
+              >
+                {item.icon && <div className="text-lg">{item.icon}</div>}
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-500">{item.label}</span>
+                  <span className="font-medium text-gray-800">
+                    {item.value}
+                  </span>
+                </div>
+              </div>
+            ))}
+            <button
+              onClick={() => setOpenSocial(!openSocial)}
+              className="flex items-center gap-3 bg-gray-50 hover:bg-gray-100 transition rounded-lg p-3 shadow-sm border border-gray-400"
+            >
+              <span>Social Links</span>
+              {openSocial ? <FaChevronUp /> : <FaChevronDown />}
+            </button>
+          </div>
+
+          {/* Biography Section */}
+          {/* <div className="mt-8">
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">
+              Biography
+            </h4>
+            <p className="text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-4 shadow-sm">
+              {profile.bio || "No biography added yet."}
+            </p>
+          </div> */}
+        </div>
+
+        {openSocial && (
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-80 md:w-100 text-center relative">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                Social Links
+              </h3>
+              
+              <div className="flex flex-wrap justify-center gap-5">
+                {socialLinks.map(
+                  (item, idx) =>
+                    item.value && (
+                      <a
+                        key={idx}
+                        href={item.value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition transform"
+                        title={item.label}
+                      >
+                        {item.icon}
+                      </a>
+                    )
+                )}
+              </div>
+              <button
+                onClick={() => setOpenSocial(false)}
+                className="mt-6 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
 export default InstructorProfile;
-
-
-
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import { toast } from "react-toastify";
-
-// const InstructorSettings = () => {
-//   const [activeTab, setActiveTab] = useState("profile");
-
-//   const [firstName, setFirstName] = useState("");
-//   const [lastName, setLastName] = useState("");
-//   const [userName, setUserName] = useState("");
-//   const [phoneNumber, setPhoneNumber] = useState("");
-//   const [skill, setSkill] = useState("");
-//   const [displayNamePubliclyAs, setDisplayNamePubliclyAs] = useState("");
-//   const [bio, setBio] = useState("");
-
-//   const validatePhone = (phoneNumber) => /^[0-9]{10}$/.test(phoneNumber);
-
-//   const tabs = ["profile", "password", "social"];
-
-//   const isActive = (tab) =>
-//     activeTab === tab
-//       ? "border-b-2 border-blue-500 text-black font-medium"
-//       : "text-gray-500 hover:text-black";
-
-//   // Fetch profile on mount
-//   useEffect(() => {
-//     const fetchProfile = async () => {
-//       try {
-//         const res = await axios.get("http://localhost:5000/api/instructor/profile", {
-//           withCredentials: true,
-//         });
-//         const data = res.data;
-//         setFirstName(data.firstName || "");
-//         setLastName(data.lastName || "");
-//         setUserName(data.userName || "");
-//         setPhoneNumber(data.phoneNumber || "");
-//         setSkill(data.skill || "");
-//         setDisplayNamePubliclyAs(data.displayNamePubliclyAs || "");
-//         setBio(data.bio || "");
-//       } catch (err) {
-//         toast.error("Failed to load profile ❌");
-//       }
-//     };
-//     fetchProfile();
-//   }, []);
-
-//   // Submit updated profile
-//   const profileSubmit = async (e) => {
-//     e.preventDefault();
-
-//     if (!validatePhone(phoneNumber)) {
-//       toast.error("Phone number must be 10 digits");
-//       return;
-//     }
-
-//     try {
-//       const res = await axios.post(
-//         "http://localhost:5000/api/instructor/profile",
-//         { firstName, lastName, userName, phoneNumber, skill, displayNamePubliclyAs, bio },
-//         { withCredentials: true }
-//       );
-//       toast.success(res.data.message || "Profile updated successfully ✅");
-//     } catch (err) {
-//       toast.error(err.response?.data?.message || "Failed to update profile ❌");
-//     }
-//   };
-
-//   return (
-//     <div className="mx-auto p-6 space-y-6 max-w-6xl">
-//       <h1 className="text-2xl font-semibold mb-6">Settings</h1>
-
-//       {/* Tabs */}
-//       <div className="grid grid-cols-3 gap-2 border-b mb-6 justify-center">
-//         {tabs.map((tab) => (
-//           <button
-//             key={tab}
-//             className={`pb-2 capitalize cursor-pointer text-lg font-semibold ${isActive(tab)}`}
-//             onClick={() => setActiveTab(tab)}
-//           >
-//             {tab === "profile"
-//               ? "Profile"
-//               : tab === "password"
-//               ? "Password"
-//               : "Social Links"}
-//           </button>
-//         ))}
-//       </div>
-
-//       {/* Profile Section */}
-//       {activeTab === "profile" && (
-//         <form className="space-y-6" onSubmit={profileSubmit}>
-//           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-//             {/* firstName, lastName, userName, phoneNumber, skill, displayNamePubliclyAs */}
-//             {/* (same inputs as you already have, just binding state) */}
-//             {/* ... */}
-//           </div>
-
-//           <div className="font-medium mb-1">
-//             <label className="mb-1">Bio</label>
-//             <textarea
-//               placeholder="Tell us about yourself"
-//               value={bio}
-//               onChange={(e) => setBio(e.target.value)}
-//               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 h-24 resize-none"
-//             />
-//           </div>
-
-//           <button
-//             type="submit"
-//             disabled={
-//               !firstName || !lastName || !userName || !phoneNumber || !skill || !displayNamePubliclyAs || !bio
-//             }
-//             className={`px-6 py-2 text-white rounded-md mt-5 ${
-//               !firstName || !lastName || !userName || !phoneNumber || !skill || !displayNamePubliclyAs || !bio
-//                 ? "bg-gray-400 cursor-not-allowed"
-//                 : "bg-blue-600 hover:bg-blue-700"
-//             }`}
-//           >
-//             Update Information
-//           </button>
-//         </form>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default InstructorSettings;
-

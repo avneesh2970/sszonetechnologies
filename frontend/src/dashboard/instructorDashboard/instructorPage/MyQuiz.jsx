@@ -23,27 +23,28 @@ const InstructorMyQuiz = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4"> My Quizzes</h2>
-      <table className="w-full border border-gray-100 rounded-4xl">
-        <thead>
-          <tr className="bg-blue-50 text-left">
-            <th className="p-2  ">#</th>
-            <th className="p-2 ">Course</th>
-            <th className="p-2 ">Module</th>
-            <th className="p-2 ">Quiz Title</th>
-            <th className="p-2 ">Questions</th>
+      <table className="w-full border border-gray-300 rounded-lg">
+        <thead className="bg-blue-100 border-b border-gray-300">
+          <tr className="text-left">
+            <th className="p-2 border border-gray-300">#</th>
+            <th className="p-2 border border-gray-300">Course</th>
+            <th className="p-2 border border-gray-300">Module</th>
+            <th className="p-2 border border-gray-300">Quiz Title</th>
+            <th className="p-2 border border-gray-300">Questions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="bg-white">
           {quizzes.map((quiz, index) => (
-            <tr
-              key={quiz._id}
-              className={` ${index % 2 === 1 ? "bg-blue-50" : ""} `}
-            >
-              <td className=" p-2">{index + 1}</td>
-              <td className=" p-2">{quiz.moduleId?.courseId?.title || "—"}</td>
-              <td className=" p-2">{quiz.moduleId?.title || "—"}</td>
-              <td className=" p-2">{quiz.title}</td>
-              <td className=" p-2">
+            <tr key={quiz._id} className="hover:bg-blue-50 transition-colors">
+              <td className="p-2 border border-gray-300">{index + 1}</td>
+              <td className="p-2 border border-gray-300">
+                {quiz.moduleId?.courseId?.title || "—"}
+              </td>
+              <td className="p-2 border border-gray-300">
+                {quiz.moduleId?.title || "—"}
+              </td>
+              <td className="p-2 border border-gray-300">{quiz.title}</td>
+              <td className="p-2 border border-gray-300">
                 <button
                   onClick={() => setSelectedQuiz(quiz)}
                   className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -58,7 +59,7 @@ const InstructorMyQuiz = () => {
 
       {/* Popup Modal */}
       {selectedQuiz && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-60">
           <div className="bg-white rounded-lg p-6 max-w-lg w-full shadow-lg">
             <h3 className="text-xl font-semibold mb-3">
               {/* {selectedQuiz.title} — Questions */}

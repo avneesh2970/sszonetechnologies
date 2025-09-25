@@ -111,6 +111,10 @@ router.get("/my-courses", authMiddleware, async (req, res) => {
         path: "modules",
         populate: { path: "lessons" },
       })
+      .populate({
+        path : "reviews", 
+        populate : {path : "userId"}
+      })
       .populate("remarks")
       .sort({createdAt : -1})
     res.status(200).json({

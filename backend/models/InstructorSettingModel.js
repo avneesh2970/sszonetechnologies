@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 
 const instructorProfileSchema = new mongoose.Schema({
   instructor: { type: mongoose.Schema.Types.ObjectId, ref: "Instructor", required: true },
-  firstName: { type: String, },
-  lastName: { type: String,  },
+   name: { type: String }, 
   userName: { type: String,  },
   phoneNumber: { type: String, },
   skill: { type: String, },
