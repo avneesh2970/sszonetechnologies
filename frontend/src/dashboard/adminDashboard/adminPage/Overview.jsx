@@ -9,7 +9,8 @@ import {
 import { useStudentAuth } from "../../../studentDashboard/StudentesPages/studentAuth";
 import useAdminAuth from "./AdminAuth";
 import { Link } from "react-router-dom";
-import MonthlyEnrollmentsChart from "./Approve Courses";
+import MonthlyEnrollmentsChart from "./MonthlyEnrollChart";
+
 
 
 const AdminOverview = () => {

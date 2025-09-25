@@ -62,7 +62,7 @@ const InstructorProfile = () => {
     { label: "Username", value: profile.userName || "Not Provided" },
     {
       label: "Email",
-      value: instructor.email || "Not Provided",
+      value: instructor?.email || "Not Provided",
       icon: <FaEnvelope className="text-blue-500" />,
     },
     {
