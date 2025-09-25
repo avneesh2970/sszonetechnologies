@@ -25,29 +25,24 @@ ChartJS.register(
 );
 
 const MonthlyEnrollmentsChart = () => {
-  const [monthlyData, setMonthlyData] = useState(
-    Array(12).fill(0) // initialize with 12 months = 0 enrollments
-  );
+  const [monthlyData, setMonthlyData] = useState(Array(12).fill(0));
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3999/api/payment/all");
+        const res = await axios.get(
+          "http://localhost:3999/api/payment/all"
+        );
         const data = res.data?.monthlyEnrollments || [];
-
-        // Ensure all 12 months are covered
-        const months = Array.from({ length: 12 }, (_, i) => i + 1);
-        const filledData = months.map((m) => {
-          const monthItem = data.find((item) => item._id === m);
+        const filledData = Array.from({ length: 12 }, (_, i) => {
+          const monthItem = data.find((item) => item._id === i + 1);
           return monthItem ? monthItem.count : 0;
         });
-
         setMonthlyData(filledData);
       } catch (error) {
         console.error("Error fetching chart data:", error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -56,7 +51,6 @@ const MonthlyEnrollmentsChart = () => {
     "Jul","Aug","Sep","Oct","Nov","Dec"
   ];
 
-  // ✅ chartData is now an object, not a function
   const chartData = {
     labels: monthsLabels,
     datasets: [
@@ -102,8 +96,7 @@ const MonthlyEnrollmentsChart = () => {
   return (
     <div className="w-full max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-xl">
       <p className="font-semibold text-lg">Monthly Course Enrollments </p>
-      {/* <Chart type="bar" data={chartData} options={options} /> */}
-      <Chart type="bar" data={chartData}  />
+      <Chart data={chartData} options={options} /> {/* ✅ remove type="bar" */}
     </div>
   );
 };

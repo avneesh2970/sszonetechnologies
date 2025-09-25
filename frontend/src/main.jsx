@@ -75,6 +75,7 @@ import LoginModal from "./componant/LoginModal.jsx";
 import SignupModal from "./componant/SignupModal.jsx";
 import UploadQuiz from "./Instructor-courseUpload/UploadQuiz.jsx";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
