@@ -52,10 +52,10 @@ const Faq = () => {
                     setOpenIndex(openIndex === index ? null : index)
                   }
                 >
-                  <h2 className="text-lg font-semibold">{faq.question}</h2>
+                  <h2 className="md:text-lg font-semibold  ">{faq.question}</h2>
                   <svg
                     width="18"
-                    height="18"
+                    height="18" 
                     viewBox="0 0 18 18"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"

@@ -43,7 +43,8 @@ function Navbaar() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const { user, setUser, cartItems, logout, fetchWishlist ,wishlistItems } = useStudentAuth();
+  const { user, setUser, cartItems, logout, fetchWishlist, wishlistItems } =
+    useStudentAuth();
 
   const getNavLinkClass = ({ isActive }) =>
     isActive
@@ -52,6 +53,11 @@ function Navbaar() {
 
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
+    if (signupData.password.length < 5) {
+      toast.error("Password must be at least 5 characters long ");
+      return;
+    }
+
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`,
@@ -91,7 +97,6 @@ function Navbaar() {
   useEffect(() => {
     fetchWishlist();
   }, []);
-
 
   const navLinks = [
     { path: "/", label: "Home" },
@@ -192,7 +197,6 @@ function Navbaar() {
                     >
                       Logout
                     </button>
-                    
                   </div>
                 )}
               </div>
@@ -207,7 +211,7 @@ function Navbaar() {
               </button> */}
               <button
                 onClick={() => setShowLogin(true)}
-                className="px-6 py-2.5 bg-blue-500 text-white rounded-md"
+                className="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 cursor-pointer text-white rounded-md"
               >
                 Log in
               </button>
@@ -335,18 +339,24 @@ function Navbaar() {
       )}
 
       {showLogin && (
-        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md relative">
+        <div
+          className="fixed inset-0 bg-black/20 flex justify-center items-center z-50  "
+          onClick={() => setShowLogin(false)}
+        >
+          <div
+            className="bg-white p-6 rounded-lg  w-[90%] max-w-md relative sm:p-6 overflow-y-auto max-h-[90vh] "
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* 🔹 LOGIN FORM */}
             {!showForgot && !showOtp && !showReset && (
               <>
                 {/* <h2 className="text-xl font-semibold mb-4">Log In</h2> */}
                 <button
                   onClick={() => setShowLogin(false)}
-                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 cursor-pointer "
                 >
                   {" "}
-                  <IoClose size={22} />{" "}
+                  <IoClose size={24} />{" "}
                 </button>{" "}
                 <h2 className="text-2xl font-semibold mb-2">
                   {" "}
@@ -364,16 +374,16 @@ function Navbaar() {
                     <FcGoogle size={20} />{" "}
                     <span className="font-medium">Sign in with Google</span>{" "}
                   </button>{" "}
-                  <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2 hover:bg-gray-50">
+                  {/* <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2 hover:bg-gray-50">
                     {" "}
                     <FaLinkedin size={20} className="text-blue-600" />{" "}
                     <span className="font-medium">Sign in with LinkedIn</span>{" "}
-                  </button>{" "}
-                  <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2 hover:bg-gray-50">
+                  </button>{" "} */}
+                  {/* <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2 hover:bg-gray-50">
                     {" "}
                     <FaApple size={20} className="text-black" />{" "}
                     <span className="font-medium">Sign in with Apple</span>{" "}
-                  </button>{" "}
+                  </button>{" "} */}
                 </div>{" "}
                 <div className="flex items-center my-6">
                   {" "}
@@ -435,7 +445,7 @@ function Navbaar() {
                     </button> */}
                     <button
                       type="submit"
-                      className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+                      className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded w-full cursor-pointer"
                     >
                       Log In
                     </button>
@@ -448,7 +458,10 @@ function Navbaar() {
                     className="text-sm cursor-pointer mt-2 text-center"
                   >
                     Don’t have an account?{" "}
-                    <span className="text-blue-500"> Sign up </span>
+                    <span className="text-blue-500 hover:text-blue-700">
+                      {" "}
+                      Sign up{" "}
+                    </span>
                   </p>
                 </form>
               </>
@@ -459,15 +472,22 @@ function Navbaar() {
 
       {/* Signup Modal */}
       {showSignup && (
-        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md relative">
+        <div
+          className="fixed inset-0  bg-black/20 flex justify-center items-center z-50 "
+          onClick={() => setShowSignup(false)}
+        >
+          <div
+            className="bg-white p-6 rounded-lg  relative  w-[90%] max-w-md sm:p-6 overflow-y-auto max-h-[90vh]    
+      "
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* <h2 className="text-xl font-semibold mb-4">Sign Up</h2> */}
             <button
               onClick={() => setShowSignup(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 cursor-pointer"
             >
               {" "}
-              <IoClose size={22} />{" "}
+              <IoClose size={24} />{" "}
             </button>{" "}
             <h2 className="text-2xl font-semibold mb-2">Create Your Account</h2>{" "}
             <h2 className="text-base text-gray-400 mb-6">
@@ -482,17 +502,8 @@ function Navbaar() {
                 <FcGoogle size={20} />{" "}
                 <span className="font-medium">Sign up with Google</span>{" "}
               </button>{" "}
-              <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2 hover:bg-gray-50">
-                {" "}
-                <FaLinkedin size={20} className="text-blue-600" />{" "}
-                <span className="font-medium">Sign up with LinkedIn</span>{" "}
-              </button>{" "}
-              <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2 hover:bg-gray-50">
-                {" "}
-                <FaApple size={20} className="text-black" />{" "}
-                <span className="font-medium">Sign up with Apple</span>{" "}
-              </button>{" "}
-            </div>{" "}
+              
+            </div>
             <div className="flex items-center my-6">
               {" "}
               <div className="flex-1 border-t" />{" "}
@@ -500,44 +511,57 @@ function Navbaar() {
               <div className="flex-1 border-t" />{" "}
             </div>
             <form onSubmit={handleSignupSubmit} className="flex flex-col gap-3">
-              <input
-                type="text"
-                required
-                placeholder="Name"
-                value={signupData.name}
-                onChange={(e) =>
-                  setSignupData({ ...signupData, name: e.target.value })
-                }
-                className="border p-2 rounded"
-              />
-              <input
-                type="email"
-                required
-                placeholder="Email"
-                value={signupData.email}
-                onChange={(e) =>
-                  setSignupData({ ...signupData, email: e.target.value })
-                }
-                className="border p-2 rounded"
-              />
-              <div className="relative w-full">
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-medium">
+                  Name <span className="text-red-500">*</span>
+                </label>
                 <input
-                  type={show ? "text" : "password"}
-                  placeholder="Password"
-                  value={signupData.password}
-                  onChange={(e) =>
-                    setSignupData({ ...signupData, password: e.target.value })
-                  }
+                  type="text"
                   required
-                  className="border p-2 rounded w-full pr-10"
+                  placeholder="Enter your name"
+                  value={signupData.name}
+                  onChange={(e) =>
+                    setSignupData({ ...signupData, name: e.target.value })
+                  }
+                  className="border p-2 rounded"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShow(!show)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  {show ? <FaEyeSlash /> : <FaEye />}
-                </button>
+              </div>
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-medium">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="Enter your email"
+                  value={signupData.email}
+                  onChange={(e) =>
+                    setSignupData({ ...signupData, email: e.target.value })
+                  }
+                  className="border p-2 rounded"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="mb-1 text-sm font-medium">Password</label>
+                <div className="relative w-full">
+                  <input
+                    type={show ? "text" : "password"}
+                    placeholder="Password"
+                    value={signupData.password}
+                    onChange={(e) =>
+                      setSignupData({ ...signupData, password: e.target.value })
+                    }
+                    required
+                    className="border p-2 rounded w-full pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShow(!show)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    {show ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
               </div>
               <div className="flex  justify-between mt-4">
                 {/* <button

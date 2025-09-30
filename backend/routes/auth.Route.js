@@ -23,7 +23,7 @@ router.post("/signup", async (req, res) => {
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -182,6 +182,8 @@ router.post("/forgot-password", async (req, res) => {
       "Password Reset OTP",
       `Your OTP IS ${otp}, It will expire in 5 minutes`
     );
+
+    
     res.status(200).json({ message: `OTP sent to email ,  ${otp}` ,  });
   } catch (err) {
     console.error(err);

@@ -5,10 +5,10 @@ import hero from "../assets/image/contactbanner.png";
 import { useEffect } from "react";
 
 function Contact() {
-  useEffect(()=>{
-      scrollTo(0,0)
-    },[])
-    
+  useEffect(() => {
+    scrollTo(0, 0);
+  }, []);
+
   return (
     <>
       <div
@@ -26,7 +26,16 @@ function Contact() {
       </div>
       <div className="max-w-screen-2xl mx-auto">
         <ContactForm />
-        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d27556.18679835932!2d78.00811094999999!3d30.3076283!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1758279339462!5m2!1sen!2sin" width="1500" height="450"  allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+        <div className="relative w-full h-0 pb-[56.25%] overflow-hidden rounded-lg">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d27556.18679835932!2d78.00811094999999!3d30.3076283!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1758279339462!5m2!1sen!2sin"
+            className="absolute top-0 left-0 w-full h-full border-0"
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
       </div>
     </>
   );

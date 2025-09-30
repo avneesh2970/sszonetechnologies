@@ -2,14 +2,14 @@ import React from "react";
 
 const Heading = ({ title, subTitle, content }) => {
   return (
-    <div className="py-10 text-center max-w-2xl mx-auto">
+    <div className="py-10 text-center max-w-2xl mx-auto px-2">
       {title && (
         <p className="text-blue-600 tracking-widest font-medium uppercase mb-2">
           {title}
         </p>
       )}
       {subTitle && (
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+        <h1 className="md:text-3xl text-2xl font-bold text-gray-800 mb-4">
           {subTitle}
         </h1>
       )}

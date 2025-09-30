@@ -24,7 +24,7 @@ const BlogCard = () => {
   }, []);
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4">
+    <div className="max-w-screen-2xl mx-auto mb-4">
       {/* Heading */}
       <Heading
         title="Our Blogs"

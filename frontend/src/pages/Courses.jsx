@@ -12,7 +12,8 @@ function Courses() {
     <>
     <div className="max-w-screen-2xl mx-auto">
 
-      <div
+      <div className="md:flex hidden">
+        <div
         className="h-[60vh] w-full bg-cover bg-center flex items-center "
         style={{ backgroundImage: `url(${hero})` }}
       >
@@ -24,6 +25,7 @@ function Courses() {
             next step toward your success!
           </p>
         </div>
+      </div>
       </div>
 
        <Heading

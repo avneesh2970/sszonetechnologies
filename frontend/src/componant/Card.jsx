@@ -52,7 +52,7 @@ const CourseList = ({}) => {
         );
 
         // ✅ Only include published courses
-        
+
         const publishedCourses = (res.data.courses || []).filter(
           (course) => course.status === "Published"
         );
@@ -84,23 +84,23 @@ const CourseList = ({}) => {
     <>
       <div className="max-w-screen-2xl mx-auto ">
         <div className="px-4 sm:px-10 lg:px-20   ">
-          <div className="flex gap-4 flex-wrap justify-center mb-6">
+          <div className="flex gap-2 md:justify-center overflow-x-auto  whitespace-nowrap scroll-hidden mb-6 ">
             {categoriesButton.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
                 className={`px-6 py-2 rounded-[40px] border text-sm transition duration-300 cursor-pointer font-medium
-              ${
-                activeCategory === category
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-blue-600 border-blue-500 hover:bg-blue-100"
-              }`}
+        ${
+          activeCategory === category
+            ? "bg-blue-600 text-white"
+            : "bg-white text-blue-600 border-blue-500 hover:bg-blue-100"
+        }`}
               >
                 {category}
               </button>
             ))}
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredCourses.map((course, index) => {
               const averageRating =
@@ -191,17 +191,17 @@ const CourseList = ({}) => {
                         <span className="text-gray-700 font-medium">
                           {averageRating || "New"}
                         </span>
-                        {course.reviews && course.reviews.length > 0 && (
+                        {/* {course.reviews && course.reviews.length > 0 && (
                           <span className="text-gray-400 ml-1">
                             ({course.reviews.length})
                           </span>
-                        )}
+                        )} */}
                       </div>
                     </div>
 
                     {/* Price and Action */}
                     <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                      <div className="flex items-center gap-2">
+                      {/* <div className="flex items-center gap-2">
                         <span className="text-xl font-bold text-gray-900">
                           ₹{course.discountPrice}
                         </span>
@@ -211,14 +211,14 @@ const CourseList = ({}) => {
                               ₹{course.regularPrice}
                             </span>
                           )}
-                      </div>
+                      </div> */}
 
                       <Link
                         to={`/courseDetailsOverview/${course._id}`}
                         state={course}
-                        className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                        className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                       >
-                        View Details
+                        View Program
                       </Link>
                     </div>
                   </div>

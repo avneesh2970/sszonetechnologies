@@ -157,7 +157,7 @@ const StudentQuiz = () => {
                 <td className="px-4 py-2 border border-gray-300">
                   <button
                     onClick={() => startQuiz(quiz._id)}
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                    className="bg-blue-600 text-sm text-white px-2 py-1 rounded hover:bg-blue-700"
                   >
                     Attempt Quiz
                   </button>

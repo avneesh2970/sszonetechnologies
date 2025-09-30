@@ -17,7 +17,7 @@ const WhyChooseUs = () => {
         {/* Right: Content */}
         <div className="space-y-6">
           <p className="text-blue-600 font-medium">Study at your own pace</p>
-          <h1 className="text-3xl md:text-5xl font-bold text-gray-900">
+          <h1 className="text-2xl md:text-5xl font-bold text-gray-900">
             Learn as an individual
           </h1>
 

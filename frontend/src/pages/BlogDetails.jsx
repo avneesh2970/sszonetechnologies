@@ -307,7 +307,7 @@ const BlogDetails = () => {
                   {allcomment.map((comment) => (
                     <div
                       key={comment._id}
-                      className="border border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                      className="border border-gray-200 rounded-xl p-4 "
                     >
                       <div className="flex items-center gap-4">
                         {comment.avatar ? (

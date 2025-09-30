@@ -74,6 +74,7 @@ import StuAllCourseDetails from "./studentDashboard/StudentesPages/AllCourseDeta
 import LoginModal from "./componant/LoginModal.jsx";
 import SignupModal from "./componant/SignupModal.jsx";
 import UploadQuiz from "./Instructor-courseUpload/UploadQuiz.jsx";
+import { ToastContainer } from "react-toastify";
 
 
 const router = createBrowserRouter([
@@ -189,6 +190,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <CartProvider>
       <RouterProvider router={router} />
+      <ToastContainer autoClose={1000}/>
     </CartProvider>
   </React.StrictMode>
 );

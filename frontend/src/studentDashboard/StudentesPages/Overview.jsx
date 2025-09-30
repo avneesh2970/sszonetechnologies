@@ -143,9 +143,9 @@ const Overview = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 ">
           {/* Course Progress Chart */}
-          <div className="xl:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="xl:col-span-2 bg-white rounded-xl shadow-sm border border-gray-800 p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-gray-900">
                 Learning Progress
@@ -161,7 +161,7 @@ const Overview = () => {
             </div>
 
             {/* Enhanced Chart */}
-            <div className="relative">
+            <div className="relative bottom-0 border">
               <svg viewBox="0 0 400 150" className="w-full h-32">
                 <defs>
                   <linearGradient
@@ -251,16 +251,16 @@ const Overview = () => {
           </div>
 
           {/* Course Completion */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">
+          <div className="bg-white rounded-xl  border border-gray-200 p-6 h-64">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Course Progress
             </h3>
-            <div className="space-y-4">
+            <div className=" overflow-y-scroll h-42 scrollbar-thin-custom">
               {purchases.map((course, i) => (
-                <div key={i} className="space-y-2">
+                <div key={i} className="space-y-2 p-1">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium text-gray-700 truncate">
-                      {course.course}
+                      {course.title}
                     </span>
                     <span className="text-sm font-semibold text-gray-900">
                       {course.progress}%
@@ -279,7 +279,7 @@ const Overview = () => {
         </div>
 
         {/* Popular Courses */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl  border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">
               Popular Courses

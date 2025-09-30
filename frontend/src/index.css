@@ -27,3 +27,13 @@ body {
   border-radius: 10px;
   border: 2px solid transparent;
 }
+
+
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scroll-hidden {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+

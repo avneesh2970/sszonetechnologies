@@ -38,7 +38,7 @@ const CourseDetails = () => {
       );
       toast.success("Added to cart");
       fetchCartItems();
-      navigate('/cart') 
+      navigate("/cart");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to add to cart");
     }
@@ -58,7 +58,7 @@ const CourseDetails = () => {
 
   const [reviews, setReviews] = useState([]);
 
-  // it is from api but i am fetching error from course 
+  // it is from api but i am fetching error from course
   const fetchReviews = async () => {
     if (!course?._id) return;
     try {
@@ -81,8 +81,6 @@ const CourseDetails = () => {
           reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
         ).toFixed(1)
       : 0;
-
-
 
   const content = {
     Overview: (
@@ -233,21 +231,22 @@ const CourseDetails = () => {
             No reviews yet. Be the first to review this course!
           </p>
         )}
+
         {course.reviews.map((review, index) => (
           <div
             key={index}
-            className="flex flex-col md:flex-row items-start gap-4 mb-6 p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition"
+            className="flex items-start gap-4 pb-4 mb-4  border-gray-200"
           >
             {/* Avatar */}
-            <div className="h-12 w-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
+            <div className="h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
               {review.userId?.name?.[0]?.toUpperCase() || "U"}
             </div>
 
             {/* Review Content */}
-            <div className="flex-1">
+            <div className="flex-1 ">
               {/* Name + Date */}
-              <div className="flex justify-between items-center">
-                <h1 className="text-lg font-semibold">
+              <div className="flex  gap-2 items-center ">
+                <h1 className="text-sm font-semibold">
                   {review.userId?.name
                     ? review.userId.name.charAt(0).toUpperCase() +
                       review.userId.name.slice(1).toLowerCase()
@@ -263,12 +262,12 @@ const CourseDetails = () => {
               </div>
 
               {/* Comment */}
-              <p className="mt-2 text-gray-700 leading-relaxed">
+              <p className=" text-gray-700 leading-relaxed text-sm">
                 {review.comment}
               </p>
 
               {/* Rating */}
-              <div className="flex gap-1 mt-2 text-yellow-400">
+              <div className="flex gap-1  text-yellow-400 text-sm">
                 {Array.from({ length: 5 }, (_, i) => {
                   if (i < Math.floor(review.rating)) return <FaStar key={i} />;
                   if (i < review.rating) return <FaRegStarHalfStroke key={i} />;
@@ -302,7 +301,7 @@ const CourseDetails = () => {
           <div className="flex flex-wrap md:flex-nowrap gap-6">
             <div className="flex-1">
               <h3 className="text-gray-500">Instructor</h3>
-              <p className="font-semibold">{course.instructor.name}</p> 
+              <p className="font-semibold">{course.instructor.name}</p>
             </div>
             <div className="flex-1">
               <h3 className="text-gray-500">Category</h3>
@@ -311,13 +310,13 @@ const CourseDetails = () => {
             <div className="flex-1">
               <h3 className="text-gray-500">Review</h3>
               <div className="flex items-center gap-1 text-amber-300">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span key={i}>
-                  {i < Math.round(averageRating) ? "⭐" : ""}
-                </span>
-              ))}
-              ({averageRating})
-            </div>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i}>
+                    {i < Math.round(averageRating) ? "⭐" : ""}
+                  </span>
+                ))}
+                ({averageRating})
+              </div>
             </div>
           </div>
         </div>

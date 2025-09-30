@@ -14,15 +14,8 @@ const Logout = () => {
   };
   return (
     <>
-      <div
-        onClick={() => setShowConfirm(true)}
-        className="cursor-pointer bg-amber-400 p-3 w-fit "
-      >
-        Log out
-      </div>
-
-      {showConfirm && (
-        <div className=" w-[50%] h-[50%] flex items-center justify-center bg-gray-100 rounded-2xl mx-auto">
+      <div className="bg-black/20 h-screen flex items-center">
+        <div className=" w-[50%] h-[50%] flex items-center justify-center  rounded-2xl mx-auto">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center space-y-4">
             <h3 className="text-lg font-semibold">Confirm Logout</h3>
             <p>Are you sure you want to log out?</p>
@@ -34,7 +27,7 @@ const Logout = () => {
                 Yes, Logout
               </button>
               <button
-                onClick={() => setShowConfirm(false)}
+                onClick={() => navigate(-1)}
                 className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-600"
               >
                 Cancel
@@ -42,7 +35,7 @@ const Logout = () => {
             </div>
           </div>
         </div>
-      )}
+    </div>
       <ToastContainer />
     </>
   );

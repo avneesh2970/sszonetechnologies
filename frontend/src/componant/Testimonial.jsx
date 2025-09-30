@@ -63,7 +63,7 @@ const Testimonial = () => {
 
       <div className="marquee-row w-full mx-auto max-w-7xl overflow-hidden relative">
         <div className="absolute left-0 top-0 h-full w-20 z-10 pointer-events-none "></div>
-        <div className="marquee-inner transform-gpu md:min-w-[200%] min-w-[400%] pb-5  flex  justify-center gap-6 w-full">
+        <div className="marquee-inner transform-gpu md:min-w-[200%] min-w-[500%] pb-5  flex  justify-center gap-6 w-full">
           {[...testimonials, ...testimonials].map((testimonial) => (
             <div
               key={testimonial.id}
@@ -76,7 +76,7 @@ const Testimonial = () => {
                   alt={testimonial.name}
                 />
                 <div>
-                  <p className="font-playfair text-xl">{testimonial.name}</p>
+                  <p className=" text-xl">{testimonial.name}</p>
                   <p className="text-gray-500 text-sm">{testimonial.address}</p>
                 </div>
               </div>

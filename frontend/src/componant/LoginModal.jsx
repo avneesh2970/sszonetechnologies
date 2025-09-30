@@ -47,7 +47,7 @@ const LoginModal = ({onClose}) => {
         </button>
 
         <h2 className="text-2xl font-semibold mb-2">
-          Welcome Back! Log in to continue
+          Welcome Back! Log in to continuezxzxzxczc
         </h2>
         <h2 className="text-lg text-gray-400 mb-6">
           Resume your learning journey
