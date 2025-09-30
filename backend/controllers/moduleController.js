@@ -25,7 +25,7 @@ exports.getModule = async (req, res) => {
   try {
     const { courseId } = req.params;
 
-    const modules = await Module.find({ courseId }).populate("lessons");
+    const modules = await Module.find({ courseId }).populate("lessons").populate("assignments");
 
     res.status(200).json({
       success: true,

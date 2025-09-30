@@ -44,6 +44,7 @@ const remark_Route = require("./routes/courseRemarkRoute");
 const razorpay_routes = require("./routes/razorpay");
 const studentSetting_route = require("./routes/studentSettingsRoute");
 const studentReview_route = require("./routes/courseReviewRoute");
+const assignment_route = require('./routes/assignmentRoute')
 
 app.use("/api/auth", auth_Routes); //student
 app.use("/api/studentSettings", studentSetting_route);
@@ -65,6 +66,7 @@ app.use("/api/overview", overview_route);
 app.use("/api/course-structure", moduleLesson_route); //Module and lesson
 app.use("/api/remark", remark_Route);
 app.use("/api/quiz", quiz_route);
+app.use('/api/assignments', assignment_route)
 
 //razorpay route
 app.use("/api/payment", razorpay_routes);

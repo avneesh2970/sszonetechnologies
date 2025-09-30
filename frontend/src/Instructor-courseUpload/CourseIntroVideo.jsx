@@ -29,7 +29,7 @@ const CourseIntroVideo = ({ courseId }) => {
     <>
       <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 mt-8 max-w-3xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <summary className="text-xl font-semibold cursor-pointer text-blue-700"> 🎥 Add Course Intro Video </summary>
+          <p className="text-2xl font-bold text-gray-800 mb-3"> Add Course Intro Video </p>
           <input
             type="url"
             value={videoUrl}

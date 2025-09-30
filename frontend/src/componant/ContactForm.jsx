@@ -178,7 +178,7 @@ const ContactForm = () => {
 
           <button
             type="submit"
-            className="bg-blue-500  hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-lg w-full  transition-colors duration-200"
+            className="bg-blue-500  hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-lg w-full cursor-pointer  transition-colors duration-200"
           >
             Send Message
           </button>
@@ -270,7 +270,7 @@ const ContactForm = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />{" "}
+      <ToastContainer autoClose={1000}/>
     </div>
   );
 };

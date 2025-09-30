@@ -4,7 +4,10 @@ const moduleSchema = new mongoose.Schema({
   title: { type: String, required: true },
   courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
   lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }],
-  quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }] 
+  quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }],
+  assignments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Assignment" }],
+  
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Module", moduleSchema);

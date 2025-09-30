@@ -87,7 +87,7 @@ const AdditionalInfoForm = ({ courseId }) => {
         className="bg-white p-8 rounded-xl shadow-lg mt-10 max-w-3xl mx-auto space-y-6 border border-gray-200"
       >
         <h2 className="text-2xl font-bold text-gray-800">
-          📘 Additional Information
+           Additional Information
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

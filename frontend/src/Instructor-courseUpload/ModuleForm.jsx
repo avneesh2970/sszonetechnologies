@@ -180,7 +180,7 @@ const ManageModulesLessons = ({ courseId }) => {
       <div className="bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-2xl font-bold text-gray-800 mb-3">
           {" "}
-          📘 Add Module
+           Add Module
         </h2>
         <div className="flex gap-2">
           <input

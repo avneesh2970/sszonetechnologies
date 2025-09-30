@@ -64,7 +64,7 @@ const UploadQuiz = ({ courseId }) => {
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-2xl font-bold text-gray-800 mb-3">
           {" "}
-          📘 Add quiz
+           Add quiz
         </h2>
           <form onSubmit={handleSubmit} className="space-y-4 ">
             <select

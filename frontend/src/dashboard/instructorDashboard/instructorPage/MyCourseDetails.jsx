@@ -16,7 +16,7 @@ import ModuleForm from "../../../Instructor-courseUpload/ModuleForm";
 import UpdateModule from "./UpdateModule";
 import AddQuestionsForm from "../../../Instructor-courseUpload/AddQuestion";
 import QuizForm from "../../../Instructor-courseUpload/UploadQuiz";
-
+import AddAssignment from "../../../Instructor-courseUpload/Assignment";
 
 const InstructorCourseDetails = () => {
   const location = useLocation();
@@ -34,6 +34,10 @@ const InstructorCourseDetails = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  const [isAssignmentOpen, setIsAssignmentOpen] = useState(false);
+
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -49,28 +53,31 @@ const InstructorCourseDetails = () => {
   }
 
   const handleDeleteModule = async (moduleId) => {
-  const confirmDelete = window.confirm("Are you sure you want to delete this module?");
-  if (!confirmDelete) return;
-
-  try {
-    await axios.delete(
-      `${import.meta.env.VITE_BACKEND_URL}/api/course-structure/module/${moduleId}`,
-      { withCredentials: true }
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this module?"
     );
+    if (!confirmDelete) return;
 
-    toast.success("Module deleted successfully!");
+    try {
+      await axios.delete(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/course-structure/module/${moduleId}`,
+        { withCredentials: true }
+      );
 
-    // Update local state so UI reflects deletion
-    setUpdatedCourse((prev) => ({
-      ...prev,
-      modules: prev.modules.filter((m) => m._id !== moduleId),
-    }));
-  } catch (error) {
-    toast.error("Failed to delete module");
-    console.error(error);
-  }
-};
+      toast.success("Module deleted successfully!");
 
+      // Update local state so UI reflects deletion
+      setUpdatedCourse((prev) => ({
+        ...prev,
+        modules: prev.modules.filter((m) => m._id !== moduleId),
+      }));
+    } catch (error) {
+      toast.error("Failed to delete module");
+      console.error(error);
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -142,9 +149,7 @@ const InstructorCourseDetails = () => {
     } catch (error) {
       toast.error("Failed to update remark status: " + error.message);
     }
-  };  
-
-
+  };
 
   const content = {
     Overview: (
@@ -170,12 +175,15 @@ const InstructorCourseDetails = () => {
         <h2 className="text-xl font-bold mb-4">Course Modules</h2>
 
         <div className="flex justify-end gap-4 mb-4">
+          {/* Add Module */}
           <button
             onClick={() => setIsAddModuleOpen(true)}
             className=" border px-4 py-1 rounded"
           >
             + Add Module & Lesson
           </button>
+
+          {/* Add Quiz */}
           <button
             onClick={() => setIsOpen(true)}
             className=" border px-4 py-1 rounded"
@@ -183,44 +191,72 @@ const InstructorCourseDetails = () => {
             + Add Quiz
           </button>
 
-          {isOpen && (
-            <div className="fixed inset-0 bg-gray-200 flex justify-center items-center z-50">
-              <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
-                {/* Close Button */}
+          {/* Add Assignment */}
+          <button
+            onClick={() => setIsAssignmentOpen(true)}
+            className=" border px-4 py-1 rounded"
+          >
+            + Add Assignment
+          </button>
+        </div>
+
+        {/* ---------------- Add Quiz Modal ---------------- */}
+        {isOpen && (
+          <div className="fixed inset-0 bg-gray-200 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
+              >
+                ✖
+              </button>
+              <QuizForm courseId={courseId} />
+            </div>
+          </div>
+        )}
+
+        {/* ---------------- Add Module Modal ---------------- */}
+        {isAddModuleOpen && (
+          <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50   ">
+            <div className="overflow-y-auto max-h-[95vh] scrollbar-thin-custom">
+              <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative ">
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => setIsAddModuleOpen(false)}
                   className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
                 >
                   ✖
                 </button>
-                
-                {/* Add only questime  */}
-                {/* <AddQuestionsForm courseId={courseId} /> */} 
-
-                 {/* It will add quiz and que */}
-                {<QuizForm courseId={courseId}/>}  
+                <ModuleForm
+                  courseId={course._id}
+                  onClose={() => setIsAddModuleOpen(false)}
+                  onModuleAdded={() => {
+                    fetchCourseDetails();
+                    toast.success("✅ Module added!");
+                  }}
+                />
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {isAddModuleOpen && (
-          <div className="border p-4 mt-4 rounded bg-gray-50 relative">
-            <button
-              onClick={() => setIsAddModuleOpen(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl"
-            >
-              &times;
-            </button>
-            {/* For adding module direct from course */}
-            <ModuleForm
-              courseId={course._id}
-              onClose={() => setIsAddModuleOpen(false)}
-              onModuleAdded={() => {
-                fetchCourseDetails();
-                toast.success("✅ Module added!");
-              }}
-            />
+        {/* ---------------- Add Assignment Modal ---------------- */}
+        {isAssignmentOpen && (
+          <div className="fixed inset-0 bg-gray-200 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+              <button
+                onClick={() => setIsAssignmentOpen(false)}
+                className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
+              >
+                ✖
+              </button>
+              <AddAssignment
+                courseId={courseId}
+                onClose={() => {
+                  setIsAssignmentOpen(false);
+                  fetchCourseDetails(); // refresh after assignment added
+                }}
+              />
+            </div>
           </div>
         )}
 
@@ -232,7 +268,7 @@ const InstructorCourseDetails = () => {
           ) || 0}
         </p>
 
-        {updatedCourse.modules?.map((module) => (
+        {/* {updatedCourse.modules?.map((module) => (
           <div
             key={module._id}
             className="mt-4 border border-gray-200 p-4 rounded"
@@ -272,7 +308,107 @@ const InstructorCourseDetails = () => {
               )}
             </ul>
           </div>
+        ))} */}
+        {updatedCourse.modules?.map((module) => (
+          <div
+            key={module._id}
+            className="mt-4 border border-gray-200 p-4 rounded"
+          >
+            {/* Module Title + Actions */}
+            <div className="flex justify-between">
+              <span className="font-semibold ">{module.title}</span>
+              <div>
+                <button
+                  onClick={() => setEditingModule(module)}
+                  className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                >
+                  <FaEdit size={18} />
+                </button>
+
+                <button
+                  onClick={() => handleDeleteModule(module._id)}
+                  className="text-red-600 hover:text-red-800 ml-3 cursor-pointer"
+                >
+                  <FaTrash size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Lessons Section */}
+            <div className="mt-3">
+              <h4 className="text-sm font-medium text-gray-700">Lessons:</h4>
+              <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
+                {module.lessons?.length > 0 ? (
+                  module.lessons.map((lesson) => (
+                    <LessonVideoPlayer
+                      key={lesson._id}
+                      lesson={lesson}
+                      modules={updatedCourse.modules}
+                    />
+                  ))
+                ) : (
+                  <li className="text-gray-400 italic">
+                    No lessons in this module.
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            {/* Assignments Section */}
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-700">
+                Assignments:
+              </h4>
+              <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
+                {module.assignments?.length > 0 ? (
+                  module.assignments.map((assignment) => (
+                    <li
+                      key={assignment._id}
+                      className="flex justify-between cursor-pointer  hover:underline hover:text-blue-500"
+                      onClick={() => setSelectedAssignment(assignment)} // open popup
+                    >
+                       {assignment.title} <span>full-details</span>
+
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-400 italic">
+                    No assignments in this module.
+                  </li>
+                )}
+              </ul>
+              {selectedAssignment && (
+                <div className="fixed inset-0 bg-black/20 bg-opacity-50 flex justify-center items-center z-50">
+                  <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+                    {/* Close button */}
+                    <button
+                      onClick={() => setSelectedAssignment(null)}
+                      className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
+                    >
+                      ✖
+                    </button>
+
+                    {/* Assignment Details */}
+                    <h2 className="text-xl font-bold mb-2">
+                      {selectedAssignment.title}
+                    </h2>
+                    <p className="text-gray-700 mb-4">
+                      {selectedAssignment.summary}
+                    </p>
+
+                    <h3 className="font-semibold mb-2">Questions:</h3>
+                    <ul className="list-decimal pl-5 space-y-2 text-gray-600">
+                      {selectedAssignment.questions?.map((q, index) => (
+                        <li key={index}>{q.questionText}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         ))}
+
         {/* Modal for editing */}
         {editingModule && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

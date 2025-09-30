@@ -22,7 +22,7 @@ const InstructorCourse = () => {
 
   //fetch course of instructor
   const { courses, fetchInstructorCourses } = useAuth();
-  
+  console.log("course " , courses)
 
   useEffect(() => {
     fetchInstructorCourses();
