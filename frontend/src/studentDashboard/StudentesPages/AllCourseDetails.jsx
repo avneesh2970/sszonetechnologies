@@ -270,6 +270,27 @@ const StuAllCourseDetails = () => {
         ))}
       </div>
     ),
+    Announcement :(
+         <>
+         {course.announcement?.length > 0 ? (
+          <div className="mt-2">
+            <h4 className="font-medium text-gray-700"> Announcements:</h4>
+            <ul className="list-disc list-inside text-sm text-gray-600">
+              {[...course.announcement].reverse().map((ann) => (
+                <li key={ann._id}>
+                  {ann.title}{" "}
+                  <span className="text-xs text-gray-400">
+                    ({new Date(ann.createdAt).toLocaleDateString()})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">No announcements yet.</p>
+        )}
+         </>
+    )
   };
 
   useEffect(() => {
@@ -382,7 +403,7 @@ const StuAllCourseDetails = () => {
           <div className="flex-1 min-w-0">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8">
               <div className="flex border-b border-slate-200 overflow-x-auto">
-                {["Overview", "Curriculum", "Instructor", "Review"].map(
+                {["Overview", "Curriculum", "Instructor", "Review" , "Announcement"].map(
                   (tab) => (
                     <button
                       key={tab}

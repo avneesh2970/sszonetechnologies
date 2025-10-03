@@ -279,6 +279,27 @@ const CourseDetails = () => {
         ))}
       </div>
     ),
+    Announcement : (
+      <>
+      {course.announcement?.length > 0 ? (
+          <div className="mt-2">
+            <h4 className="font-medium text-gray-700"> Announcements:</h4>
+            <ul className="list-disc list-inside text-sm text-gray-600">
+              {[...course.announcement].reverse().map((ann) => (
+                <li key={ann._id}>
+                  {ann.title}{" "}
+                  <span className="text-xs text-gray-400">
+                    ({new Date(ann.createdAt).toLocaleDateString()})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">No announcements yet.</p>
+        )}
+      </>
+    )
   };
 
   useEffect(() => {
@@ -325,7 +346,7 @@ const CourseDetails = () => {
       <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12">
         <div className="flex-1">
           <div className="flex gap-4 border-b mb-6 overflow-x-auto">
-            {["Overview", "Curriculum", "Instructor", "Review"].map((tab) => (
+            {["Overview", "Curriculum", "Instructor", "Review" , "Announcement"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}

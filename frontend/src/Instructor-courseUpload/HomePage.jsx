@@ -7,6 +7,7 @@ import Overview from "./OverView";
 import { ToastContainer } from "react-toastify";
 import QuizForm from "./UploadQuiz";
 import AddAssignment from "./Assignment";
+import InsAnnouncement from "./Announcement";
 
 const InstructorCourseAddHomePage = () => {
   const [courseId, setCourseId] = useState(null);
@@ -20,6 +21,7 @@ const InstructorCourseAddHomePage = () => {
     "Quiz & Question ",
     "Assignment",
     "Overview",
+    "Announcement"
   ];
 
   const handleNext = () => {
@@ -79,6 +81,8 @@ const InstructorCourseAddHomePage = () => {
         {activeTab === 5 && courseId && <AddAssignment courseId={courseId}/>}
 
         {activeTab === 6 &&  courseId &&  <Overview courseId={courseId} />}
+
+        {activeTab === 7 &&   <InsAnnouncement courseId={courseId} />}
       </div>
 
       {/* Bottom Navigation */}

@@ -333,6 +333,27 @@ export default function StudentCourseDetail(courseId) {
         </div>
       </>
     ),
+    Announcement: (
+      <>
+        {course.announcement?.length > 0 ? (
+          <div className="mt-2">
+            <h4 className="font-medium text-gray-700"> Announcements:</h4>
+            <ul className="list-disc list-inside text-sm text-gray-600">
+              {[...course.announcement].reverse().map((ann) => (
+                <li key={ann._id}>
+                  {ann.title}{" "}
+                  <span className="text-xs text-gray-400">
+                    ({new Date(ann.createdAt).toLocaleDateString()})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">No announcements yet.</p>
+        )}
+      </>
+    ),
   };
 
   return (
@@ -342,12 +363,12 @@ export default function StudentCourseDetail(courseId) {
         {activeVideoUrl && ReactPlayer.canPlay(activeVideoUrl) ? (
           <div className="">
             <div className="bg-white rounded-xl p-6 shadow-lg border border-slate-200">
-              <div className="flex items-center gap-3 mb-4 group" onClick={() => navigate(-1)}>
-                <FaArrowLeft className="text-gray-400 group-hover:text-blue-600"/>
-                <h3
-                  className="text-xl font-semibold text-gray-400 group-hover:text-blue-600"
-                  
-                >
+              <div
+                className="flex items-center gap-3 mb-4 group"
+                onClick={() => navigate(-1)}
+              >
+                <FaArrowLeft className="text-gray-400 group-hover:text-blue-600" />
+                <h3 className="text-xl font-semibold text-gray-400 group-hover:text-blue-600">
                   Back
                 </h3>
               </div>
@@ -358,16 +379,16 @@ export default function StudentCourseDetail(courseId) {
                   width="100%"
                   height="500px"
                   playing={true}
-                   config={{
-                     youtube: {
-                       playerVars: {
-                         modestbranding: 1,
-                         rel: 0,
-                         showinfo: 0,
-                         autoplay: 1,
-                       },
-                     },
-                   }}
+                  config={{
+                    youtube: {
+                      playerVars: {
+                        modestbranding: 1,
+                        rel: 0,
+                        showinfo: 0,
+                        autoplay: 1,
+                      },
+                    },
+                  }}
                 />
               </div>
             </div>
@@ -421,21 +442,22 @@ export default function StudentCourseDetail(courseId) {
                 Rating
               </h3>
               <div className="flex items-center gap-2">
-  <div className="flex text-amber-400 text-xl">
-    {Array.from({ length: 5 }).map((_, i) => {
-      const starNumber = i + 1;
-      if (averageRating >= starNumber) {
-        return <span key={i}>★</span>; // full star
-      } else if (averageRating >= starNumber - 0.5) {
-        return <span key={i}>⯨</span>; // half star (you can replace with an icon or character)
-      } else {
-        return <span key={i}>☆</span>; // empty star
-      }
-    })}
-  </div>
-  <span className="text-slate-600 font-medium">({averageRating})</span>
-</div>
-
+                <div className="flex text-amber-400 text-xl">
+                  {Array.from({ length: 5 }).map((_, i) => {
+                    const starNumber = i + 1;
+                    if (averageRating >= starNumber) {
+                      return <span key={i}>★</span>; // full star
+                    } else if (averageRating >= starNumber - 0.5) {
+                      return <span key={i}>⯨</span>; // half star (you can replace with an icon or character)
+                    } else {
+                      return <span key={i}>☆</span>; // empty star
+                    }
+                  })}
+                </div>
+                <span className="text-slate-600 font-medium">
+                  ({averageRating})
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -448,7 +470,7 @@ export default function StudentCourseDetail(courseId) {
           <div className="flex-1 min-w-0">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8">
               <div className="flex border-b border-slate-200 overflow-x-auto">
-                {["Overview", "Curriculum", "Instructor", "Review"].map(
+                {["Overview", "Curriculum", "Instructor", "Review" , "Announcement"].map(
                   (tab) => (
                     <button
                       key={tab}
@@ -474,8 +496,6 @@ export default function StudentCourseDetail(courseId) {
           {/* Sidebar */}
           <aside className="lg:w-96 flex-shrink-0">
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 sticky top-8">
-              
-
               {/* Includes */}
               <div className="mb-8">
                 <h3 className="text-xl font-bold text-slate-900 mb-6">

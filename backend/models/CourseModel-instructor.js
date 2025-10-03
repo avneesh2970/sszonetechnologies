@@ -1,10 +1,9 @@
-
 const mongoose = require("mongoose");
 
 const CourseSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    slug: { type: String, required: true, },
+    slug: { type: String, required: true },
     description: { type: String },
     regularPrice: { type: Number },
     discountPrice: { type: Number },
@@ -27,11 +26,13 @@ const CourseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "AdditionalInfo",
     },
-     modules : [{
-       type : mongoose.Schema.Types.ObjectId,
-       ref :"Module"
-     }],
-     
+    modules: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Module",
+      },
+    ],
+
     overview: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Overview",
@@ -41,18 +42,23 @@ const CourseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "CourseIntroVideo",
     },
-    remarks : [
+    remarks: [
       {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : "CourseRemark"
-    }
-  ],
-  reviews: [
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CourseRemark",
+      },
+    ],
+    reviews: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Review",
       },
     ],
+
+    announcement:[ {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "InsAnnouncement",
+    }],
   },
   { timestamps: true }
 );

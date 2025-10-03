@@ -17,6 +17,7 @@ import UpdateModule from "./UpdateModule";
 import AddQuestionsForm from "../../../Instructor-courseUpload/AddQuestion";
 import QuizForm from "../../../Instructor-courseUpload/UploadQuiz";
 import AddAssignment from "../../../Instructor-courseUpload/Assignment";
+import InsAnnouncement from "../../../Instructor-courseUpload/Announcement";
 
 const InstructorCourseDetails = () => {
   const location = useLocation();
@@ -37,6 +38,8 @@ const InstructorCourseDetails = () => {
   const [isAssignmentOpen, setIsAssignmentOpen] = useState(false);
 
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+
+  const [openAnn, setOpenAnn] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -268,47 +271,6 @@ const InstructorCourseDetails = () => {
           ) || 0}
         </p>
 
-        {/* {updatedCourse.modules?.map((module) => (
-          <div
-            key={module._id}
-            className="mt-4 border border-gray-200 p-4 rounded"
-          >
-            <div className="flex justify-between">
-              <span className="font-semibold ">{module.title}</span>
-              <div>
-                <button
-                  onClick={() => setEditingModule(module)}
-                  className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                >
-                  <FaEdit size={18} />
-                </button>
-
-                <button
-                  onClick={() => handleDeleteModule(module._id)}
-                  className="text-red-600 hover:text-red-800 ml-3 cursor-pointer"
-                >
-                  <FaTrash size={18} />
-                </button>
-              </div>
-            </div>
-
-            <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
-              {module.lessons?.length > 0 ? (
-                module.lessons.map((lesson) => (
-                  <LessonVideoPlayer
-                    key={lesson._id}
-                    lesson={lesson}
-                    modules={updatedCourse.modules}
-                  />
-                ))
-              ) : (
-                <li className="text-gray-400 italic">
-                  No lessons in this module.
-                </li>
-              )}
-            </ul>
-          </div>
-        ))} */}
         {updatedCourse.modules?.map((module) => (
           <div
             key={module._id}
@@ -367,8 +329,7 @@ const InstructorCourseDetails = () => {
                       className="flex justify-between cursor-pointer  hover:underline hover:text-blue-500"
                       onClick={() => setSelectedAssignment(assignment)} // open popup
                     >
-                       {assignment.title} <span>full-details</span>
-
+                      {assignment.title} <span>full-details</span>
                     </li>
                   ))
                 ) : (
@@ -507,6 +468,54 @@ const InstructorCourseDetails = () => {
         ))}
       </div>
     ),
+    Announcement: (
+      <>
+        <div className="flex justify-end">
+          <button
+            onClick={() => setOpenAnn(true)}
+            className="border px-4 py-1 rounded flex"
+          >
+           + Add Announcements 
+          </button>
+        </div>
+
+        {course.announcement?.length > 0 ? (
+          <div className="mt-2">
+            <h4 className="font-medium text-gray-700"> Announcements:</h4>
+            <ul className="list-disc list-inside text-sm text-gray-600">
+              {[...course.announcement].reverse().map((ann) => (
+                <li key={ann._id}>
+                  {ann.title}{" "}
+                  <span className="text-xs text-gray-400">
+                    ({new Date(ann.createdAt).toLocaleDateString()})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">No announcements yet.</p>
+        )}
+        {openAnn && (
+          <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+              <button
+                onClick={() => setOpenAnn(false)}
+                className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
+              >
+                ✖
+              </button>
+              <InsAnnouncement
+                courseId={courseId}
+                onClose={() => {
+                  setOpenAnn(false);
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </>
+    ),
   };
 
   return (
@@ -548,7 +557,13 @@ const InstructorCourseDetails = () => {
       <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12">
         <div className="flex-1">
           <div className="flex gap-4 border-b mb-6 overflow-x-auto">
-            {["Overview", "Curriculum", "Instructor", "Review"].map((tab) => (
+            {[
+              "Overview",
+              "Curriculum",
+              "Instructor",
+              "Review",
+              "Announcement",
+            ].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}

@@ -1,264 +1,166 @@
 import React, { useEffect, useState } from "react";
-import { FaX } from "react-icons/fa6";
 import { toast } from "react-toastify";
+import useAuth from "./hooks/useAuth";
 import axios from "axios";
 
 const InstructorAnnouncement = () => {
-  const [open, setOpen] = useState(false);
-  const [announcements, setAnnouncements] = useState([]);
+  const { courses, fetchInstructorCourses } = useAuth();
 
-  const [title, setTitle] = useState("");
-  const [course, setCourse] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [editId, setEditId] = useState(null);
-
-  // Fetch announcements from backend
-  const getAnnouncement = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/ancument/getannouncement`
-      );
-      setAnnouncements(response.data);
-    } catch (error) {
-      toast.error("Failed to fetch announcements.");
-    }
-  };
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedAnn, setSelectedAnn] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
 
   useEffect(() => {
-    getAnnouncement();
+    fetchInstructorCourses();
   }, []);
 
-  // Add new announcement
-  const handleAddAnnouncement = async (e) => {
-    e.preventDefault();
+  // ✅ Open Edit Modal
+  const handleEdit = (ann) => {
+    setSelectedAnn(ann);
+    setEditTitle(ann.title);
+    setShowEditModal(true);
+  };
 
-    if (!title || !course || !date || !time) {
-      return toast.error("Please fill in all fields.");
-    }
-
-    const formData = { title, course, date, time };
-
+  // ✅ Submit Edit
+  const submitEdit = async () => {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/ancument/announcement`,
-        formData
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/insAnnouncement/${selectedAnn._id}`,
+        { title: editTitle }
       );
-
-      toast.success("Announcement added successfully!");
-      setAnnouncements((prev) => [response.data, ...prev]);
-
-      clearForm();
-    } catch (error) {
-      toast.error("Failed to add announcement.");
+      toast.success("Announcement updated");
+      fetchInstructorCourses();
+      setShowEditModal(false);
+    } catch (err) {
+      toast.error("Failed to update");
     }
   };
 
-  // Update announcement
-  const handleUpdateAnnouncement = async (e) => {
-    e.preventDefault();
-
-    if (!title || !course || !date || !time) {
-      return toast.error("Please fill in all fields.");
-    }
-
-    try {
-      const response = await axios.put(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/ancument/announcement/${editId}`,
-        { title, course, date, time }
-      );
-
-      toast.success("Announcement updated successfully!");
-      const updatedList = announcements.map((item) =>
-        item._id === editId ? response.data : item
-      );
-      setAnnouncements(updatedList);
-
-      clearForm();
-      setIsEditing(false);
-      setEditId(null);
-      setOpen(false);
-    } catch (error) {
-      toast.error("Failed to update announcement.");
-    }
+  // ✅ Open Delete Modal
+  const handleDelete = (ann) => {
+    setSelectedAnn(ann);
+    setShowDeleteModal(true);
   };
 
-  // Delete announcement
-  const handleDeleteAnnouncement = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this announcement?"))
-      return;
-
+  // ✅ Confirm Delete
+  const confirmDelete = async () => {
     try {
       await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URL}/api/ancument/announcement/${id}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/insAnnouncement/${selectedAnn._id}`
       );
-      setAnnouncements((prev) => prev.filter((item) => item._id !== id));
-      toast.success("Announcement deleted successfully!");
-    } catch (error) {
-      toast.error("Failed to delete announcement.");
+      toast.success("Announcement deleted");
+      fetchInstructorCourses();
+      setShowDeleteModal(false);
+    } catch (err) {
+      toast.error("Failed to delete");
     }
-  };
-
-  // Prepare form for editing announcement
-  const handleEdit = (announcement) => {
-    setTitle(announcement.title);
-    setCourse(announcement.course);
-    setDate(announcement.date);
-    setTime(announcement.time);
-    setEditId(announcement._id);
-    setIsEditing(true);
-    setOpen(true);
-  };
-
-  // Clear form fields
-  const clearForm = () => {
-    setTitle("");
-    setCourse("");
-    setDate("");
-    setTime("");
   };
 
   return (
-    <div className="p-6 relative">
-      <h1 className="text-2xl font-semibold mb-4">Announcement</h1>
+    <div className="sm:p-6">
+      <h2 className="text-xl font-semibold mb-4">Announcement</h2>
 
-      {/* Header Section */}
-      <div className="bg-blue-100 p-6 rounded-lg mb-6 flex items-center justify-between">
-        <div>
-          <p className="text-lg font-semibold">Notify all your students.</p>
-          <p className="text-sm text-gray-700">Create Announcement</p>
-        </div>
-        <button
-          className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
-          onClick={() => {
-            clearForm();
-            setIsEditing(false);
-            setEditId(null);
-            setOpen(true);
-          }}
-        >
-          Add New Announcement
-        </button>
-      </div>
-
-      {/* Announcement Table */}
+      {/* ✅ Announcement Table */}
       <div className="overflow-hidden border border-gray-300 rounded-lg">
-        <div className="grid grid-cols-3 bg-blue-100 font-semibold text-gray-700 p-4 border-b border-gray-300">
-          <div>Date</div>
-          <div>Announcements</div>
-          <div>Status</div>
-        </div>
-
-        <div className="bg-white">
-          {announcements.length === 0 && (
-            <div className="p-4 text-center text-gray-600">
-              No announcements found.
-            </div>
-          )}
-
-          {announcements.map((item, idx) => (
-            <div
-              key={item._id || idx}
-              className="grid grid-cols-3 items-start text-sm text-gray-800 px-4 py-3 border-b border-gray-300 hover:bg-blue-50 transition"
-            >
-              {/* Date */}
-              <div>
-                <p>{item.date}</p>
-                <p className="text-gray-500 text-xs">{item.time}</p>
-              </div>
-
-              {/* Title + Course */}
-              <div>
-                <p className="font-medium">{item.title}</p>
-                <p className="text-gray-500 text-xs">Course: {item.course}</p>
-              </div>
-
-              {/* Actions */}
-              <div>
-                <button
-                  className="text-blue-600 hover:underline mr-4"
-                  onClick={() => handleEdit(item)}
+        <table className="min-w-full border-collapse">
+          <thead className="bg-blue-100 text-gray-700 font-semibold">
+            <tr>
+              <th className="border border-gray-300 px-4 py-3 text-left">Date</th>
+              <th className="border border-gray-300 px-4 py-3 text-left">Announcements</th>
+              <th className="border border-gray-300 px-4 py-3 text-left">Course</th>
+              <th className="border border-gray-300 px-4 py-3 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white">
+            {courses?.map((course) =>
+              course.announcement?.map((ann, idx) => (
+                <tr
+                  key={ann._id || idx}
+                  className="hover:bg-blue-50 transition"
                 >
-                  Update
-                </button>
-                <button
-                  className="text-red-500 hover:underline"
-                  onClick={() => handleDeleteAnnouncement(item._id)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+                  <td className="border- border-gray-300 px-4 py-3">
+                    {new Date(ann.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-3 font-medium">
+                    {ann.title}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-3 text-gray-500 ">
+                    {course.title}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-3">
+                    <button
+                      className="text-blue-600 hover:underline mr-4"
+                      onClick={() => handleEdit(ann)}
+                    >
+                      Update
+                    </button>
+                    <button
+                      className="text-red-500 hover:underline"
+                      onClick={() => handleDelete(ann)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Modal */}
-      {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-[90%] md:w-[600px] p-6 relative">
-            {/* Close Button */}
-            <button
-              className="absolute top-4 right-4 text-gray-600 hover:text-red-600"
-              onClick={() => {
-                setOpen(false);
-                clearForm();
-                setIsEditing(false);
-                setEditId(null);
-              }}
-            >
-              <FaX className="w-5 h-5" />
-            </button>
-
-            {/* Modal Title */}
-            <h2 className="text-xl font-semibold mb-4">
-              {isEditing ? "Update Announcement" : "New Announcement"}
-            </h2>
-
-            {/* Form */}
-            <form
-              className="grid grid-cols-1 gap-4"
-              onSubmit={
-                isEditing ? handleUpdateAnnouncement : handleAddAnnouncement
-              }
-            >
-              <input
-                type="text"
-                placeholder="Title"
-                className="border p-2 rounded"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Course"
-                className="border p-2 rounded"
-                value={course}
-                onChange={(e) => setCourse(e.target.value)}
-              />
-              <input
-                type="date"
-                className="border p-2 rounded"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-              <input
-                type="time"
-                className="border p-2 rounded"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
+      {/* ✅ Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Edit Announcement</h2>
+            <input
+              type="text"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              className="w-full border rounded px-3 py-2 mb-4"
+            />
+            <div className="flex justify-end gap-3">
               <button
-                type="submit"
-                className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                className="px-4 py-2 bg-gray-300 rounded"
+                onClick={() => setShowEditModal(false)}
               >
-                {isEditing ? "Update" : "Submit"}
+                Cancel
               </button>
-            </form>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+                onClick={submitEdit}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Delete Announcement</h2>
+            <p className="mb-6">
+              Are you sure you want to delete{" "}
+              <span className="font-semibold">"{selectedAnn?.title}"</span>?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded"
+                onClick={confirmDelete}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

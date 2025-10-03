@@ -58,71 +58,7 @@ const InstructorCourse = () => {
         </div>
       </div>
 
-      {/* <div className="grid gap-8 grid-cols-1 lg:grid-cols-3 mt-6 px-4 mb-8">
-        {filteredCoursesMain.length === 0 ? (
-          <p className="col-span-full text-center text-gray-500 text-lg">
-            No courses found for {activeTab}.
-          </p>
-        ) : (
-          filteredCoursesMain.map((course, index) => (
-            <div
-              key={course.id || index}
-              className="bg-white p-5 rounded-2xl shadow-lg w-full max-w-sm mx-auto hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="relative">
-                <img
-                  src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
-                  alt="course"
-                  className="w-full h-44 object-cover  rounded-xl"
-                />
-                <button className="absolute top-3 left-3 text-white bg-[#296AD2] px-3 py-1 rounded-full text-xs font-semibold">
-                  <span className="flex items-center gap-1">
-                    <HiOutlineClock className="text-sm" />
-                    {course.additionalInfo?.duration
-                      ? `${course.additionalInfo.duration.hour}h ${course.additionalInfo.duration.minute}m`
-                      : "N/A"}
-                  </span>
-                </button>
-              </div>
-
-              <h2 className="text-lg font-semibold mt-4 text-gray-800">
-                {course.title}
-              </h2>
-              <p className="text-gray-600 text-sm mt-1">{course.description}</p>
-
-              <div className="flex justify-between items-center mt-3 text-sm text-gray-700">
-                <span className="flex items-center gap-1">
-                  <FaBook />{" "}
-                  {course.modules?.reduce(
-                    (sum, module) => sum + (module.lessons?.length || 0),
-                    0
-                  ) || 0}{" "}
-                  Lessons
-                </span>
-                <span className="flex items-center gap-1">
-                  <FaRegStar className="text-yellow-500" /> {course.rating}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center mt-4">
-                <p className="text-lg font-bold text-green-600">
-                  ₹ {course.discountPrice}{" "}
-                  <span className="text-sm line-through text-black">
-                    {course.regularPrice}
-                  </span>
-                </p>
-                <Link
-                  to={`/instructor/instructorCourseDetails/${course._id}`}
-                  state={course}
-                  className="text-sm text-[#296AD2] font-medium border border-[#296AD2] px-3 py-1 rounded hover:bg-[#296AD2] hover:text-white transition-all duration-200"
-                >
-                  View Details
-                </Link>
-              </div>
-            </div>
-          ))
-        )}
-      </div> */}
+      
 
       <div className="grid gap-8 grid-cols-1 lg:grid-cols-3 mt-6 px-4 mb-8">
         {filteredCoursesMain.length === 0 ? (

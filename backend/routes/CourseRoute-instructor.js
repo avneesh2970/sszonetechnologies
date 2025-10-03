@@ -160,6 +160,7 @@ router.get("/my-courses", authMiddleware, async (req, res) => {
         populate: { path: "userId" },
       })
       .populate("remarks")
+      .populate("announcement")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
