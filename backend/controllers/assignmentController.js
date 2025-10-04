@@ -3,8 +3,7 @@ const Module = require("../models/Module");
 
 const cloudinary = require("../config/clodinary");
 
-
-// ➕ Create assignment
+//  Create assignment
 exports.createAssignment = async (req, res) => {
   try {
     const { moduleId, title, summary, questions } = req.body;
@@ -32,7 +31,7 @@ exports.createAssignment = async (req, res) => {
   }
 };
 
-
+// Submit assignment with pdf 
 exports.submitAssignment = async (req, res) => {
   try {
     const { assignmentId } = req.params;
@@ -42,34 +41,34 @@ exports.submitAssignment = async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
     if (!req.file) {
-      return res.status(400).json({ success: false, message: "PDF file is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "PDF file is required" });
     }
 
     const assignment = await Assignment.findById(assignmentId);
     if (!assignment) {
-      return res.status(404).json({ success: false, message: "Assignment not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Assignment not found" });
     }
-
-    // Helper: upload buffer to Cloudinary
-    // controllers/assignmentController.js (inside submitAssignment)
-const uploadToCloudinary = () =>
-  new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        resource_type: "raw",
-        // Put it in the assignments folder and make the student's PDF predictable:
-        // public_id can include folders; this replaces folder+filename_override combos.
-        public_id: `assignments/${assignmentId}/${studentId}`,
-        overwrite: true, // allow re-submits to replace the file
-      },
-      (error, result) => {
-        if (error) return reject(error);
-        resolve(result);
-      }
-    );
-    stream.end(req.file.buffer);
-  });
-
+    const uploadToCloudinary = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: "raw",
+            // Put it in the assignments folder and make the student's PDF predictable:
+            // public_id can include folders; this replaces folder+filename_override combos.
+            public_id: `assignments/${assignmentId}/${studentId}`,
+            overwrite: true, // allow re-submits to replace the file
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
 
     // Check if submission exists
     const index = assignment.submissions.findIndex(
@@ -79,9 +78,12 @@ const uploadToCloudinary = () =>
     // Delete old PDF if resubmitting
     if (index !== -1 && assignment.submissions[index].pdfPublicId) {
       try {
-        await cloudinary.uploader.destroy(assignment.submissions[index].pdfPublicId, {
-          resource_type: "raw",
-        });
+        await cloudinary.uploader.destroy(
+          assignment.submissions[index].pdfPublicId,
+          {
+            resource_type: "raw",
+          }
+        );
       } catch (e) {
         console.warn("Failed to delete old PDF:", e.message);
       }
@@ -100,7 +102,10 @@ const uploadToCloudinary = () =>
     if (index === -1) {
       assignment.submissions.push(payload);
     } else {
-      assignment.submissions[index] = { ...assignment.submissions[index]._doc, ...payload };
+      assignment.submissions[index] = {
+        ...assignment.submissions[index]._doc,
+        ...payload,
+      };
     }
 
     await assignment.save();
@@ -118,23 +123,24 @@ const uploadToCloudinary = () =>
   }
 };
 
-
 exports.getMyAssignmentStatus = async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const studentId = req.user?._id;
+    const studentId = req.user?.id;
 
     const assignment = await Assignment.findById(assignmentId)
       .select("title submissions")
       .lean();
 
     if (!assignment) {
-      return res.status(404).json({ success: false, message: "Assignment not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Assignment not found" });
     }
 
-    const sub =
-      assignment.submissions.find((s) => String(s.student) === String(studentId)) ||
-      { status: "pending" };
+    const sub = assignment.submissions.find(
+      (s) => String(s.student) === String(studentId)
+    ) || { status: "pending" };
 
     return res.status(200).json({
       success: true,
@@ -149,7 +155,6 @@ exports.getMyAssignmentStatus = async (req, res) => {
   }
 };
 
-
 // 📥 Get all assignments of a module
 exports.getAssignmentsByModule = async (req, res) => {
   try {
@@ -160,7 +165,9 @@ exports.getAssignmentsByModule = async (req, res) => {
       .exec();
 
     if (!module) {
-      return res.status(404).json({ success: false, message: "Module not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Module not found" });
     }
 
     res.json({ success: true, assignments: module.assignments });
@@ -182,7 +189,9 @@ exports.updateAssignment = async (req, res) => {
     );
 
     if (!assignment) {
-      return res.status(404).json({ success: false, message: "Assignment not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Assignment not found" });
     }
 
     res.json({ success: true, message: "Assignment updated", assignment });
@@ -199,7 +208,9 @@ exports.deleteAssignment = async (req, res) => {
     const assignment = await Assignment.findByIdAndDelete(id);
 
     if (!assignment) {
-      return res.status(404).json({ success: false, message: "Assignment not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Assignment not found" });
     }
 
     // remove assignment reference from module

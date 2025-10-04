@@ -24,6 +24,7 @@
 // module.exports = mongoose.model("Assignment", assignmentSchema);
 
 // models/Assignment.js
+
 const mongoose = require("mongoose");
 
 const submissionSchema = new mongoose.Schema(

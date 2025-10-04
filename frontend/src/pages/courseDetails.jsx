@@ -382,17 +382,31 @@ const CourseDetails = () => {
                               </p>
                             )}
                             {subStatus.pdfUrl && (
-                              <p>
-                                PDF:{" "}
-                                <a
-                                  className="text-blue-600 underline break-all"
-                                  href={subStatus.pdfUrl}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  View / Download
-                                </a>
-                              </p>
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                <p className="font-medium text-slate-700">
+                                  PDF:
+                                </p>
+                                <div className="flex gap-3">
+                                  {/* View PDF */}
+                                  <a
+                                    href={subStatus.pdfUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-blue-600 underline"
+                                  >
+                                    View
+                                  </a>
+
+                                  {/* Download PDF */}
+                                  <a
+                                    href={subStatus.pdfUrl}
+                                    download
+                                    className="text-green-600 underline"
+                                  >
+                                    Download
+                                  </a>
+                                </div>
+                              </div>
                             )}
                           </div>
                         ) : (
