@@ -18,6 +18,7 @@ import AddQuestionsForm from "../../../Instructor-courseUpload/AddQuestion";
 import QuizForm from "../../../Instructor-courseUpload/UploadQuiz";
 import AddAssignment from "../../../Instructor-courseUpload/Assignment";
 import InsAnnouncement from "../../../Instructor-courseUpload/Announcement";
+import InstructorCourseSubmissions from "./OrderHistory";
 
 const InstructorCourseDetails = () => {
   const location = useLocation();
@@ -56,9 +57,9 @@ const InstructorCourseDetails = () => {
       setMsg("");
       try {
         const res = await fetch(
-          `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/assignments/${selectedAssignment._id}/my-status`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/assignments/${
+            selectedAssignment._id
+          }/my-status`,
           {
             method: "GET",
             credentials: "include", // ✅ include cookies for auth
@@ -113,9 +114,9 @@ const InstructorCourseDetails = () => {
       form.append("pdf", file);
 
       const res = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/assignments/${selectedAssignment._id}/submit`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/assignments/${
+          selectedAssignment._id
+        }/submit`,
         {
           method: "POST",
           credentials: "include", // ✅ include cookies automatically
@@ -773,15 +774,29 @@ const InstructorCourseDetails = () => {
         )}
       </>
     ),
+    Assignment: (
+      <div>
+        <InstructorCourseSubmissions courseId={courseId} />
+      </div>
+    ),
   };
 
   return (
     <>
-      <div className="p-3">
+      <div className="relative p-3">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-6 left-6 bg-white/80 hover:bg-white text-gray-800 md:font-medium md:px-4 md:py-2 px-2 py-0.5 rounded-full shadow-md flex items-center gap-2 transition"
+        >
+          ← Back
+        </button>
+
+        {/* Banner Image */}
         <img
           src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
           alt="Course Banner"
-          className="h-[50vh] md:h-[70vh] w-full object-contain object-center rounded"
+          className="h-[50vh] md:h-[70vh] w-full object-cover object-center rounded-lg shadow"
         />
       </div>
 
@@ -820,6 +835,7 @@ const InstructorCourseDetails = () => {
               "Instructor",
               "Review",
               "Announcement",
+              "Assignment",
             ].map((tab) => (
               <button
                 key={tab}
@@ -970,6 +986,7 @@ const InstructorCourseDetails = () => {
               />
             )}
           </div>
+
           <ToastContainer position="top-right" autoClose={2000} />
         </aside>
       </div>

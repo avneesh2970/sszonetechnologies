@@ -1,6 +1,6 @@
 const Assignment = require("../models/Assignment");
 const Module = require("../models/Module");
-
+const mongoose = require("mongoose");
 const cloudinary = require("../config/clodinary");
 
 //  Create assignment
@@ -120,6 +120,153 @@ exports.submitAssignment = async (req, res) => {
   } catch (error) {
     console.error("submitAssignment error:", error);
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+exports.getCourseSubmissions = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { status = "completed", page = 1, limit = 20, q } = req.query;
+
+    if (!mongoose.isValidObjectId(courseId)) {
+      return res.status(400).json({ success: false, message: "Invalid courseId" });
+    }
+
+    // Find module IDs in this course
+    const modules = await Module.find({ courseId })
+      .select("_id")
+      .lean();
+
+    const moduleIds = modules.map(m => m._id);
+    if (!moduleIds.length) {
+      return res.status(200).json({ success: true, submissions: [], total: 0 });
+    }
+
+    const matchStatus = status ? { "submissions.status": status } : {};
+    const skip = (Number(page) - 1) * Number(limit);
+    const lim = Math.max(1, Math.min(Number(limit), 200));
+
+    // Build optional search (by student name/email or assignment title)
+    const searchStage = q
+      ? [{
+          $match: {
+            $or: [
+              { "student.name": { $regex: q, $options: "i" } },
+              { "student.email": { $regex: q, $options: "i" } },
+              { "title": { $regex: q, $options: "i" } },
+            ]
+          }
+        }]
+      : [];
+
+    const basePipeline = [
+      { $match: { moduleId: { $in: moduleIds } } },
+      { $unwind: "$submissions" },
+      { $match: { ...matchStatus } },
+      {
+        $lookup: {
+          from: "users", // collection name
+          localField: "submissions.student",
+          foreignField: "_id",
+          as: "student",
+        }
+      },
+      { $unwind: "$student" },
+      // optional light projection before count/pagination
+      {
+        $project: {
+          assignmentId: "$_id",
+          assignmentTitle: "$title",
+          moduleId: 1,
+          studentId: "$student._id",
+          studentName: "$student.name",
+          studentEmail: "$student.email",
+          pdfUrl: "$submissions.pdfUrl",
+          submittedAt: "$submissions.submittedAt",
+          status: "$submissions.status",
+        }
+      },
+    ];
+
+    // total count
+    const countPipeline = [
+      ...basePipeline,
+      ...searchStage,
+      { $count: "total" }
+    ];
+    const countRes = await Assignment.aggregate(countPipeline);
+    const total = countRes[0]?.total || 0;
+
+    // paginated data
+    const dataPipeline = [
+      ...basePipeline,
+      ...searchStage,
+      { $sort: { submittedAt: -1 } },
+      { $skip: skip },
+      { $limit: lim },
+    ];
+    const rows = await Assignment.aggregate(dataPipeline);
+
+    return res.status(200).json({
+      success: true,
+      total,
+      page: Number(page),
+      limit: lim,
+      submissions: rows, // each row has: studentName, assignmentTitle, pdfUrl, submittedAt
+    });
+  } catch (err) {
+    console.error("getCourseSubmissions error:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
+// GET /instructor/assignments/:assignmentId/submissions?status=completed
+exports.getAssignmentSubmissions = async (req, res) => {
+  try {
+    const { assignmentId } = req.params;
+    const { status } = req.query;
+
+    if (!mongoose.isValidObjectId(assignmentId)) {
+      return res.status(400).json({ success: false, message: "Invalid assignmentId" });
+    }
+
+    const matchStatus = status ? { "submissions.status": status } : {};
+
+    const rows = await Assignment.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(assignmentId) } },
+      { $unwind: "$submissions" },
+      { $match: { ...matchStatus } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "submissions.student",
+          foreignField: "_id",
+          as: "student",
+        }
+      },
+      { $unwind: "$student" },
+      {
+        $project: {
+          assignmentId: "$_id",
+          assignmentTitle: "$title",
+          moduleId: 1,
+          studentId: "$student._id",
+          studentName: "$student.name",
+          studentEmail: "$student.email",
+          pdfUrl: "$submissions.pdfUrl",
+          submittedAt: "$submissions.submittedAt",
+          status: "$submissions.status",
+        }
+      },
+      { $sort: { submittedAt: -1 } },
+    ]);
+
+    return res.status(200).json({ success: true, submissions: rows });
+  } catch (err) {
+    console.error("getAssignmentSubmissions error:", err);
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
 

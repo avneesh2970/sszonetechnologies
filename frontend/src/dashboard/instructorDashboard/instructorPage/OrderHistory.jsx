@@ -1,122 +1,82 @@
+// InstructorCourseSubmissions.jsx
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import react, { useState } from "react";
-import { toast } from "react-toastify";
-import useAuth from "./hooks/useAuth";
+export default function InstructorCourseSubmissions({ courseId }) {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState("");
 
-const orders = [
-  {
-    id: "#5478",
-    course: "App Development",
-    date: "January 27, 2024",
-    price: "₹ 4,999",
-    status: "Success",
-  },
-  {
-    id: "#5450",
-    course: "Graphic Design",
-    date: "January 12, 2024",
-    price: "₹ 4,999",
-    status: "Pending",
-  },
-  {
-    id: "#5410",
-    course: "MERN Stack",
-    date: "March 20, 2025",
-    price: "₹ 4,999",
-    status: "Failed",
-  },
-  {
-    id: "#5450",
-    course: "Graphic Design",
-    date: "January 12, 2024",
-    price: "₹ 4,999",
-    status: "Pending",
-  },
-  {
-    id: "#5478",
-    course: "App Development",
-    date: "January 27, 2024",
-    price: "₹ 4,999",
-    status: "Success",
-  },
-  {
-    id: "#5450",
-    course: "Graphic Design",
-    date: "January 12, 2024",
-    price: "₹ 4,999",
-    status: "Pending",
-  },
-  {
-    id: "#5410",
-    course: "MERN Stack",
-    date: "March 20, 2025",
-    price: "₹ 4,999",
-    status: "Failed",
-  },
-  {
-    id: "#5450",
-    course: "Graphic Design",
-    date: "January 12, 2024",
-    price: "₹ 4,999",
-    status: "Pending",
-  },
-];
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      setMsg("");
+      try {
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/assignments/courses/${courseId}/submissions`;
+        const { data } = await axios.get(url, {
+          params: { status: "completed", page: 1, limit: 50 }, // tweak as you like
+          withCredentials: true, // ✅ send cookie for auth
+        });
+        if (!data.success) throw new Error(data.message || "Failed to load submissions");
+        setRows(data.submissions || []);
+      } catch (err) {
+        setMsg(err.response?.data?.message || err.message || "Error loading submissions");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [courseId]);
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "Success":
-      return "text-green-600";
-    case "Pending":
-      return "text-yellow-500";
-    case "Failed":
-      return "text-red-600";
-    default:
-      return "";
-  }
-};
-
-const InstructorOrderHistory = () => {
-  const { instructor, loading } = useAuth();
-
-  if (loading) return <p>Loading...</p>;
-
-  if (!instructor) return <p>You must be logged in as an instructor.</p>;
+  if (loading) return <p className="text-sm text-gray-500">Loading…</p>;
+  if (msg) return <p className="text-sm text-red-600">{msg}</p>;
 
   return (
-    <>
-      <div className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Order History</h2>
-
-        <div className="bg-blue-50 rounded-lg overflow-hidden">
-          <div className="grid grid-cols-5 font-semibold text-gray-700 border-b px-4 py-3">
-            <div>Order ID</div>
-            <div>Course Name</div>
-            <div>Date</div>
-            <div>Price</div>
-            <div>Status</div>
-          </div>
-
-          {orders.map((order, idx) => (
-            <div
-              key={idx}
-              className={`grid grid-cols-5 px-4 py-3 text-sm border-b ${
-                idx % 2 === 0 ? "bg-white" : "bg-blue-50"
-              }`}
-            >
-              <div>{order.id}</div>
-              <div>{order.course}</div>
-              <div>{order.date}</div>
-              <div>{order.price}</div>
-              <div className={`font-medium ${getStatusColor(order.status)}`}>
-                {order.status}
-              </div>
-            </div>
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-sm">
+        <thead>
+          <tr className="text-left border-b">
+            <th className="py-2 pr-4">Student</th>
+            
+            <th className="py-2 pr-4">Assignment</th>
+            <th className="py-2 pr-4">Submitted At</th>
+            <th className="py-2 pr-4">PDF</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={`${r.assignmentId}-${r.studentId}`} className="border-b">
+              <td className="py-2 pr-4">{r.studentName}</td>
+              
+              <td className="py-2 pr-4">{r.assignmentTitle}</td>
+              <td className="py-2 pr-4">
+                {r.submittedAt ? new Date(r.submittedAt).toLocaleString() : "—"}
+              </td>
+              <td className="py-2 pr-4">
+                {r.pdfUrl ? (
+                  <a
+                    href={r.pdfUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    View PDF
+                  </a>
+                ) : (
+                  <span className="text-gray-400">No PDF</span>
+                )}
+              </td>
+            </tr>
           ))}
-        </div>
-      </div>
-    </>
-  );
-};
 
-export default InstructorOrderHistory;
+          {!rows.length && (
+            <tr>
+              <td colSpan="5" className="py-6 text-gray-500 text-center">
+                No submissions yet.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
