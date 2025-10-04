@@ -6,10 +6,17 @@ const {
   getAssignmentsByModule,
   updateAssignment,
   deleteAssignment,
+  submitAssignment,
+  getMyAssignmentStatus,
 } = require("../controllers/assignmentController");
+const { uploadPdf } = require("../middleware/assignmentMulter");
+const  requireAuth  = require("../middleware/auth");
 
 // CREATE
 router.post("/", createAssignment);
+
+router.post("/:assignmentId/submit", requireAuth, uploadPdf, submitAssignment);
+router.get("/:assignmentId/my-status", requireAuth, getMyAssignmentStatus);
 
 // READ (by moduleId)
 router.get("/:moduleId", getAssignmentsByModule);

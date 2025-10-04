@@ -39,7 +39,7 @@ const InstructorCourseDetails = () => {
 
   const [selectedAssignment, setSelectedAssignment] = useState(null);
 
-  const [openAnn, setOpenAnn] = useState(false);
+  const [openAnn, setOpenAnn] = useState(false);  
 
   useEffect(() => {
     window.scrollTo(0, 0);
