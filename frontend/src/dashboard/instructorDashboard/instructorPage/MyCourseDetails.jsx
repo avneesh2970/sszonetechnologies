@@ -37,9 +37,109 @@ const InstructorCourseDetails = () => {
 
   const [isAssignmentOpen, setIsAssignmentOpen] = useState(false);
 
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  // const [selectedAssignment, setSelectedAssignment] = useState(null);
 
-  const [openAnn, setOpenAnn] = useState(false);  
+  const [openAnn, setOpenAnn] = useState(false);
+
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [subStatus, setSubStatus] = useState(null);
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  // Fetch student submission status when popup opens
+  useEffect(() => {
+    const fetchStatus = async () => {
+      if (!selectedAssignment?._id) return;
+      setStatusLoading(true);
+      setMsg("");
+      try {
+        const res = await fetch(
+          `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/assignments/${selectedAssignment._id}/my-status`,
+          {
+            method: "GET",
+            credentials: "include", // ✅ include cookies for auth
+          }
+        );
+        const data = await res.json();
+        if (!data.success)
+          throw new Error(data.message || "Failed to load status");
+        setSubStatus(data);
+      } catch (err) {
+        setMsg(err.message || "Could not fetch status");
+        setSubStatus(null);
+      } finally {
+        setStatusLoading(false);
+      }
+    };
+    fetchStatus();
+  }, [selectedAssignment]);
+
+  // Validate PDF file
+  const onFileChange = (e) => {
+    setMsg("");
+    const f = e.target.files?.[0];
+    if (!f) return setFile(null);
+
+    if (f.type !== "application/pdf") {
+      setMsg("Only PDF files are allowed.");
+      e.target.value = "";
+      return setFile(null);
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      setMsg("File too large. Max 10MB.");
+      e.target.value = "";
+      return setFile(null);
+    }
+    setFile(f);
+  };
+
+  // Submit assignment PDF
+  const onSubmit = async () => {
+    if (!selectedAssignment?._id) return;
+    if (!file) {
+      setMsg("Please choose a PDF file first.");
+      return;
+    }
+
+    setUploading(true);
+    setMsg("");
+
+    try {
+      const form = new FormData();
+      form.append("pdf", file);
+
+      const res = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/assignments/${selectedAssignment._id}/submit`,
+        {
+          method: "POST",
+          credentials: "include", // ✅ include cookies automatically
+          body: form,
+        }
+      );
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || "Submission failed");
+
+      setMsg("✅ Assignment submitted successfully.");
+      setFile(null);
+      setSubStatus((prev) => ({
+        ...(prev || {}),
+        status: "completed",
+        pdfUrl: data.submission?.pdfUrl || prev?.pdfUrl,
+        submittedAt: data.submission?.submittedAt || new Date().toISOString(),
+      }));
+    } catch (err) {
+      setMsg(err.message || "Submission error");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -367,6 +467,163 @@ const InstructorCourseDetails = () => {
                 </div>
               )}
             </div>
+
+            {/* new assignment with form submit  */}
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-700">
+                Assignments:
+              </h4>
+              <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
+                {module.assignments?.length > 0 ? (
+                  module.assignments.map((assignment) => (
+                    <li
+                      key={assignment._id}
+                      className="flex justify-between cursor-pointer hover:underline hover:text-blue-500"
+                      onClick={() => setSelectedAssignment(assignment)}
+                    >
+                      {assignment.title} <span>full-details</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-400 italic">
+                    No assignments in this module.
+                  </li>
+                )}
+              </ul>
+
+              {selectedAssignment && (
+                <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50">
+                  <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+                    {/* Close */}
+                    <button
+                      onClick={() => {
+                        setSelectedAssignment(null);
+                        setSubStatus(null);
+                        setFile(null);
+                        setMsg("");
+                      }}
+                      className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
+                    >
+                      ✖
+                    </button>
+
+                    {/* Assignment Info */}
+                    <h2 className="text-xl font-bold mb-2">
+                      {selectedAssignment.title}
+                    </h2>
+                    <p className="text-gray-700 mb-4">
+                      {selectedAssignment.summary}
+                    </p>
+
+                    <h3 className="font-semibold mb-2">Questions:</h3>
+                    <ul className="list-decimal pl-5 space-y-2 text-gray-600">
+                      {selectedAssignment.questions?.map((q, index) => (
+                        <li key={index}>{q.questionText || q}</li>
+                      ))}
+                    </ul>
+
+                    <div className="border-t my-4" />
+
+                    {/* Status */}
+                    <div className="mb-3">
+                      <h4 className="font-semibold">Your submission</h4>
+                      {statusLoading ? (
+                        <p className="text-sm text-gray-500 mt-1">
+                          Loading status…
+                        </p>
+                      ) : subStatus ? (
+                        <div className="text-sm mt-1 space-y-1">
+                          <p>
+                            Status:{" "}
+                            <span
+                              className={
+                                subStatus.status === "completed"
+                                  ? "text-green-600 font-medium"
+                                  : "text-yellow-700 font-medium"
+                              }
+                            >
+                              {subStatus.status || "pending"}
+                            </span>
+                          </p>
+                          {subStatus.submittedAt && (
+                            <p className="text-gray-600">
+                              Submitted:{" "}
+                              {new Date(subStatus.submittedAt).toLocaleString()}
+                            </p>
+                          )}
+                          {subStatus.pdfUrl && (
+                            <p>
+                              PDF:{" "}
+                              <a
+                                className="text-blue-600 underline break-all"
+                                href={subStatus.pdfUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                View / Download
+                              </a>
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 mt-1">
+                          No submission yet (pending).
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Upload form */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium">
+                        Upload PDF
+                      </label>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={onFileChange}
+                        className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      />
+                      {file && (
+                        <p className="text-xs text-gray-500">
+                          Selected: {file.name} (
+                          {(file.size / (1024 * 1024)).toFixed(2)} MB)
+                        </p>
+                      )}
+
+                      {msg && (
+                        <p
+                          className={`text-sm ${
+                            msg.startsWith("✅")
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {msg}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-2 pt-2">
+                        <button
+                          disabled={uploading || !file}
+                          onClick={onSubmit}
+                          className={`px-4 py-2 rounded-md text-white ${
+                            uploading || !file
+                              ? "bg-blue-300 cursor-not-allowed"
+                              : "bg-blue-600 hover:bg-blue-700"
+                          }`}
+                        >
+                          {uploading
+                            ? "Submitting…"
+                            : subStatus?.status === "completed"
+                            ? "Re-submit PDF"
+                            : "Submit PDF"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
 
@@ -475,7 +732,7 @@ const InstructorCourseDetails = () => {
             onClick={() => setOpenAnn(true)}
             className="border px-4 py-1 rounded flex"
           >
-           + Add Announcements 
+            + Add Announcements
           </button>
         </div>
 

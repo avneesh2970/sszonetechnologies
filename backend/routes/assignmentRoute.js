@@ -15,7 +15,7 @@ const  requireAuth  = require("../middleware/auth");
 // CREATE
 router.post("/", createAssignment);
 
-router.post("/:assignmentId/submit", requireAuth, uploadPdf, submitAssignment);
+router.post("/:assignmentId/submit", requireAuth,  uploadPdf , submitAssignment);
 router.get("/:assignmentId/my-status", requireAuth, getMyAssignmentStatus);
 
 // READ (by moduleId)

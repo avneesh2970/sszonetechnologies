@@ -193,13 +193,17 @@ router.get("/", async (req, res) => {
       .populate("overview") // populate overview
       .populate("introVideo")
       .populate({
-        path: "modules", // populate modules
-        populate: { path: "lessons" }, // populate lessons inside each module
+        path: "modules",
+        populate: [
+          { path: "lessons" },
+          { path: "quizzes" },
+          { path: "assignments" }, // ✅ add this line
+        ],
       })
       .populate({
         path : "reviews", 
         populate : {path : "userId"}
-      });
+      }).sort({createdAt : -1});
       
 
     res.status(200).json({ success: true, courses });

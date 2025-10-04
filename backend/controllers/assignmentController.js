@@ -36,7 +36,7 @@ exports.createAssignment = async (req, res) => {
 exports.submitAssignment = async (req, res) => {
   try {
     const { assignmentId } = req.params;
-    const studentId = req.user?._id;
+    const studentId = req.user?.id;
 
     if (!studentId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -51,21 +51,25 @@ exports.submitAssignment = async (req, res) => {
     }
 
     // Helper: upload buffer to Cloudinary
-    const uploadToCloudinary = () =>
-      new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {
-            resource_type: "raw",
-            folder: `assignments/${assignmentId}`,
-            filename_override: `${studentId}.pdf`,
-          },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
+    // controllers/assignmentController.js (inside submitAssignment)
+const uploadToCloudinary = () =>
+  new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: "raw",
+        // Put it in the assignments folder and make the student's PDF predictable:
+        // public_id can include folders; this replaces folder+filename_override combos.
+        public_id: `assignments/${assignmentId}/${studentId}`,
+        overwrite: true, // allow re-submits to replace the file
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    stream.end(req.file.buffer);
+  });
+
 
     // Check if submission exists
     const index = assignment.submissions.findIndex(
