@@ -468,6 +468,7 @@ const CourseDetails = () => {
                   </div>
                 )}
               </div>
+              
             </div>
           ))
         ) : (

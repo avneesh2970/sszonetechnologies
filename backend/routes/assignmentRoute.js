@@ -26,7 +26,6 @@ router.get("/courses/:courseId/submissions", requireAuth, requireInstructor, get
 router.get("/assignments/:assignmentId/submissions", requireAuth, requireInstructor, getAssignmentSubmissions);
 
 
-
 // READ (by moduleId)
 router.get("/:moduleId", getAssignmentsByModule);
 

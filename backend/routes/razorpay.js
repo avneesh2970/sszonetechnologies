@@ -84,7 +84,6 @@ router.post("/verify-payment", async (req, res) => {
   }
 });
 
-
 // Based on user
 router.get("/my-purchases", auth, async (req, res) => {
   try {
@@ -107,7 +106,11 @@ router.get("/my-purchases", auth, async (req, res) => {
           { path: "introVideo" },
           {
             path: "modules",
-            populate: { path: "lessons" },
+            populate: [
+              { path: "lessons" },
+              { path: "quizzes" },
+              { path: "assignments" }, // ✅ add this line
+            ],
           },
         ],
       })
@@ -118,13 +121,12 @@ router.get("/my-purchases", auth, async (req, res) => {
   }
 });
 
-
-router.get('/all-purchases', async (req, res) => {
+router.get("/all-purchases", async (req, res) => {
   try {
-    const allPurchase = await Purchase.find().sort({createdAt : -1})
+    const allPurchase = await Purchase.find()
+      .sort({ createdAt: -1 })
       .populate("user", "name")
-      .populate("product")
-      
+      .populate("product");
 
     res.status(200).json({ success: true, allPurchase });
   } catch (error) {
@@ -132,19 +134,19 @@ router.get('/all-purchases', async (req, res) => {
   }
 });
 
-router.get('/all', async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
     // Aggregate purchases by month
     const monthlyEnrollments = await Purchase.aggregate([
       {
         $group: {
           _id: { $month: "$createdAt" }, // get month from createdAt
-          count: { $sum: 1 } // count number of purchases
-        }
+          count: { $sum: 1 }, // count number of purchases
+        },
       },
       {
-        $sort: { "_id": 1 } // sort by month ascending
-      }
+        $sort: { _id: 1 }, // sort by month ascending
+      },
     ]);
     // http://localhost:3999/api/payment/all
 
@@ -154,15 +156,14 @@ router.get('/all', async (req, res) => {
       .populate("user", "name")
       .populate("product");
 
-    res.status(200).json({ 
-      success: true, 
+    res.status(200).json({
+      success: true,
       allPurchase,
-      monthlyEnrollments
+      monthlyEnrollments,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
 
 module.exports = router;

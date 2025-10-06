@@ -146,8 +146,8 @@ router.get("/my-courses", authMiddleware, async (req, res) => {
       })
       .populate("additionalInfo")
       .populate("overview")
-      .populate("introVideo")
-      .populate({
+      .populate("introVideo")   
+      .populate({   
         path: "modules",
         populate: [
           { path: "lessons" },
@@ -158,7 +158,7 @@ router.get("/my-courses", authMiddleware, async (req, res) => {
       .populate({
         path: "reviews",
         populate: { path: "userId" },
-      })
+      })  
       .populate("remarks")
       .populate("announcement")
       .sort({ createdAt: -1 });
