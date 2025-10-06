@@ -90,45 +90,6 @@ router.post("/:id/additional-info", authMiddleware, async (req, res) => {
   }
 });
 
-// Course of particular instructor
-// router.get("/my-courses", authMiddleware, async (req, res) => {
-//   try {
-//     const instructorId = req.instructorId;
-
-//     const courses = await Course.find({ instructor: instructorId })
-//       .populate({
-//         path: "instructor",
-//         populate: {
-//           path: "profile",
-//           model: "InstructorProfile",
-//           select: "skill bio firstName lastName userName displayNamePubliclyAs",
-//         },
-//       })
-//       .populate("additionalInfo")
-//       .populate("overview")
-//       .populate("introVideo")
-//       .populate({
-//         path: "modules",
-//         populate: { path: "lessons" },
-        
-//       })
-//       .populate({
-//         path : "reviews", 
-//         populate : {path : "userId"}
-//       })
-//       .populate("remarks")
-//       .sort({createdAt : -1})
-//     res.status(200).json({
-//       success: true,
-//       courses,
-//       message: "course for Currently Login Instructor",
-//     });
-//   } catch {
-//     res
-//       .status(500)
-//       .json({ message: "Error fetching instructor courses", error: err });
-//   }
-// });
 
 router.get("/my-courses", authMiddleware, async (req, res) => {
   try {

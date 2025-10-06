@@ -15,24 +15,70 @@ const razorpay = new Razorpay({
 });
 
 // Create order API
+// router.post("/create-order", auth, async (req, res) => {
+//   try {
+//     const { amount, cartItems } = req.body; // frontend sends amount & cart items
+//     console.log("cartItems" + cartItems);
+//     const userId = req.user.id; // ✅ get userId from auth middleware
+
+//     const options = {
+//       amount: amount * 100, // amount in paise
+//       currency: "INR",
+//       receipt: "receipt_" + Date.now(),
+//     };
+
+//     const order = await razorpay.orders.create(options);
+
+//     // Save purchase in MongoDB
+//     const newPurchase = await Purchase.create({
+//       user: userId,
+//       product: cartItems.map((item) => item.course._id), // array of course IDs
+//       amount,
+//       status: "created",
+//       currency: "INR",
+//       razorpay: { orderId: order.id },
+//       receipt: options.receipt,
+//     });
+
+//     res.status(200).json({ success: true, order, purchaseId: newPurchase._id });
+//   } catch (error) {
+//     console.log("error", error);
+
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
+// Create order API
 router.post("/create-order", auth, async (req, res) => {
   try {
-    const { amount, cartItems } = req.body; // frontend sends amount & cart items
-    console.log("cartItems" + cartItems);
-    const userId = req.user.id; // ✅ get userId from auth middleware
+    const { amount, cartItems } = req.body;
+    const userId = req.user.id;
+
+    // ✅ Check if user already owns all courses in cart
+    const alreadyOwned = await Purchase.find({
+      user: userId,
+      status: "paid",
+      product: { $in: cartItems.map((item) => item.course._id) },
+    }).lean();
+
+    if (alreadyOwned.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "You already purchased one or more of these courses.",
+        ownedCourses: alreadyOwned.flatMap((p) => p.product),
+      });
+    }
 
     const options = {
-      amount: amount * 100, // amount in paise
+      amount: amount * 100, // in paise
       currency: "INR",
       receipt: "receipt_" + Date.now(),
     };
 
     const order = await razorpay.orders.create(options);
 
-    // Save purchase in MongoDB
     const newPurchase = await Purchase.create({
       user: userId,
-      product: cartItems.map((item) => item.course._id), // array of course IDs
+      product: cartItems.map((item) => item.course._id),
       amount,
       status: "created",
       currency: "INR",
@@ -43,10 +89,10 @@ router.post("/create-order", auth, async (req, res) => {
     res.status(200).json({ success: true, order, purchaseId: newPurchase._id });
   } catch (error) {
     console.log("error", error);
-
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
 
 // Verify payment signature API
 router.post("/verify-payment", async (req, res) => {
@@ -81,6 +127,22 @@ router.post("/verify-payment", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// checkout button status paid or checkout 
+router.get("/is-paid/:courseId", auth, async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const paid = await Purchase.exists({
+      user: req.user.id,
+      status: "paid",
+      product: courseId,
+    });
+
+    res.json({ success: true, paid: !!paid });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
   }
 });
 

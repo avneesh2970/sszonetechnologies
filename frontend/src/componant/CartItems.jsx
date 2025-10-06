@@ -50,55 +50,119 @@ function CartItems() {
   };
 
   // Razorpay checkout
+  // const handleCheckout = async (amount) => {
+  //   try {
+  //     const { data } = await axios.post(
+  //       `${import.meta.env.VITE_BACKEND_URL}/api/payment/create-order`,
+  //       {
+  //         amount,
+  //         cartItems, // send current cart
+  //         // make sure you have user ID
+  //       },
+  //       { withCredentials: true }
+  //     );
+
+  //     if (!data.success) return toast.error("Failed to create order");
+
+  //     const options = {
+  //       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+  //       amount: data.order.amount,
+  //       currency: data.order.currency,
+  //       name: "My Shop",
+  //       description: "Course Purchase",
+  //       order_id: data.order.id,
+  //       handler: async function (response) {
+  //         await axios.post(
+  //           `${import.meta.env.VITE_BACKEND_URL}/api/payment/verify-payment`,
+  //           {
+  //             ...response,
+  //             purchaseId: data.purchaseId, // pass the purchase document ID
+  //           },
+  //           { withCredentials: true }
+  //         );
+
+  //         await axios.delete(
+  //           `${import.meta.env.VITE_BACKEND_URL}/api/cart/clear`,
+  //           { withCredentials: true }
+  //         );
+
+  //         toast.success("Payment successful!");
+  //         fetchCartItems(null); // optional: refresh cart after payment
+  //       },
+  //       theme: { color: "#296AD2" },
+  //     };
+
+  //     const rzp = new window.Razorpay(options);
+  //     rzp.open();
+  //   } catch (err) {
+  //     console.log(err);
+  //     toast.error("Something went wrong with checkout");
+  //   }
+  // };
+
   const handleCheckout = async (amount) => {
-    try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/payment/create-order`,
-        {
-          amount,
-          cartItems, // send current cart
-          // make sure you have user ID
-        },
-        { withCredentials: true }
-      );
+  try {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/payment/create-order`,
+      { amount, cartItems },
+      { withCredentials: true }
+    );
 
-      if (!data.success) return toast.error("Failed to create order");
+    if (!data.success) return toast.error("Failed to create order");
 
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: data.order.amount,
-        currency: data.order.currency,
-        name: "My Shop",
-        description: "Course Purchase",
-        order_id: data.order.id,
-        handler: async function (response) {
-          await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/api/payment/verify-payment`,
-            {
-              ...response,
-              purchaseId: data.purchaseId, // pass the purchase document ID
-            },
-            { withCredentials: true }
-          );
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: data.order.amount,
+      currency: data.order.currency,
+      name: "My Shop",
+      description: "Course Purchase",
+      order_id: data.order.id,
+      handler: async function (response) {
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/payment/verify-payment`,
+          { ...response, purchaseId: data.purchaseId },
+          { withCredentials: true }
+        );
 
-          await axios.delete(
-            `${import.meta.env.VITE_BACKEND_URL}/api/cart/clear`,
-            { withCredentials: true }
-          );
+        await axios.delete(
+          `${import.meta.env.VITE_BACKEND_URL}/api/cart/clear`,
+          { withCredentials: true }
+        );
 
-          toast.success("Payment successful!");
-          fetchCartItems(null); // optional: refresh cart after payment
-        },
-        theme: { color: "#296AD2" },
-      };
+        toast.success("Payment successful!");
+        fetchCartItems(null);
+      },
+      theme: { color: "#296AD2" },
+    };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (err) {
-      console.log(err);
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    if (err.response?.data?.message?.includes("already purchased")) {
+      toast.info(" You already purchased this course.");
+    } else {
       toast.error("Something went wrong with checkout");
     }
-  };
+  }
+};   
+
+// for status paid ----------------------------------
+//  const [paid, setPaid] = useState(false);
+
+//   useEffect(() => {
+//     (async () => {
+//       try {
+//         const { data } = await axios.get(
+//           `${import.meta.env.VITE_BACKEND_URL}/api/purchases/is-paid/${course._id}`,
+//           { withCredentials: true }
+//         );
+//         setPaid(data.paid);
+//       } catch (err) {
+//         console.log("Not logged in or error checking purchase");
+//       }
+//     })();
+//   }, [course._id]);
+
 
   return (
     <div className="font-[Manrope] max-w-screen-2xl mx-auto">
@@ -237,6 +301,19 @@ function CartItems() {
               >
                 Checkout
               </button>
+              
+              {/* {paid ? (
+        <div className="w-full py-3 bg-green-600 text-white font-medium rounded-md text-center">
+          ✅ Already Purchased
+        </div>
+      ) : (
+        <button
+          className="w-full py-3 bg-[#296AD2] text-white font-medium rounded-md uppercase text-sm"
+          onClick={() => handleCheckout(total)}
+        >
+          Checkout
+        </button>
+      )} */}
             </div>
 
             {/* Promotions */}
