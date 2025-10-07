@@ -4,11 +4,11 @@ import {
   FaStar,
   FaChartLine,
   FaTrophy,
-  FaMoneyBillWave,
-  FaGraduationCap,
+  
 } from "react-icons/fa";
 import { useEffect } from "react";
 import { useStudentAuth } from "./studentAuth";
+import useCourseCounts from "./utils/courseCount";
 
 // Mock data for demonstration
 
@@ -26,29 +26,17 @@ const Overview = () => {
     fetchReviews();
   }, [user]);
 
-  // Mock auth hook for demonstration
-  // const user = mockUser;
-  // const purchases = mockPurchases;
   
 
   useEffect(() => {
     // fetchReviews();
-  }, [user]);
+  }, [user]);  
 
-  // Calculate statistics
-  const completedCourses = purchases.filter(
-    (course) => course.progress === 100
-  ).length;
-  const activeCourses = purchases.filter(
-    (course) => course.progress > 0 && course.progress < 100
-  ).length;
-  const averageProgress =
-    purchases.length > 0
-      ? Math.round(
-          purchases.reduce((acc, course) => acc + course.progress, 0) /
-            purchases.length
-        )
-      : 0;
+  const userId = user?.id || user?._id || "anon";
+
+  const {  activeCount, completedCount } =
+     useCourseCounts(purchases, userId);
+
 
   const stats = [
     {
@@ -63,7 +51,7 @@ const Overview = () => {
     },
     {
       title: "Active Courses",
-      value: activeCourses,
+      value:  activeCount,
       color: "bg-gradient-to-r from-orange-500 to-orange-600",
       icon: FaChartLine,
       textColor: "text-orange-600",
@@ -73,7 +61,7 @@ const Overview = () => {
     },
     {
       title: "Completed Courses",
-      value: completedCourses,
+      value: completedCount,
       color: "bg-gradient-to-r from-green-500 to-green-600",
       icon: FaTrophy,
       textColor: "text-green-600",
