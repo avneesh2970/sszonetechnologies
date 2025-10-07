@@ -76,7 +76,7 @@ const StuAllCourseDetails = () => {
       <div className="px-6 md:px-12 my-6">
         <h1 className="text-xl font-bold mb-4">Description</h1>
         <p className="text-gray-600 mb-6">
-          {course.overview.overviewDescription || course.description}
+          {course?.overview?.overviewDescription || course?.description}
         </p>
         <div className="flex flex-col gap-4">
           {course?.overview?.whatYouWillLearn ? (

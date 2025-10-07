@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useStudentAuth } from "./studentAuth";
 import { getProgress, setProgress } from "./utils/ProgressStore"; // <-- new
-import { getTotalLessons, percent } from "./utils/totals";        // <-- new
+import { getTotalLessons, percent } from "./utils/totals"; // <-- new
 
 const TabButton = ({ label, active, onClick }) => (
   <button
@@ -78,16 +78,15 @@ const EnrollCourse = () => {
     const pct = percent(completedLessons, totalLessons);
 
     return (
-      <div className="bg-white p-4 rounded-lg shadow-md w-72 flex flex-col justify-between">
-        <div>
-          <div className="relative">
-            <img
-              src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
-              alt={course.title}
-              className="w-full h-40 object-cover rounded-md"
-            />
-          </div>
-
+      <div className="bg-white  rounded-lg shadow-md w-72 flex flex-col justify-between">
+        <div className="relative cursor-pointer " onClick={()=>navigate(`/dashboard/enrollCourseDetails/${course._id}`)}>
+          <img
+            src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
+            alt={course.title}
+            className="w-full h-40 object-cover rounded-md"
+          />
+        </div>
+        <div className="p-4">
           <span className="text-xs inline-block bg-blue-100 text-blue-600 rounded-full px-2 py-1 mt-2">
             {course.categories || "Development"}
           </span>
@@ -97,7 +96,9 @@ const EnrollCourse = () => {
           <div className="flex items-center justify-between text-sm text-gray-500 mt-1">
             <div className="flex items-center">
               <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center mr-2 text-sm font-bold uppercase">
-                {course.instructor?.name ? course.instructor.name.slice(0, 1).toUpperCase() : "NA"}
+                {course.instructor?.name
+                  ? course.instructor.name.slice(0, 1).toUpperCase()
+                  : "NA"}
               </div>
               <span>{course.instructor?.name || "Unknown"}</span>
             </div>
@@ -106,7 +107,8 @@ const EnrollCourse = () => {
           <div className="flex justify-between text-sm text-gray-600 mt-2">
             <span>📘 {totalLessons} Lessons</span>
             <span>
-              ⏱ {course.additionalInfo?.duration?.hour || 0}h {course.additionalInfo?.duration?.minute || 0}m
+              ⏱ {course.additionalInfo?.duration?.hour || 0}h{" "}
+              {course.additionalInfo?.duration?.minute || 0}m
             </span>
           </div>
 
@@ -123,8 +125,14 @@ const EnrollCourse = () => {
                 step={1}
                 value={completedLessons}
                 onChange={(e) => {
-                  const v = Math.max(0, Math.min(totalLessons, e.target.valueAsNumber || 0));
-                  setProgress(userId, course._id, { started: true, completedLessons: v });
+                  const v = Math.max(
+                    0,
+                    Math.min(totalLessons, e.target.valueAsNumber || 0)
+                  );
+                  setProgress(userId, course._id, {
+                    started: true,
+                    completedLessons: v,
+                  });
                   setProgressVersion((x) => x + 1);
                   if (totalLessons > 0 && v >= totalLessons) {
                     toast.success(`🎉 ${course.title} completed!`);
@@ -137,23 +145,23 @@ const EnrollCourse = () => {
               </div>
             </div>
           )}
-        </div>
 
-        {!completedView ? (
-          <button
-            onClick={() => handleGoToCourse(course)}
-            className="mt-3 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-          >
-            {started ? "Continue Course" : "Go to Course"}
-          </button>
-        ) : (
-          <button
-            onClick={() => navigate(`/dashboard/certificates/${course._id}`)}
-            className="mt-3 w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition"
-          >
-            Download Certificate
-          </button>
-        )}
+          {!completedView ? (
+            <button
+              onClick={() => handleGoToCourse(course)}
+              className="mt-3 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition cursor-pointer"
+            >
+              {started ? "Continue Course" : "Go to Course"}
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate(`/dashboard/certificates/${course._id}`)}
+              className="mt-3 w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition cursor-pointer"
+            >
+              Download Certificate
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -167,7 +175,12 @@ const EnrollCourse = () => {
               <p className="text-sm text-gray-500">No courses purchased yet.</p>
             ) : (
               enrollCourses.map((course) => (
-                <CourseCard key={course._id} course={course} showProgress={false} completedView={false} />
+                <CourseCard
+                  key={course._id}
+                  course={course}
+                  showProgress={false}
+                  completedView={false}
+                />
               ))
             )}
           </div>
@@ -177,10 +190,17 @@ const EnrollCourse = () => {
         return (
           <div className="flex flex-wrap gap-4 mt-6">
             {activeCourses.length === 0 ? (
-              <p className="text-sm text-gray-500">No active courses. Start any course from Enroll tab.</p>
+              <p className="text-sm text-gray-500">
+                No active courses. Start any course from Enroll tab.
+              </p>
             ) : (
               activeCourses.map((course) => (
-                <CourseCard key={course._id} course={course} showProgress completedView={false} />
+                <CourseCard
+                  key={course._id}
+                  course={course}
+                  showProgress
+                  completedView={false}
+                />
               ))
             )}
           </div>
@@ -193,7 +213,12 @@ const EnrollCourse = () => {
               <p className="text-sm text-gray-500">No completed courses yet.</p>
             ) : (
               completedCourses.map((course) => (
-                <CourseCard key={course._id} course={course} showProgress={false} completedView />
+                <CourseCard
+                  key={course._id}
+                  course={course}
+                  showProgress={false}
+                  completedView
+                />
               ))
             )}
           </div>
@@ -208,9 +233,21 @@ const EnrollCourse = () => {
     <div className="p-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-2">My Courses</h1>
       <div className="flex space-x-6 border-b pb-2">
-        <TabButton label="Enroll Courses" active={activeTab === "Enroll"} onClick={() => setActiveTab("Enroll")} />
-        <TabButton label="Active Courses" active={activeTab === "Active"} onClick={() => setActiveTab("Active")} />
-        <TabButton label="Completed Courses" active={activeTab === "Completed"} onClick={() => setActiveTab("Completed")} />
+        <TabButton
+          label="Enroll Courses"
+          active={activeTab === "Enroll"}
+          onClick={() => setActiveTab("Enroll")}
+        />
+        <TabButton
+          label="Active Courses"
+          active={activeTab === "Active"}
+          onClick={() => setActiveTab("Active")}
+        />
+        <TabButton
+          label="Completed Courses"
+          active={activeTab === "Completed"}
+          onClick={() => setActiveTab("Completed")}
+        />
       </div>
       {renderContent()}
     </div>

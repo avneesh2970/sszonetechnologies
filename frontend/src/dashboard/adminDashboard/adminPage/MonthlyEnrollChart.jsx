@@ -86,7 +86,7 @@ const MonthlyEnrollmentsChart = () => {
     plugins: {
       legend: { position: "top" },
       title: {
-        display: true,
+        display: false,
         text: "Monthly Course Enrollments",
         font: { size: 18, weight: "bold" },
       },
@@ -99,7 +99,7 @@ const MonthlyEnrollmentsChart = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+    <div className="w-full max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-xl ">
       <p className="font-semibold text-lg mb-4">Monthly Course Enrollments</p>
       <Chart data={chartData} options={options} /> {/* ✅ No type here */}
     </div>

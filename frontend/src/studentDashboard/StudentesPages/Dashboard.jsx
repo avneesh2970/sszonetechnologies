@@ -59,9 +59,7 @@ const Dashboard = () => {
     <>
       {/* Top Navbar */}
       <div className="bg-white px-4 md:px-6 py-3 shadow flex justify-between items-center w-full sticky top-0 z-50">
-        {/* Left: Hamburger + Logo */}
         <div className="flex items-center space-x-3">
-          {/* Hamburger only on small screens */}
           <button
             onClick={toggleSidebar}
             className="md:hidden text-gray-700 hover:text-blue-600 focus:outline-none"
@@ -69,25 +67,21 @@ const Dashboard = () => {
             {sidebarOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
           </button>
 
-          {/* Logo */}
           <Link to="/" className="flex items-center">
             <img src={logo} alt="Logo" className="h-8 md:h-10 w-auto" />
           </Link>
         </div>
 
-        {/* Right: Search + Nav Links + Profile */}
         <div className="flex items-center gap-2">
-          {/* Search box only visible on medium and up */}
           <div className="relative hidden sm:block">
             <input
               type="text"
               placeholder="Search for course..."
               className="border px-3 py-1.5 rounded-2xl pl-10 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-44 md:w-56"
             />
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           </div>
 
-          {/* Navigation icons */}
           <div className="flex items-center gap-1">
             {navLinks.map((link) => (
               <NavLink
@@ -96,8 +90,8 @@ const Dashboard = () => {
                 end
                 className={({ isActive }) =>
                   `flex items-center justify-center p-2 rounded-full transition-colors duration-200 
-        hover:text-blue-600 hover:bg-blue-50 text-xl md:text-2xl 
-       ${isActive ? " bg-blue-100 text-blue-600" : "text-gray-500"}`
+                  hover:text-blue-600 hover:bg-blue-50 text-xl md:text-2xl 
+                  ${isActive ? " bg-blue-100 text-blue-600" : "text-gray-500"}`
                 }
               >
                 {link.icon}
@@ -105,23 +99,31 @@ const Dashboard = () => {
             ))}
           </div>
 
-          {/* User Profile Initials */}
           <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 text-sm font-medium w-9 h-9 flex items-center justify-center">
             {user?.name ? user.name.slice(0, 2).toUpperCase() : "NA"}
           </button>
         </div>
       </div>
 
+      {/* MOBILE overlay when sidebar open */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/30 md:hidden z-30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Body */}
-      <div className="flex">
-        {/* Sidebar */}
+      <div className="bg-[#f3f5f7] min-h-screen">
+        {/* Sidebar (fixed) */}
         <aside
-          className={`fixed md:sticky top-12 left-0 h-full bg-white shadow-md p-6 w-64 overflow-y-auto transition-transform duration-300 z-40
-          ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0`}
+          className={`fixed left-0 top-16  /* top equals navbar height (4rem) */
+                      h-[calc(100vh-4rem)] w-64 bg-white shadow-md overflow-y-auto
+                      transition-transform duration-300 z-40
+                      ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+                      md:translate-x-0`}
         >
-          <nav className="space-y-2 text-gray-600 ">
+          <nav className="space-y-2 text-gray-600 p-6">
             {sidebarLinks.map((link, index) =>
               link.isDivider ? (
                 <hr key={index} className="my-4" />
@@ -143,11 +145,11 @@ const Dashboard = () => {
           </nav>
         </aside>
 
-        {/* Main Content */}
-        <div className="px-2 w-full bg-[#f3f5f7] min-h-screen">
+        {/* Main Content: push right on md+ so it doesn't sit under the fixed sidebar */}
+        <main className="px-2 pt-2 md:ml-64">
           {/* <StuTopBar /> */}
           <Outlet />
-        </div>
+        </main>
       </div>
 
       <ToastContainer autoClose={2000} />

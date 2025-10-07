@@ -4,11 +4,12 @@ import {
   FaStar,
   FaChartLine,
   FaTrophy,
-  
 } from "react-icons/fa";
 import { useEffect } from "react";
 import { useStudentAuth } from "./studentAuth";
 import useCourseCounts from "./utils/courseCount";
+import DashboardCourseProgress from "./DashboardCourseProgress";
+import DashboardLearningGraph from "./DashboardLearningGraph";
 
 // Mock data for demonstration
 
@@ -26,17 +27,13 @@ const Overview = () => {
     fetchReviews();
   }, [user]);
 
-  
-
   useEffect(() => {
     // fetchReviews();
-  }, [user]);  
+  }, [user]);
 
   const userId = user?.id || user?._id || "anon";
 
-  const {  activeCount, completedCount } =
-     useCourseCounts(purchases, userId);
-
+  const { activeCount, completedCount } = useCourseCounts(purchases, userId);
 
   const stats = [
     {
@@ -51,7 +48,7 @@ const Overview = () => {
     },
     {
       title: "Active Courses",
-      value:  activeCount,
+      value: activeCount,
       color: "bg-gradient-to-r from-orange-500 to-orange-600",
       icon: FaChartLine,
       textColor: "text-orange-600",
@@ -69,7 +66,7 @@ const Overview = () => {
       // change: "+1 this week",
       // changeColor: "text-green-600"
     },
-  ];
+  ];  
 
   return (
     <div className="  p-6">
@@ -131,143 +128,19 @@ const Overview = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 ">
-          {/* Course Progress Chart */}
-          <div className="xl:col-span-2 bg-white rounded-xl shadow-sm border border-gray-800 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Learning Progress
-              </h3>
-              <div className="flex space-x-2">
-                <button className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">
-                  This Week
-                </button>
-                <button className="px-3 py-1 text-gray-500 rounded-lg text-sm font-medium hover:bg-gray-100">
-                  This Month
-                </button>
-              </div>
-            </div>
 
-            {/* Enhanced Chart */}
-            <div className="relative bottom-0 border">
-              <svg viewBox="0 0 400 150" className="w-full h-32">
-                <defs>
-                  <linearGradient
-                    id="progressGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="0%"
-                  >
-                    <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#1D4ED8" stopOpacity="0.8" />
-                  </linearGradient>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-
-                {/* Grid lines */}
-                <defs>
-                  <pattern
-                    id="grid"
-                    width="40"
-                    height="30"
-                    patternUnits="userSpaceOnUse"
-                  >
-                    <path
-                      d="M 40 0 L 0 0 0 30"
-                      fill="none"
-                      stroke="#E5E7EB"
-                      strokeWidth="0.5"
-                    />
-                  </pattern>
-                </defs>
-                <rect
-                  width="100%"
-                  height="100%"
-                  fill="url(#grid)"
-                  opacity="0.5"
-                />
-
-                {/* Progress line */}
-                <path
-                  d="M0 120 L60 85 L120 95 L180 60 L240 75 L300 45 L360 35 L400 25"
-                  fill="none"
-                  stroke="url(#progressGradient)"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  filter="url(#glow)"
-                />
-
-                {/* Data points */}
-                {[
-                  { x: 0, y: 120 },
-                  { x: 60, y: 85 },
-                  { x: 120, y: 95 },
-                  { x: 180, y: 60 },
-                  { x: 240, y: 75 },
-                  { x: 300, y: 45 },
-                  { x: 360, y: 35 },
-                  { x: 400, y: 25 },
-                ].map((point, i) => (
-                  <circle
-                    key={i}
-                    cx={point.x}
-                    cy={point.y}
-                    r="4"
-                    fill="#1D4ED8"
-                    className="hover:r-6 transition-all duration-200 cursor-pointer"
-                  />
-                ))}
-              </svg>
-            </div>
-
-            <div className="flex justify-between text-xs text-gray-500 mt-2">
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
-              <span>Sun</span>
-            </div>
-          </div>
-
-          {/* Course Completion */}
-          <div className="bg-white rounded-xl  border border-gray-200 p-6 h-64">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Course Progress
+        {/* Course Progress Chart */}
+        <div className="xl:col-span-2 bg-white rounded-xl   p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Learning Progress
             </h3>
-            <div className=" overflow-y-scroll h-42 scrollbar-thin-custom">
-              {purchases.map((course, i) => (
-                <div key={i} className="space-y-2 p-1">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700 truncate">
-                      {course.title}
-                    </span>
-                    <span className="text-sm font-semibold text-gray-900">
-                      {course.progress}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-1000 ease-out"
-                      style={{ width: `${course.progress}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
+          <DashboardLearningGraph />
         </div>
 
         {/* Popular Courses */}
-        <div className="bg-white rounded-xl  border border-gray-200 p-6">
+        {/* <div className="bg-white rounded-xl  border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">
               Popular Courses
@@ -303,7 +176,7 @@ const Overview = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

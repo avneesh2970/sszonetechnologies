@@ -75,6 +75,7 @@ import LoginModal from "./componant/LoginModal.jsx";
 import SignupModal from "./componant/SignupModal.jsx";
 import UploadQuiz from "./Instructor-courseUpload/UploadQuiz.jsx";
 import { ToastContainer } from "react-toastify";
+import Certificate from "./studentDashboard/StudentesPages/Certificate.jsx";
 
 
 const router = createBrowserRouter([
@@ -105,6 +106,7 @@ const router = createBrowserRouter([
       { path: "stuAllCourse/:id", element: <StuAllCourseDetails /> },
       { path: "enrollCourse", element: <EnrollCourse /> },
       { path: "enrollCourseDetails/:id", element: <StudentCourseDetail /> },
+      { path : 'certificates/:id' , element: <Certificate/>} ,
       { path: "wishlist", element: <StuWishlist /> },
       { path: "review", element: <Reviews /> },
       { path: "myQuiz", element: <Quiz /> },
