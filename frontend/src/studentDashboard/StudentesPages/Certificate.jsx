@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../assets/image/Logo.png"
+import logo from "../../assets/image/logo.png"
 
 const Certificate = ({
   name = "xyz",
