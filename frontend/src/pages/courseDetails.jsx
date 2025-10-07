@@ -9,7 +9,7 @@ import {
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { FaRegStarHalfStroke } from "react-icons/fa6";
 import { FaTwitter, FaDribbble, FaLinkedin } from "react-icons/fa";
-import { MdCurrencyRupee } from "react-icons/md";
+import { MdCurrencyRupee, MdLockOutline } from "react-icons/md";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 
@@ -172,7 +172,7 @@ const CourseDetails = () => {
 
   const [reviews, setReviews] = useState([]);
 
-  // it is from api but i am fetching error from course
+  // it is from api but i am fetching review from course
   const fetchReviews = async () => {
     if (!course?._id) return;
     try {
@@ -196,6 +196,23 @@ const CourseDetails = () => {
         ).toFixed(1)
       : 0;
 
+      // for status paid ----------------------------------
+  const [paid, setPaid] = useState(false);
+
+   useEffect(() => {
+     (async () => {
+       try {
+         const { data } = await axios.get(
+           `${import.meta.env.VITE_BACKEND_URL}/api/payment/is-paid/${course._id}`,
+           { withCredentials: true }
+         );
+         setPaid(data.paid);
+       } catch (err) {
+         console.log("Not logged in or error checking purchase");
+       }
+     })();
+   }, [course._id]);
+
   const content = {
     Overview: (
       <div className="px-6 md:px-12 my-6">
@@ -216,6 +233,12 @@ const CourseDetails = () => {
       </div>
     ),
     Curriculum: (
+    
+      <>
+      <div>
+      {paid ? 
+    
+
       <div className="px-6 md:px-12 my-6">
         <h2 className="text-lg font-bold mb-4">Course Modules</h2>
 
@@ -474,7 +497,28 @@ const CourseDetails = () => {
         ) : (
           <p className="text-gray-500">No modules found for this course.</p>
         )}
+      </div>   : 
+       
+       <div className="flex items-center justify-center">
+      <div className="bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl p-6 text-center shadow-md">
+        <div className="flex items-center justify-center mb-3">
+          <MdLockOutline className="text-slate-700 w-7 h-7" />
+        </div>
+        <p className="text-slate-800 font-semibold">To unlock module pay first</p>
+        <p className="text-slate-500 text-sm mt-1">Complete your purchase to access all lessons & assignments.</p>
+
+        <button
+          className="mt-4 px-4 py-2 rounded-md bg-[#296AD2] text-white text-sm font-medium hover:bg-blue-700"
+           onClick={() => addToCart(course)}
+        >
+          Add to cart
+        </button>
       </div>
+    </div>
+      }
+
+      </div>
+      </>
     ),
     Instructor: (
       <div className="px-6 md:px-12 my-6">
@@ -684,6 +728,7 @@ const CourseDetails = () => {
           >
             Add To Cart
           </button>
+        
 
           <p className="text-xl font-semibold mb-2"> This Course Includes </p>
           <div className="flex flex-col gap-2 text-gray-600">
