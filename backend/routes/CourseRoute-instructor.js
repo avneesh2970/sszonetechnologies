@@ -158,14 +158,16 @@ router.get("/", async (req, res) => {
         populate: [
           { path: "lessons" },
           { path: "quizzes" },
-          { path: "assignments" }, // ✅ add this line
+          { path: "assignments" }, 
         ],
       })
       .populate("remarks")
       .populate({
         path : "reviews", 
         populate : {path : "userId"}
-      }).sort({createdAt : -1});
+      })
+      .populate("announcement")
+      .sort({createdAt : -1});
       
 
     res.status(200).json({ success: true, courses });

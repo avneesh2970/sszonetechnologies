@@ -43,6 +43,7 @@ const CourseList = ({}) => {
     }
   };
 
+  // fetch all course and then filter them 
   useEffect(() => {
     const fetchAllCourses = async () => {
       try {
@@ -58,6 +59,7 @@ const CourseList = ({}) => {
         );
 
         setAll_course(publishedCourses);
+        console.log("publisged course" , publishedCourses)
         fetchWishlist();
       } catch (err) {
         console.error("Error fetching courses", err);
