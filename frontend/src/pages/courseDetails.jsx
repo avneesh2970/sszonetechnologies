@@ -1099,8 +1099,8 @@ const CourseDetails = () => {
     ),
     Curriculum: (
       <>
-        <div>
-          {paid ? (
+        <div >
+          
             <div className="px-6 md:px-12 my-6">
               <h2 className="text-lg font-bold mb-4">Course Modules</h2>
 
@@ -1139,10 +1139,34 @@ const CourseDetails = () => {
                           No lessons in this module.
                         </li>
                       )}
-                    </ul>
+                    </ul> 
 
                     <div className="mt-4">
-                      <h4 className="text-sm font-medium text-gray-700">
+                      <h4 className=" font-medium">
+                        Quizzes:
+                      </h4>
+                    <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
+                        {module.quizzes?.length > 0 ? (
+                          module.quizzes.map((quiz) => (
+                            <li
+                              key={quiz._id}
+                              className="flex justify-between cursor-pointer hover:underline hover:text-blue-500"
+                              onClick={() => startQuiz(quiz._id)}
+                            >
+                              {quiz.title} <span>Attempt Quiz</span>
+                            </li>
+                          ))
+                        ) : (
+                          <li className="text-gray-400 italic">
+                            No Quiz in this module.
+                          </li>
+                        )}
+                        
+                      </ul>
+                      </div>
+
+                    <div className="mt-4">
+                      <h4 className=" font-medium ">
                         Assignments:
                       </h4>
                       <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
@@ -1318,6 +1342,7 @@ const CourseDetails = () => {
                 </p>
               )}
             </div>
+            {paid ? ( ""
           ) : (
             <div className="flex items-center justify-center">
               <div className="bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl p-6 text-center shadow-md">
