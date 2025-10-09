@@ -161,6 +161,7 @@ router.get("/", async (req, res) => {
           { path: "assignments" }, // ✅ add this line
         ],
       })
+      .populate("remarks")
       .populate({
         path : "reviews", 
         populate : {path : "userId"}

@@ -1,33 +1,13 @@
-import React, { useEffect, useState } from "react";
+// src/courseUpload/LassonVideoPlayer.jsx
+import React from "react";
 import ReactPlayer from "react-player";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import LessonEditModal from "./LessonEdit";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const LessonVideoPlayer = ({ lesson, modules }) => {
-  const [showVideo, setShowVideo] = useState(false);
-  const [editingLesson, setEditingLesson] = useState(null);
-  const [localModules, setLocalModules] = useState(modules);
-
-  useEffect(() => {
-    setLocalModules(modules);
-  }, [modules]);
-
-  
-
-  const handleLessonUpdate = (updatedLesson) => {
-    const updatedModules = localModules.map((mod) => ({
-      ...mod,
-      lessons: mod.lessons.map((l) =>
-        l._id === updatedLesson._id ? updatedLesson : l
-      ),
-    }));
-    setLocalModules(updatedModules);
-    setEditingLesson(null);
-  };
-
-  
+const LessonVideoPlayer = ({ lesson, modules, isOpen, onToggle }) => {
+  // removed local showVideo state; now controlled by parent via isOpen/onToggle
 
   const formattedTime = `${lesson.lessonHour || 0}h ${
     lesson.lessonMinute || 0
@@ -35,31 +15,32 @@ const LessonVideoPlayer = ({ lesson, modules }) => {
 
   return (
     <>
-      <li className="bg-white rounded-lg shadow-sm p-4 my-4">
+      <li className=" rounded-lg border-b p-4 my-4">
         {/* Title and Buttons */}
         <div className="flex justify-between items-center">
           <div className="font-semibold text-lg text-gray-800">
             {lesson.lessonTitle}
-            <span className="text-sm text-gray-500 ml-2">
+            {/* <span className="text-sm text-gray-500 ml-2">
               ({formattedTime})
-            </span>
+            </span> */}
           </div>
           
         </div>
 
         {/* Content */}
-        <p className="text-gray-600 mt-2">{lesson.lessonContent}</p>
+        <p className="text-gray-600 my-1">{lesson.lessonContent}</p>
 
         {/* Video Toggle */}
         <button
-          onClick={() => setShowVideo(!showVideo)}
-          className="mt-3 text-white bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded-md text-sm"
+          onClick={()=>{
+            onToggle() , scrollTo(0 , 0) }}
+          className=" text-white bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded-md text-sm"
         >
-          {showVideo ? "Hide Video" : "Watch Course Video"}
+          {isOpen ? "Hide Video" : "Watch Course Video"}
         </button>
 
-        {/* Video */}
-        {showVideo && (
+        {/* Video (kept - will still show inside the lesson list when isOpen true) */}
+        {/* {isOpen && (
           <div className="mt-4">
             {lesson.lessonVideoSource &&
             ReactPlayer.canPlay(lesson.lessonVideoSource) ? (
@@ -76,17 +57,8 @@ const LessonVideoPlayer = ({ lesson, modules }) => {
               </p>
             )}
           </div>
-        )}
+        )} */}
       </li>
-
-      {/* Edit Modal */}
-      {/* {editingLesson && (
-        <LessonEditModal
-          lesson={editingLesson}
-          onClose={() => setEditingLesson(null)}
-          onLessonUpdated={handleLessonUpdate}
-        />
-      )} */}
     </>
   );
 };

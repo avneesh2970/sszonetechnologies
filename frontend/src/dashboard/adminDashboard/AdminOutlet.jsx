@@ -123,7 +123,7 @@ const AdminOutlet = () => {
             <span>Quiz Attempt</span>
           </NavLink>
 
-          <NavLink
+          {/* <NavLink
             to="/admin/category"
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
@@ -132,7 +132,7 @@ const AdminOutlet = () => {
           >
             <MdSettings />
             <span>Category</span>
-          </NavLink>
+          </NavLink> */}
 
           <NavLink
             to="/admin/payment"
