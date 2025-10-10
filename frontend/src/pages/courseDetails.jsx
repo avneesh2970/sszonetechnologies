@@ -783,7 +783,7 @@
 
 // export default CourseDetails;
 
-// src/pages/CourseDetails.jsx
+
 import React, { useEffect, useState } from "react";
 import {
   useLocation,
@@ -805,6 +805,7 @@ import all_course from "../assets/Course_Data";
 import ReactPlayer from "react-player";
 // removed import of external LassonVideoPlayer since it's merged below
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
+import { FiLock } from "react-icons/fi";
 
 const CourseDetails = () => {
   const { id } = useParams(); // getting from URL
@@ -828,6 +829,12 @@ const CourseDetails = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState("");
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [answers, setAnswers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -1026,15 +1033,73 @@ const CourseDetails = () => {
       lesson.lessonMinute || 0
     }m ${lesson.lessonSecond || 0}s`;
 
+    // for quiz
+    const openModal = async (quizId) => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/quiz/${quizId}`
+        );
+        setSelectedQuiz(data.quiz);
+        setAnswers(new Array(data.quiz.questions.length).fill(null));
+        setResult(null);
+        setShowModal(true);
+      } catch (err) {
+        toast.error("Failed to load quiz");
+      }
+    };
+
+    const closeModal = () => {
+      setShowModal(false);
+      setSelectedQuiz(null);
+      setAnswers([]);
+      setResult(null);
+    };
+
+    const handleAnswer = (qIndex, optionIndex) => {
+      const copy = [...answers];
+      copy[qIndex] = optionIndex;
+      setAnswers(copy);
+    };
+
+    const handleSubmit = async () => {
+      if (!selectedQuiz) return;
+      setLoading(true);
+      try {
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/quiz/submit`,
+          { quizId: selectedQuiz._id, answers },
+          { withCredentials: true }
+        );
+        setResult(data);
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Failed to submit quiz");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     return (
-      <div className="bg-white rounded-lg shadow-sm p-4 my-4">
+      <div className="  p-1  ">
         {/* Title */}
         <div className="flex justify-between items-center">
-          <div className="font-semibold text-gray-800">
-            {lesson.lessonTitle}
-            <span className="text-sm text-gray-500 ml-2">
-              ({formattedTime})
+          <div
+            className="  text-gray-800 cursor-pointer hover:text-blue-600"
+            onClick={() => {
+              onToggle?.();
+
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            <span
+              className={` ${
+                isOpen ? "text-blue-600 font-semibold  " : "font-medium"
+              }`}
+            >
+              {lesson.lessonTitle}
             </span>
+            {/* <span className="text-sm text-gray-500 ml-2">
+              ({formattedTime})
+            </span> */}
           </div>
         </div>
 
@@ -1042,7 +1107,7 @@ const CourseDetails = () => {
         <p className="text-gray-600 mt-2">{lesson.lessonContent}</p>
 
         {/* Video Toggle */}
-        <div className="mt-3">
+        {/* <div className="mt-3">
           <button
             onClick={() => {
               onToggle?.();
@@ -1053,27 +1118,7 @@ const CourseDetails = () => {
           >
             {isOpen ? "Hide Video" : "Watch Course Video"}
           </button>
-        </div>
-
-        {/* Inline lesson preview inside the list (kept for convenience) */}
-        {/* {isOpen && (
-          <div className="mt-4">
-            {lesson.lessonVideoSource &&
-            ReactPlayer.canPlay(lesson.lessonVideoSource) ? (
-              <ReactPlayer
-                url={lesson.lessonVideoSource}
-                controls
-                width="100%"
-                height="360px"
-                style={{ borderRadius: "10px", overflow: "hidden" }}
-              />
-            ) : (
-              <p className="text-red-500 text-sm mt-2">
-                ⚠️ Invalid or missing video URL.
-              </p>
-            )}
-          </div>
-        )} */}
+        </div> */}
       </div>
     );
   };
@@ -1099,39 +1144,69 @@ const CourseDetails = () => {
     ),
     Curriculum: (
       <>
-        <div >
-          
-            <div className="px-6 md:px-12 my-6">
-              <h2 className="text-lg font-bold mb-4">Course Modules</h2>
+        <div>
+          <div className="px-6 md:px-12 my-6">
+            <h2 className="text-lg font-bold mb-4">Course Modules</h2>
 
-              <p className="text-md font-medium mt-2 text-gray-400">
-                Total Lessons:{" "}
-                {course.modules?.reduce(
-                  (sum, module) => sum + (module.lessons?.length || 0),
-                  0
-                ) || 0}
-              </p>
+            <p className="text-md font-medium mt-2 text-gray-400">
+              Total Lessons:{" "}
+              {course.modules?.reduce(
+                (sum, module) => sum + (module.lessons?.length || 0),
+                0
+              ) || 0}
+            </p>
 
-              {course.modules?.length > 0 ? (
-                course.modules.map((module, midx) => (
+            {course.modules?.length > 0 ? (
+              course.modules.map((module, midx) => {
+                const disabledModule = !paid;
+
+                return (
                   <div
                     key={module._id}
-                    className="mb-6 border border-gray-200 p-4 rounded"
+                    className={`mb-6 border border-gray-200 p-4 rounded ${
+                      disabledModule ? "opacity-70" : ""
+                    }`}
                   >
-                    <h2 className=" font-bold text-md mb-3">
-                      Module {midx + 1}: {module.title}
+                    {/* --- Module Title --- */}
+                    <h2 className="font-bold text-md mb-3 flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        Module {midx + 1}: {module.title}
+                        {!paid && <FiLock className="text-gray-500 text-lg" />}
+                      </span>
+                      {!paid && (
+                        <span className="text-sm text-gray-500 flex items-center gap-1">
+                          Locked
+                        </span>
+                      )}
                     </h2>
 
-                    <ul>
+                    {/* --- Lessons --- */}
+                    <ul
+                      className={`list-disc pl-5 space-y-1 text-sm mt-2 ${
+                        disabledModule
+                          ? "pointer-events-none cursor-not-allowed"
+                          : ""
+                      }`}
+                    >
                       {module.lessons?.length > 0 ? (
                         module.lessons.map((lesson, lidx) => (
-                          <li key={lesson._id}>
-                            {/* Use merged LessonItem component */}
-                            <LessonItem
-                              lesson={lesson}
-                              isOpen={openLessonId === lesson._id}
-                              onToggle={() => handleLessonToggle(lesson)}
-                            />
+                          <li
+                            key={lesson._id}
+                            className="flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2">
+                              <LessonItem
+                                lesson={lesson}
+                                isOpen={openLessonId === lesson._id}
+                                onToggle={() => {
+                                  if (paid) handleLessonToggle(lesson);
+                                }}
+                                disabled={!paid}
+                              />
+                              {!paid && (
+                                <FiLock className="text-gray-400 text-sm" />
+                              )}
+                            </div>
                           </li>
                         ))
                       ) : (
@@ -1139,21 +1214,34 @@ const CourseDetails = () => {
                           No lessons in this module.
                         </li>
                       )}
-                    </ul> 
+                    </ul>
 
-                    <div className="mt-4">
-                      <h4 className=" font-medium">
-                        Quizzes:
-                      </h4>
-                    <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
+                    {/* --- Quizzes --- */}
+                    <div
+                      className={`mt-4 ${!paid ? "pointer-events-none" : ""}`}
+                    >
+                      <h4 className="font-medium">Quizzes:</h4>
+                      <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
                         {module.quizzes?.length > 0 ? (
-                          module.quizzes.map((quiz) => (
+                          module.quizzes.map((q) => (
                             <li
-                              key={quiz._id}
-                              className="flex justify-between cursor-pointer hover:underline hover:text-blue-500"
-                              onClick={() => startQuiz(quiz._id)}
+                              key={q._id}
+                              className={`flex justify-between items-center ${
+                                paid
+                                  ? "cursor-pointer hover:underline hover:text-blue-500"
+                                  : "cursor-not-allowed text-gray-500"
+                              }`}
+                              onClick={() => {
+                                if (paid) openModal(q._id);
+                              }}
                             >
-                              {quiz.title} <span>Attempt Quiz</span>
+                              <div className="flex items-center gap-2">
+                                {q.title}
+                                {!paid && (
+                                  <FiLock className="text-gray-400 text-sm" />
+                                )}
+                              </div>
+                              <span>{paid ? "Attempt Quiz" : "Locked"}</span>
                             </li>
                           ))
                         ) : (
@@ -1161,23 +1249,140 @@ const CourseDetails = () => {
                             No Quiz in this module.
                           </li>
                         )}
-                        
                       </ul>
-                      </div>
 
-                    <div className="mt-4">
-                      <h4 className=" font-medium ">
-                        Assignments:
-                      </h4>
+                      {/* MODAL */}
+                      {showModal && selectedQuiz && (
+                        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-black/40 p-4">
+                          <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl mt-10 relative">
+                            <div className="flex items-center justify-between p-4 border-b">
+                              <div>
+                                <h3 className="text-lg font-semibold">
+                                  {selectedQuiz.title}
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  {selectedQuiz.questions.length} questions
+                                </p>
+                              </div>
+                              <button
+                                onClick={closeModal}
+                                className="p-2 hover:bg-gray-100 rounded"
+                                aria-label="Close"
+                              >
+                                <FaTimes />
+                              </button>
+                            </div>
+
+                            <div className="p-4 max-h-[60vh] overflow-y-auto">
+                              {selectedQuiz.questions.map((ques, i) => (
+                                <div
+                                  key={i}
+                                  className="mb-4 p-3 border rounded"
+                                >
+                                  <p className="font-semibold">
+                                    {i + 1}. {ques.question}
+                                  </p>
+                                  <div className="mt-2 space-y-2">
+                                    {ques.options.map((opt, oi) => (
+                                      <label
+                                        key={oi}
+                                        className="block cursor-pointer"
+                                      >
+                                        <input
+                                          type="radio"
+                                          name={`q-${i}`}
+                                          checked={answers[i] === oi}
+                                          onChange={() => handleAnswer(i, oi)}
+                                        />
+                                        <span className="ml-2">{opt}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="p-4 border-t flex items-center gap-3 justify-end">
+                              <button
+                                onClick={closeModal}
+                                className="px-4 py-2 rounded border"
+                              >
+                                Close
+                              </button>
+                              <button
+                                onClick={handleSubmit}
+                                disabled={loading}
+                                className="px-4 py-2 rounded bg-green-600 text-white disabled:opacity-50"
+                              >
+                                {loading ? "Submitting..." : "Submit"}
+                              </button>
+                            </div>
+
+                            {/* Inline result (after submit) */}
+                            {result && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 p-4">
+                                <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+                                  <h4 className="text-lg font-semibold mb-2 text-center">
+                                    Result
+                                  </h4>
+                                  <p className="text-center mb-3 font-medium">
+                                    Score: {result.score} / {result.total}
+                                  </p>
+                                  <div className="max-h-48 overflow-y-auto mb-4">
+                                    {result.results?.map((r, idx) => (
+                                      <p
+                                        key={idx}
+                                        className={
+                                          r.isCorrect
+                                            ? "text-green-600"
+                                            : "text-red-600"
+                                        }
+                                      >
+                                        Q{idx + 1}:{" "}
+                                        {r.isCorrect ? "Correct" : "Wrong"}
+                                      </p>
+                                    ))}
+                                  </div>
+                                  <button
+                                    onClick={closeModal}
+                                    className="w-full bg-blue-600 text-white py-2 rounded"
+                                  >
+                                    Back to List
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* --- Assignments --- */}
+                    <div
+                      className={`mt-4 ${!paid ? "pointer-events-none" : ""}`}
+                    >
+                      <h4 className="font-medium">Assignments:</h4>
                       <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
                         {module.assignments?.length > 0 ? (
                           module.assignments.map((assignment) => (
                             <li
                               key={assignment._id}
-                              className="flex justify-between cursor-pointer hover:underline hover:text-blue-500"
-                              onClick={() => setSelectedAssignment(assignment)}
+                              className={`flex justify-between items-center ${
+                                paid
+                                  ? "cursor-pointer hover:underline hover:text-blue-500"
+                                  : "cursor-not-allowed text-gray-500"
+                              }`}
+                              onClick={() => {
+                                if (paid) setSelectedAssignment(assignment);
+                              }}
                             >
-                              {assignment.title} <span>full-details</span>
+                              <div className="flex items-center gap-2">
+                                {assignment.title}
+                                {!paid && (
+                                  <FiLock className="text-gray-400 text-sm" />
+                                )}
+                              </div>
+                              <span>{paid ? "full-details" : "Locked"}</span>
                             </li>
                           ))
                         ) : (
@@ -1187,7 +1392,7 @@ const CourseDetails = () => {
                         )}
                       </ul>
 
-                      {/* 🔹 Modal */}
+                      {/* 🔹 Modal (unchanged from your version) */}
                       {selectedAssignment && (
                         <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50">
                           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
@@ -1335,36 +1540,12 @@ const CourseDetails = () => {
                       )}
                     </div>
                   </div>
-                ))
-              ) : (
-                <p className="text-gray-500">
-                  No modules found for this course.
-                </p>
-              )}
-            </div>
-            {paid ? ( ""
-          ) : (
-            <div className="flex items-center justify-center">
-              <div className="bg-white/90 backdrop-blur-sm border border-slate-200 rounded-xl p-6 text-center shadow-md">
-                <div className="flex items-center justify-center mb-3">
-                  <MdLockOutline className="text-slate-700 w-7 h-7" />
-                </div>
-                <p className="text-slate-800 font-semibold">
-                  To unlock module pay first
-                </p>
-                <p className="text-slate-500 text-sm mt-1">
-                  Complete your purchase to access all lessons & assignments.
-                </p>
-
-                <button
-                  className="mt-4 px-4 py-2 rounded-md bg-[#296AD2] text-white text-sm font-medium hover:bg-blue-700"
-                  onClick={() => addToCart(course)}
-                >
-                  Add to cart
-                </button>
-              </div>
-            </div>
-          )}
+                );
+              })
+            ) : (
+              <p className="text-gray-500">No modules found for this course.</p>
+            )}
+          </div>
         </div>
       </>
     ),
@@ -1485,223 +1666,229 @@ const CourseDetails = () => {
 
   return (
     <>
-      <div className="p-3">
-        {/* Show mainVideoUrl if playable, otherwise fallback to thumbnail image */}
-        {mainVideoUrl && ReactPlayer.canPlay(mainVideoUrl) ? (
-          <ReactPlayer
-            url={mainVideoUrl}
-            controls
-            width="100%"
-            height="70vh" // increased height for hero
-            className="rounded object-contain"
-          />
-        ) : (
-          <img
-            src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
-            alt="Course Banner"
-            className="h-[70vh] w-full object-cover object-center rounded"
-          />
-        )}
-      </div>
+      <div className="max-w-screen-2xl mx-auto">
+        <div className="p-3">
+          {/* Show mainVideoUrl if playable, otherwise fallback to thumbnail image */}
+          {mainVideoUrl && ReactPlayer.canPlay(mainVideoUrl) ? (
+            <ReactPlayer
+              url={mainVideoUrl}
+              controls
+              width="100%"
+              height="70vh" // increased height for hero
+              className="rounded object-contain"
+            />
+          ) : (
+            <img
+              src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
+              alt="Course Banner"
+              className="h-[70vh] w-full object-cover object-center rounded"
+            />
+          )}
+        </div>
 
-      <div className="relative">
-        <div className="shadow-lg bg-white px-6 py-4 max-w-3xl md:mx-6 mx-auto rounded-xl  md:-mt-10">
-          <h1 className="text-2xl font-bold mb-3">{course.title}</h1>
-          <div className="flex flex-wrap md:flex-nowrap gap-6">
-            <div className="flex-1">
-              <h3 className="text-gray-500">Instructor</h3>
-              <p className="font-semibold">{course.instructor.name}</p>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-gray-500">Category</h3>
-              <p className="font-semibold"> {course.categories}</p>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-gray-500">Review</h3>
-              <div className="flex items-center gap-1 text-amber-300">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i}>
-                    {i < Math.round(averageRating) ? "⭐" : ""}
-                  </span>
-                ))}
-                ({averageRating})
+        <div className="relative">
+          <div className="shadow-lg bg-white px-6 py-4 max-w-3xl md:mx-6 mx-auto rounded-xl  md:-mt-10">
+            <h1 className="text-2xl font-bold mb-3">{course.title}</h1>
+            <div className="flex flex-wrap md:flex-nowrap gap-6">
+              <div className="flex-1">
+                <h3 className="text-gray-500">Instructor</h3>
+                <p className="font-semibold">{course.instructor.name}</p>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-gray-500">Category</h3>
+                <p className="font-semibold"> {course.categories}</p>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-gray-500">Review</h3>
+                <div className="flex items-center gap-1 text-amber-300">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i}>
+                      {i < Math.round(averageRating) ? "⭐" : ""}
+                    </span>
+                  ))}
+                  ({averageRating})
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12">
-        <div className="flex-1">
-          <div className="flex gap-4 border-b mb-6 overflow-x-auto">
-            {[
-              "Overview",
-              "Curriculum",
-              "Instructor",
-              "Review",
-              "Announcement",
-            ].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-2 md:px-4 px-3 font-medium ${
-                  activeTab === tab
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "border-transparent text-gray-600 hover:text-blue-500"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div>{content[activeTab]}</div>
-        </div>
-
-        <aside className="w-full md:w-[400px] flex-shrink-0 p-4 rounded-xl bg-white lg:-mt-43 -mt-10 shadow-sm">
-          {/* Course Includes */}
-          <h3 className="text-xl font-semibold mb-3">This Course Includes</h3>
-
-          <div className="flex flex-col gap-2 text-gray-600 mb-4">
-            <div className="flex justify-between">
-              <span>On-demand video</span>
-              <span>{course?.overview?.videoHours ?? 5} hrs</span>
+        <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12">
+          <div className="flex-1">
+            <div className="flex gap-4 border-b mb-6 overflow-x-auto">
+              {[
+                "Overview",
+                "Curriculum",
+                "Instructor",
+                "Review",
+                "Announcement",
+              ].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`pb-2 md:px-4 px-3 font-medium ${
+                    activeTab === tab
+                      ? "border-b-2 border-blue-500 text-blue-500"
+                      : "border-transparent text-gray-600 hover:text-blue-500"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
-
-            <div className="flex justify-between">
-              <span>Instructor</span>
-              <span>{course.instructor?.name}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Language</span>
-              <span>
-                {course?.overview?.overviewLanguage || "Hindi, English"}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Level</span>
-              <span>{course?.overview?.courseLevel || "Beginner"}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Certificate</span>
-              <span>{course?.overview?.certificate ? "✅" : "❌"}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Mobile & TV</span>
-              <span>{course?.overview?.accessOnMobileAndTV ? "✅" : "❌"}</span>
-            </div>
+            <div>{content[activeTab]}</div>
           </div>
 
-          {/* Price */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              {/* <MdCurrencyRupee className="h-6 w-6" /> */}
-              <span className="text-2xl font-bold">
-                {new Intl.NumberFormat("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                  maximumFractionDigits: 0,
-                }).format(Number(course?.discountPrice ?? 0))}
-              </span>
+          <aside className="w-full md:w-[400px] flex-shrink-0 p-4 rounded-xl bg-white lg:-mt-43 -mt-10 shadow-sm">
+            {/* Course Includes */}
+            <h3 className="text-xl font-semibold mb-3">This Course Includes</h3>
+
+            <div className="flex flex-col gap-2 text-gray-600 mb-4">
+              <div className="flex justify-between">
+                <span>On-demand video</span>
+                <span>{course?.overview?.videoHours ?? 5} hrs</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Instructor</span>
+                <span>{course.instructor?.name}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Language</span>
+                <span>
+                  {course?.overview?.overviewLanguage || "Hindi, English"}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Level</span>
+                <span>{course?.overview?.courseLevel || "Beginner"}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Certificate</span>
+                <span>{course?.overview?.certificate ? "✅" : "❌"}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Mobile & TV</span>
+                <span>
+                  {course?.overview?.accessOnMobileAndTV ? "✅" : "❌"}
+                </span>
+              </div>
             </div>
 
-            {/* optional small note or badge */}
-            {course?.originalPrice &&
-              course.originalPrice > course.discountPrice && (
-                <span className="text-sm text-gray-500 line-through">
+            {/* Price */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                {/* <MdCurrencyRupee className="h-6 w-6" /> */}
+                <span className="text-2xl font-bold">
                   {new Intl.NumberFormat("en-IN", {
                     style: "currency",
                     currency: "INR",
                     maximumFractionDigits: 0,
-                  }).format(Number(course.originalPrice))}
+                  }).format(Number(course?.discountPrice ?? 0))}
                 </span>
-              )}
-          </div>
+              </div>
 
-          {/* CTA */}
-          <button
-            onClick={() => addToCart(course)}
-            aria-label={`Add ${course?.title || "course"} to cart`}
-            className={`w-full py-3 rounded-lg mb-4 text-white font-medium ${
-              paid
-                ? "bg-blue-500 cursor-not-allowed"
-                : "bg-blue-700 hover:bg-blue-800 cursor-pointer"
-            }`}
-            disabled={paid}
-          >
-            {paid ? "Enrolled " : "Add To Cart"}
-          </button>
-
-          {/* Share block */}
-          <div className="mt-2 ">
-            <h4 className="font-semibold mb-2">Share</h4>
-
-            <div className="flex  items-center gap-3 ">
-              {/* Copy link */}
-              <button
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(window.location.href);
-                    toast.success("Course link copied to clipboard");
-                  } catch {
-                    toast.info(
-                      "Copy failed — please copy the URL from the address bar"
-                    );
-                  }
-                }}
-                className="px-3 py-2 bg-gray-50 border rounded-md text-sm hover:bg-gray-100 cursor-pointer"
-                aria-label="Copy course link"
-                title="Copy course link"
-              >
-                Copy link
-              </button>
-
-              {/* Native share (mobile) */}
-              <button
-                onClick={async () => {
-                  if (navigator.share) {
-                    try {
-                      await navigator.share({
-                        title: course?.title,
-                        text:
-                          course?.overview?.overviewDescription ||
-                          course?.title,
-                        url: window.location.href,
-                      });
-                    } catch {
-                      /* user cancelled or error */
-                    }
-                  } else {
-                    toast.info("Native share is not available on this device");
-                  }
-                }}
-                className="px-3 py-2 bg-gray-50 border rounded-md text-sm hover:bg-gray-100  cursor-pointer"
-                aria-label="Share (native)"
-                title="Share (native)"
-              >
-                Share
-              </button>
+              {/* optional small note or badge */}
+              {course?.originalPrice &&
+                course.originalPrice > course.discountPrice && (
+                  <span className="text-sm text-gray-500 line-through">
+                    {new Intl.NumberFormat("en-IN", {
+                      style: "currency",
+                      currency: "INR",
+                      maximumFractionDigits: 0,
+                    }).format(Number(course.originalPrice))}
+                  </span>
+                )}
             </div>
-          </div>
-        </aside>
-      </div>
 
-      <div className="px-6 md:px-12 my-20 text-center">
-        <h2 className="text-blue-500 text-sm">Explore Recommended Courses</h2>
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">
-          You Might Also Like
-        </h1>
-        <p className="text-gray-600 mb-12">
-          Discover personalized course recommendations curated to match your
-          interests and learning goals.
-        </p>
+            {/* CTA */}
+            <button
+              onClick={() => addToCart(course)}
+              aria-label={`Add ${course?.title || "course"} to cart`}
+              className={`w-full py-3 rounded-lg mb-4  font-medium ${
+                paid
+                  ? "text-black border border-green-400 cursor-not-allowed"
+                  : "bg-blue-700 hover:bg-blue-800 text-white cursor-pointer"
+              }`}
+              disabled={paid}
+            >
+              {paid ? "Enrolled " : "Add To Cart"}
+            </button>
 
-        <Card all_course={all_course.slice(0, 3)} />
+            {/* Share block */}
+            <div className="mt-2 ">
+              <h4 className="font-semibold mb-2">Share</h4>
+
+              <div className="flex  items-center gap-3 ">
+                {/* Copy link */}
+                <button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(window.location.href);
+                      toast.success("Course link copied to clipboard");
+                    } catch {
+                      toast.info(
+                        "Copy failed — please copy the URL from the address bar"
+                      );
+                    }
+                  }}
+                  className="px-3 py-2 bg-gray-50 border rounded-md text-sm hover:bg-gray-100 cursor-pointer"
+                  aria-label="Copy course link"
+                  title="Copy course link"
+                >
+                  Copy link
+                </button>
+
+                {/* Native share (mobile) */}
+                <button
+                  onClick={async () => {
+                    if (navigator.share) {
+                      try {
+                        await navigator.share({
+                          title: course?.title,
+                          text:
+                            course?.overview?.overviewDescription ||
+                            course?.title,
+                          url: window.location.href,
+                        });
+                      } catch {
+                        /* user cancelled or error */
+                      }
+                    } else {
+                      toast.info(
+                        "Native share is not available on this device"
+                      );
+                    }
+                  }}
+                  className="px-3 py-2 bg-gray-50 border rounded-md text-sm hover:bg-gray-100  cursor-pointer"
+                  aria-label="Share (native)"
+                  title="Share (native)"
+                >
+                  Share
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div className="px-6 md:px-12 my-20 text-center">
+          <h2 className="text-blue-500 text-sm">Explore Recommended Courses</h2>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            You Might Also Like
+          </h1>
+          <p className="text-gray-600 mb-12">
+            Discover personalized course recommendations curated to match your
+            interests and learning goals.
+          </p>
+
+          <Card all_course={all_course.slice(0, 3)} />
+        </div>
+        <ToastContainer position="top-right" autoClose={1000} />
       </div>
-      <ToastContainer position="top-right" autoClose={1000} />
     </>
   );
 };
