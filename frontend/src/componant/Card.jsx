@@ -10,11 +10,13 @@ import { useEffect } from "react";
 import { HiOutlineClock } from "react-icons/hi";
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
 import Heading from "../pages/Heading";
+import { useCartContext } from "../context/CartContext";
 
 const CourseList = ({}) => {
   const [all_course, setAll_course] = useState([]);
   const [wishlist, setWishlist] = useState([]); // ✅ added to wishlist
-  const { wishlistItems, fetchWishlist } = useStudentAuth();
+  // const { wishlistItems, fetchWishlist } = useStudentAuth();
+  const {fetchWishlist, wishlistItems} = useCartContext()
 
   const categoriesButton = [
     "All Categories",
@@ -38,6 +40,7 @@ const CourseList = ({}) => {
 
       // ✅ Update local state so it turns red immediately
       setWishlist((prev) => [...prev, course._id]);
+      fetchWishlist()
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to add to wishlist");
     }

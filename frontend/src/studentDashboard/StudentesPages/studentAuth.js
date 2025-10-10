@@ -61,6 +61,7 @@ export const useStudentAuth = () => {
   };
 
   // 🔹 reusable fetchCartItems function
+  
   const fetchCartItems = useCallback(async () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/cart`, {

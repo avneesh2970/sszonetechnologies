@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
+import { useCartContext } from "../context/CartContext";
 
 function CartItems() {
   // const [cartItems, setCartItems] = useState([]);
-  const { cartItems, fetchCartItems } = useStudentAuth();
+  const { cartItems, fetchCartItems } = useCartContext();
   const [promoCode, setPromoCode] = useState("");
   const [applied, setApplied] = useState(false);
   const [discount, setDiscount] = useState(0);

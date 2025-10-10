@@ -17,6 +17,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
 import ForgotPasswordModal from "../studentDashboard/StudentesPages/ResetPassword";
+import { useCartContext } from "../context/CartContext";
 // import Signup from "./SignUp";
 
 function Navbaar() {
@@ -43,8 +44,10 @@ function Navbaar() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const { user, setUser, cartItems, logout, fetchWishlist, wishlistItems } =
+  const { user, setUser,  logout,  } =
     useStudentAuth();
+
+    const {fetchWishlist, wishlistItems , cartItems, fetchCartItems} = useCartContext()
 
   const getNavLinkClass = ({ isActive }) =>
     isActive

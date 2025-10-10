@@ -100,7 +100,7 @@ export const AllCourse = () => {
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {filteredCourses.map((course, index) => {
               const averageRating =
                 course.reviews && course.reviews.length > 0
@@ -121,7 +121,7 @@ export const AllCourse = () => {
               return (
                 <div
                   key={course.id || index}
-                  className="group bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden"
+                  className="group bg-white rounded-xl border-b border-gray-400 hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden"
                 >
                   {/* Image Container */}
                   <div className="relative overflow-hidden">
@@ -204,12 +204,12 @@ export const AllCourse = () => {
                         <span className="text-xl font-bold text-gray-900">
                           ₹{course.discountPrice}
                         </span>
-                        {course.regularPrice &&
+                        {/* {course.regularPrice &&
                           course.regularPrice !== course.discountPrice && (
                             <span className="text-sm text-gray-400 line-through">
                               ₹{course.regularPrice}
                             </span>
-                          )}
+                          )} */}
                       </div>
 
                       <Link

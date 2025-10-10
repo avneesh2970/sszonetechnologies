@@ -806,12 +806,14 @@ import ReactPlayer from "react-player";
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
 import { FiLock } from "react-icons/fi";
 import QuizModal from "./QuizModel";
+import { useCartContext } from "../context/CartContext";
 
 const CourseDetails = () => {
   const { id } = useParams(); // getting from URL
   const location = useLocation();
   const course = location.state;
-  const { fetchCartItems } = useStudentAuth();
+  // const { fetchCartItems } = useStudentAuth();
+  const {cartItems,fetchCartItems} = useCartContext()
   const navigate = useNavigate();
 
   // track which lesson is open (only one at a time)

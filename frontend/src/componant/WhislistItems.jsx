@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
+import { useCartContext } from "../context/CartContext";
 
 function WishlistItems() {
- const {wishlistItems, fetchWishlist} = useStudentAuth();
+//  const {wishlistItems, fetchWishlist} = useStudentAuth();
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState(null);
+  const {fetchWishlist, wishlistItems} = useCartContext()
 
   // Fetch wishlist items for logged-in user
   
@@ -126,7 +128,7 @@ function WishlistItems() {
           </div>
         ))}
       </div>
-      <ToastContainer autoClose={2000}/>
+      <ToastContainer autoClose={1000}/>
     </div>
   );
 }
