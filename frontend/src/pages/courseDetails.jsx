@@ -783,7 +783,6 @@
 
 // export default CourseDetails;
 
-
 import React, { useEffect, useState } from "react";
 import {
   useLocation,
@@ -806,6 +805,7 @@ import ReactPlayer from "react-player";
 // removed import of external LassonVideoPlayer since it's merged below
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
 import { FiLock } from "react-icons/fi";
+import QuizModal from "./QuizModel";
 
 const CourseDetails = () => {
   const { id } = useParams(); // getting from URL
@@ -835,6 +835,132 @@ const CourseDetails = () => {
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+
+  // put this inside your CourseDetails component (replace your old openModal)
+const openModal = async (quizOrId) => {
+  const base = import.meta.env.VITE_BACKEND_URL || "";
+
+  // helper: shallow search for a "questions" array anywhere in an object
+  function findQuestions(obj) {
+    if (!obj || typeof obj !== "object") return null;
+    if (Array.isArray(obj.questions)) return obj;
+    // search top-level keys
+    for (const k of Object.keys(obj)) {
+      const v = obj[k];
+      if (Array.isArray(v) && k.toLowerCase().includes("question")) {
+        // e.g. data.questions or data.quizQuestions
+        return { questions: v, ...obj };
+      }
+      if (v && typeof v === "object") {
+        // nested object (one level deep)
+        if (Array.isArray(v.questions)) return v;
+      }
+    }
+    return null;
+  }
+
+  try {
+    // if a fully-populated quiz object passed (has questions array), use it directly
+    if (quizOrId && typeof quizOrId === "object" && Array.isArray(quizOrId.questions)) {
+      console.log("openModal: using passed-in populated quiz object", quizOrId);
+      setSelectedQuiz(quizOrId);
+      setAnswers(new Array(quizOrId.questions.length).fill(null));
+      setResult(null);
+      setShowModal(true);
+      return;
+    }
+
+    // extract id if an object was passed
+    const quizId = typeof quizOrId === "string" ? quizOrId : quizOrId?._id;
+    if (!quizId) {
+      toast.error("Invalid quiz id");
+      return;
+    }
+
+    // try two common endpoints (tolerant)
+    const endpoints = [`${base}/api/quiz/${quizId}`, `${base}/api/quizzes/${quizId}`];
+
+    let resp = null;
+    let data = null;
+    for (const url of endpoints) {
+      try {
+        console.log("openModal: fetching quiz from", url);
+        resp = await axios.get(url, { withCredentials: true });
+        data = resp.data;
+        console.log("openModal: raw response for", url, resp);
+        // if we got something, break and inspect
+        if (data) break;
+      } catch (err) {
+        console.warn("openModal: fetch failed for", url, err?.response?.status || err.message);
+        // continue to try next endpoint
+      }
+    }
+
+    if (!data) {
+      throw new Error("No response from quiz endpoints");
+    }
+
+    // possible shapes:
+    // 1) { success: true, quiz: { ... } }
+    // 2) { quiz: { ... } }
+    // 3) { ...quizFields... } (quiz object directly)
+    // 4) { data: { quiz: {...} } } etc.
+
+    // try to extract the quiz object
+    let quizCandidate = data.quiz || data.data?.quiz || data.data || data;
+
+    // If quizCandidate still has wrapper keys (e.g. { success:true, quiz: {...} }), search deeper
+    if (!Array.isArray(quizCandidate?.questions)) {
+      const maybe = findQuestions(data) || findQuestions(data.quiz) || findQuestions(data.data) || findQuestions(quizCandidate);
+      if (maybe) {
+        // maybe is object that contains questions
+        quizCandidate = maybe;
+      }
+    }
+
+    // final check
+    if (!quizCandidate || !Array.isArray(quizCandidate.questions)) {
+      console.error("openModal: could not find questions in the server response. Full response:", data);
+      toast.error("Quiz data missing questions — check server response (see console).");
+      return;
+    }
+
+    // success — set state
+    setSelectedQuiz(quizCandidate);
+    setAnswers(new Array(quizCandidate.questions.length).fill(null));
+    setResult(null);
+    setShowModal(true);
+  } catch (err) {
+    console.error("openModal error:", err);
+    toast.error(err.response?.data?.message || err.message || "Failed to load quiz");
+  }
+};
+
+
+  // handleSubmit: validate all answered then post
+  const handleSubmit = async () => {
+    if (!selectedQuiz) return;
+    if (
+      answers.length !== (selectedQuiz.questions?.length || 0) ||
+      answers.some((a) => a === null || a === undefined)
+    ) {
+      toast.error("Please answer all questions before submitting.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/quiz/submit`,
+        { quizId: selectedQuiz._id, answers },
+        { withCredentials: true }
+      );
+      setResult(data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to submit quiz");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -1034,49 +1160,6 @@ const CourseDetails = () => {
     }m ${lesson.lessonSecond || 0}s`;
 
     // for quiz
-    const openModal = async (quizId) => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/quiz/${quizId}`
-        );
-        setSelectedQuiz(data.quiz);
-        setAnswers(new Array(data.quiz.questions.length).fill(null));
-        setResult(null);
-        setShowModal(true);
-      } catch (err) {
-        toast.error("Failed to load quiz");
-      }
-    };
-
-    const closeModal = () => {
-      setShowModal(false);
-      setSelectedQuiz(null);
-      setAnswers([]);
-      setResult(null);
-    };
-
-    const handleAnswer = (qIndex, optionIndex) => {
-      const copy = [...answers];
-      copy[qIndex] = optionIndex;
-      setAnswers(copy);
-    };
-
-    const handleSubmit = async () => {
-      if (!selectedQuiz) return;
-      setLoading(true);
-      try {
-        const { data } = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/quiz/submit`,
-          { quizId: selectedQuiz._id, answers },
-          { withCredentials: true }
-        );
-        setResult(data);
-      } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to submit quiz");
-      } finally {
-        setLoading(false);
-      }
-    };
 
     return (
       <div className="  p-1  ">
@@ -1105,20 +1188,6 @@ const CourseDetails = () => {
 
         {/* Content */}
         <p className="text-gray-600 mt-2">{lesson.lessonContent}</p>
-
-        {/* Video Toggle */}
-        {/* <div className="mt-3">
-          <button
-            onClick={() => {
-              onToggle?.();
-              // scroll to top also here (defensive) — parent already does this
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className="mt-3 text-white bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded-md text-sm"
-          >
-            {isOpen ? "Hide Video" : "Watch Course Video"}
-          </button>
-        </div> */}
       </div>
     );
   };
@@ -1232,7 +1301,7 @@ const CourseDetails = () => {
                                   : "cursor-not-allowed text-gray-500"
                               }`}
                               onClick={() => {
-                                if (paid) openModal(q._id);
+                                if (paid) openModal(q); // pass full object if available
                               }}
                             >
                               <div className="flex items-center gap-2">
@@ -1250,111 +1319,22 @@ const CourseDetails = () => {
                           </li>
                         )}
                       </ul>
-
-                      {/* MODAL */}
-                      {showModal && selectedQuiz && (
-                        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-black/40 p-4">
-                          <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl mt-10 relative">
-                            <div className="flex items-center justify-between p-4 border-b">
-                              <div>
-                                <h3 className="text-lg font-semibold">
-                                  {selectedQuiz.title}
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                  {selectedQuiz.questions.length} questions
-                                </p>
-                              </div>
-                              <button
-                                onClick={closeModal}
-                                className="p-2 hover:bg-gray-100 rounded"
-                                aria-label="Close"
-                              >
-                                <FaTimes />
-                              </button>
-                            </div>
-
-                            <div className="p-4 max-h-[60vh] overflow-y-auto">
-                              {selectedQuiz.questions.map((ques, i) => (
-                                <div
-                                  key={i}
-                                  className="mb-4 p-3 border rounded"
-                                >
-                                  <p className="font-semibold">
-                                    {i + 1}. {ques.question}
-                                  </p>
-                                  <div className="mt-2 space-y-2">
-                                    {ques.options.map((opt, oi) => (
-                                      <label
-                                        key={oi}
-                                        className="block cursor-pointer"
-                                      >
-                                        <input
-                                          type="radio"
-                                          name={`q-${i}`}
-                                          checked={answers[i] === oi}
-                                          onChange={() => handleAnswer(i, oi)}
-                                        />
-                                        <span className="ml-2">{opt}</span>
-                                      </label>
-                                    ))}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="p-4 border-t flex items-center gap-3 justify-end">
-                              <button
-                                onClick={closeModal}
-                                className="px-4 py-2 rounded border"
-                              >
-                                Close
-                              </button>
-                              <button
-                                onClick={handleSubmit}
-                                disabled={loading}
-                                className="px-4 py-2 rounded bg-green-600 text-white disabled:opacity-50"
-                              >
-                                {loading ? "Submitting..." : "Submit"}
-                              </button>
-                            </div>
-
-                            {/* Inline result (after submit) */}
-                            {result && (
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 p-4">
-                                <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
-                                  <h4 className="text-lg font-semibold mb-2 text-center">
-                                    Result
-                                  </h4>
-                                  <p className="text-center mb-3 font-medium">
-                                    Score: {result.score} / {result.total}
-                                  </p>
-                                  <div className="max-h-48 overflow-y-auto mb-4">
-                                    {result.results?.map((r, idx) => (
-                                      <p
-                                        key={idx}
-                                        className={
-                                          r.isCorrect
-                                            ? "text-green-600"
-                                            : "text-red-600"
-                                        }
-                                      >
-                                        Q{idx + 1}:{" "}
-                                        {r.isCorrect ? "Correct" : "Wrong"}
-                                      </p>
-                                    ))}
-                                  </div>
-                                  <button
-                                    onClick={closeModal}
-                                    className="w-full bg-blue-600 text-white py-2 rounded"
-                                  >
-                                    Back to List
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
+                      {/* Quiz modal (mounted once per page) */}
+                      <QuizModal
+                        isOpen={showModal}
+                        quiz={selectedQuiz}
+                        onClose={() => {
+                          setShowModal(false);
+                          setSelectedQuiz(null);
+                          setAnswers([]);
+                          setResult(null);
+                        }}
+                        answers={answers}
+                        setAnswers={setAnswers}
+                        onSubmit={handleSubmit}
+                        loading={loading}
+                        result={result}
+                      />
                     </div>
 
                     {/* --- Assignments --- */}
@@ -1885,8 +1865,8 @@ const CourseDetails = () => {
             interests and learning goals.
           </p>
 
-          <Card all_course={all_course.slice(0, 3)} />
         </div>
+          <Card all_course={all_course.slice(0, 3)} />
         <ToastContainer position="top-right" autoClose={1000} />
       </div>
     </>
