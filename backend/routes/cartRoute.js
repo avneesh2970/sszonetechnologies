@@ -42,7 +42,7 @@ router.get("/", auth, async (req, res) => {
         { path: "overview" },
         { path: "introVideo" },
         { path: "remarks" },
-        {path : "reviews"}
+        { path: "reviews" },
       ],
     });
     res.json(cartItems);

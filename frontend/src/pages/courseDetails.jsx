@@ -1246,7 +1246,7 @@ const openModal = async (quizOrId) => {
                       </span>
                       {!paid && (
                         <span className="text-sm text-gray-500 flex items-center gap-1">
-                          Locked
+                          Locked 
                         </span>
                       )}
                     </h2>
@@ -1556,7 +1556,7 @@ const openModal = async (quizOrId) => {
 
             <p className="font-semibold">
               <span className="font-bold text-gray-700">Occupation :</span>{" "}
-              {course.instructor?.profile?.skill || "No skills listed"}
+              {course.instructor?.profile?.skill || "No skills listed"}  
             </p>
 
             <p className="text-gray-600">

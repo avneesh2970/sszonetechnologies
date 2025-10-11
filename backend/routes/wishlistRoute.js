@@ -38,9 +38,21 @@ router.post("/add", auth, async (req, res) => {
 // Get wishlist
 router.get("/", auth, async (req, res) => {
   try {
-    const wishlist = await Wishlist.find({ user: req.user.id }).populate(
-      "course"
-    );
+    const wishlist = await Wishlist.find({ user: req.user.id }).populate({
+      path: "course",
+        populate: [
+        { path: "instructor" ,   },
+        { path: "additionalInfo" },
+        { path: "modules", populate: [ { path: "lessons" },
+                  { path: "quizzes" },
+                  { path: "assignments" } ]},
+        { path: "overview" },
+        { path: "introVideo" },
+        { path: "remarks" },
+        { path: "reviews" },
+        { path : "announcement"}
+      ],
+    });
     res.json(wishlist);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch wishlist" });
