@@ -68,7 +68,7 @@ export default function QuizModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-auto bg-black/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black/40 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="quiz-modal-title"
@@ -78,7 +78,7 @@ export default function QuizModal({
         tabIndex={-1}
         className="bg-white rounded-lg shadow-lg w-full max-w-3xl mt-10 relative outline-none"
       >
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between p-4 ">
           <div>
             <h3 id="quiz-modal-title" className="text-lg font-semibold">
               {quiz.title}
@@ -95,6 +95,8 @@ export default function QuizModal({
             <FaTimes />
           </button>
         </div>
+
+        <div className="text-center text-lg">{quiz.questions?.length === 0 ? "No Qustion in this quiz  ": " "}</div>
 
         <div className="p-4 max-h-[60vh] overflow-y-auto">
           {quiz.questions?.map((ques, qi) => {
