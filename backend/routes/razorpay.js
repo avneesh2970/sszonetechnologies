@@ -93,7 +93,6 @@ router.post("/create-order", auth, async (req, res) => {
   }
 });
 
-
 // Verify payment signature API
 router.post("/verify-payment", async (req, res) => {
   try {
@@ -130,7 +129,7 @@ router.post("/verify-payment", async (req, res) => {
   }
 });
 
-// checkout button status paid or checkout 
+// checkout button status paid or checkout
 router.get("/is-paid/:courseId", auth, async (req, res) => {
   try {
     const { courseId } = req.params;
@@ -173,6 +172,10 @@ router.get("/my-purchases", auth, async (req, res) => {
               { path: "quizzes" },
               { path: "assignments" }, // ✅ add this line
             ],
+          },
+          {
+            path: "reviews",
+            populate: { path: "userId" },
           },
         ],
       })

@@ -13,9 +13,12 @@ export const useStudentAuth = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/me`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/me`,
+          {
+            withCredentials: true,
+          }
+        );
         setUser(res.data.user);
       } catch {
         setUser(null);
@@ -24,10 +27,10 @@ export const useStudentAuth = () => {
     fetchUser();
   }, []);
 
-  // All user 
-  const [allUser , setAllUser] = useState([])
+  // All user
+  const [allUser, setAllUser] = useState([]);
 
-   const fetchAllUsers = async () => {
+  const fetchAllUsers = async () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/all`,
@@ -61,12 +64,15 @@ export const useStudentAuth = () => {
   };
 
   // 🔹 reusable fetchCartItems function
-  
+
   const fetchCartItems = useCallback(async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/cart`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/cart`,
+        {
+          withCredentials: true,
+        }
+      );
       setCartItems(res.data || []);
     } catch (error) {
       console.error("Error fetching cart items:", error);
@@ -81,9 +87,12 @@ export const useStudentAuth = () => {
 
   const fetchWishlist = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/wishlist`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/wishlist`,
+        {
+          withCredentials: true,
+        }
+      );
       setWishlistItems(res.data || []);
       // setLoading(false);
     } catch (err) {
@@ -120,29 +129,32 @@ export const useStudentAuth = () => {
   }, []);
 
   //Fetch Reviews
-    const [myReviews, setMyReviews] = useState([]);
-    const [reviews, setReviews] = useState([]);
-  
-    const fetchReviews = async () => {
-      try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/reviews`, {
+  const [myReviews, setMyReviews] = useState([]);
+  const [reviews, setReviews] = useState([]);
+
+  const fetchReviews = async () => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/reviews`,
+        {
           withCredentials: true,
-        });
-        setReviews(data.reviews);
-  
-        // ✅ filter reviews by login user
-        if (user?._id) {
-          const filtered = data.reviews.filter(
-            (review) => review.userId?._id === user._id 
-          );
-          setMyReviews(filtered);
         }
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-        toast.error("Failed to get reviews");
+      );
+      setReviews(data.reviews);
+
+      // ✅ filter reviews by login user
+      if (user?._id) {
+        const filtered = data.reviews.filter(
+          (review) => review.userId?._id === user._id
+        );
+        setMyReviews(filtered);
       }
-    };
-  
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      toast.error("Failed to get reviews");
+    }
+  };
+
 
   return {
     user,
@@ -157,7 +169,10 @@ export const useStudentAuth = () => {
     setLoading,
     fetchWishlist,
     purchases,
-    reviews , fetchReviews , myReviews,
-    allUser , fetchAllUsers
-  };
+    reviews,
+    fetchReviews,
+    myReviews,
+    allUser,
+    fetchAllUsers,
+    };
 };

@@ -813,7 +813,7 @@ const CourseDetails = () => {
   const location = useLocation();
   const course = location.state;
   // const { fetchCartItems } = useStudentAuth();
-  const {cartItems,fetchCartItems} = useCartContext()
+  const { cartItems, fetchCartItems } = useCartContext();
   const navigate = useNavigate();
 
   // track which lesson is open (only one at a time)
@@ -832,6 +832,7 @@ const CourseDetails = () => {
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState("");
 
+  // Quiz
   const [showModal, setShowModal] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [answers, setAnswers] = useState([]);
@@ -839,105 +840,129 @@ const CourseDetails = () => {
   const [result, setResult] = useState(null);
 
   // put this inside your CourseDetails component (replace your old openModal)
-const openModal = async (quizOrId) => {
-  const base = import.meta.env.VITE_BACKEND_URL || "";
+  const openModal = async (quizOrId) => {
+    const base = import.meta.env.VITE_BACKEND_URL || "";
 
-  // helper: shallow search for a "questions" array anywhere in an object
-  function findQuestions(obj) {
-    if (!obj || typeof obj !== "object") return null;
-    if (Array.isArray(obj.questions)) return obj;
-    // search top-level keys
-    for (const k of Object.keys(obj)) {
-      const v = obj[k];
-      if (Array.isArray(v) && k.toLowerCase().includes("question")) {
-        // e.g. data.questions or data.quizQuestions
-        return { questions: v, ...obj };
+    // helper: shallow search for a "questions" array anywhere in an object
+    function findQuestions(obj) {
+      if (!obj || typeof obj !== "object") return null;
+      if (Array.isArray(obj.questions)) return obj;
+      // search top-level keys
+      for (const k of Object.keys(obj)) {
+        const v = obj[k];
+        if (Array.isArray(v) && k.toLowerCase().includes("question")) {
+          // e.g. data.questions or data.quizQuestions
+          return { questions: v, ...obj };
+        }
+        if (v && typeof v === "object") {
+          // nested object (one level deep)
+          if (Array.isArray(v.questions)) return v;
+        }
       }
-      if (v && typeof v === "object") {
-        // nested object (one level deep)
-        if (Array.isArray(v.questions)) return v;
-      }
+      return null;
     }
-    return null;
-  }
 
-  try {
-    // if a fully-populated quiz object passed (has questions array), use it directly
-    if (quizOrId && typeof quizOrId === "object" && Array.isArray(quizOrId.questions)) {
-      console.log("openModal: using passed-in populated quiz object", quizOrId);
-      setSelectedQuiz(quizOrId);
-      setAnswers(new Array(quizOrId.questions.length).fill(null));
+    try {
+      // if a fully-populated quiz object passed (has questions array), use it directly
+      if (
+        quizOrId &&
+        typeof quizOrId === "object" &&
+        Array.isArray(quizOrId.questions)
+      ) {
+        console.log(
+          "openModal: using passed-in populated quiz object",
+          quizOrId
+        );
+        setSelectedQuiz(quizOrId);
+        setAnswers(new Array(quizOrId.questions.length).fill(null));
+        setResult(null);
+        setShowModal(true);
+        return;
+      }
+
+      // extract id if an object was passed
+      const quizId = typeof quizOrId === "string" ? quizOrId : quizOrId?._id;
+      if (!quizId) {
+        toast.error("Invalid quiz id");
+        return;
+      }
+
+      // try two common endpoints (tolerant)
+      const endpoints = [
+        `${base}/api/quiz/${quizId}`,
+        `${base}/api/quizzes/${quizId}`,
+      ];
+
+      let resp = null;
+      let data = null;
+      for (const url of endpoints) {
+        try {
+          console.log("openModal: fetching quiz from", url);
+          resp = await axios.get(url, { withCredentials: true });
+          data = resp.data;
+          console.log("openModal: raw response for", url, resp);
+          // if we got something, break and inspect
+          if (data) break;
+        } catch (err) {
+          console.warn(
+            "openModal: fetch failed for",
+            url,
+            err?.response?.status || err.message
+          );
+          // continue to try next endpoint
+        }
+      }
+
+      if (!data) {
+        throw new Error("No response from quiz endpoints");
+      }
+
+      // possible shapes:
+      // 1) { success: true, quiz: { ... } }
+      // 2) { quiz: { ... } }
+      // 3) { ...quizFields... } (quiz object directly)
+      // 4) { data: { quiz: {...} } } etc.
+
+      // try to extract the quiz object
+      let quizCandidate = data.quiz || data.data?.quiz || data.data || data;
+
+      // If quizCandidate still has wrapper keys (e.g. { success:true, quiz: {...} }), search deeper
+      if (!Array.isArray(quizCandidate?.questions)) {
+        const maybe =
+          findQuestions(data) ||
+          findQuestions(data.quiz) ||
+          findQuestions(data.data) ||
+          findQuestions(quizCandidate);
+        if (maybe) {
+          // maybe is object that contains questions
+          quizCandidate = maybe;
+        }
+      }
+
+      // final check
+      if (!quizCandidate || !Array.isArray(quizCandidate.questions)) {
+        console.error(
+          "openModal: could not find questions in the server response. Full response:",
+          data
+        );
+        toast.error(
+          "Quiz data missing questions — check server response (see console)."
+        );
+        return;
+      }
+
+      // success — set state
+      setSelectedQuiz(quizCandidate);
+      setAnswers(new Array(quizCandidate.questions.length).fill(null));
       setResult(null);
       setShowModal(true);
-      return;
+    } catch (err) {
+      console.error("openModal error:", err);
+      toast.error(
+        err.response?.data?.message || err.message || "Failed to load quiz"
+      );
     }
-
-    // extract id if an object was passed
-    const quizId = typeof quizOrId === "string" ? quizOrId : quizOrId?._id;
-    if (!quizId) {
-      toast.error("Invalid quiz id");
-      return;
-    }
-
-    // try two common endpoints (tolerant)
-    const endpoints = [`${base}/api/quiz/${quizId}`, `${base}/api/quizzes/${quizId}`];
-
-    let resp = null;
-    let data = null;
-    for (const url of endpoints) {
-      try {
-        console.log("openModal: fetching quiz from", url);
-        resp = await axios.get(url, { withCredentials: true });
-        data = resp.data;
-        console.log("openModal: raw response for", url, resp);
-        // if we got something, break and inspect
-        if (data) break;
-      } catch (err) {
-        console.warn("openModal: fetch failed for", url, err?.response?.status || err.message);
-        // continue to try next endpoint
-      }
-    }
-
-    if (!data) {
-      throw new Error("No response from quiz endpoints");
-    }
-
-    // possible shapes:
-    // 1) { success: true, quiz: { ... } }
-    // 2) { quiz: { ... } }
-    // 3) { ...quizFields... } (quiz object directly)
-    // 4) { data: { quiz: {...} } } etc.
-
-    // try to extract the quiz object
-    let quizCandidate = data.quiz || data.data?.quiz || data.data || data;
-
-    // If quizCandidate still has wrapper keys (e.g. { success:true, quiz: {...} }), search deeper
-    if (!Array.isArray(quizCandidate?.questions)) {
-      const maybe = findQuestions(data) || findQuestions(data.quiz) || findQuestions(data.data) || findQuestions(quizCandidate);
-      if (maybe) {
-        // maybe is object that contains questions
-        quizCandidate = maybe;
-      }
-    }
-
-    // final check
-    if (!quizCandidate || !Array.isArray(quizCandidate.questions)) {
-      console.error("openModal: could not find questions in the server response. Full response:", data);
-      toast.error("Quiz data missing questions — check server response (see console).");
-      return;
-    }
-
-    // success — set state
-    setSelectedQuiz(quizCandidate);
-    setAnswers(new Array(quizCandidate.questions.length).fill(null));
-    setResult(null);
-    setShowModal(true);
-  } catch (err) {
-    console.error("openModal error:", err);
-    toast.error(err.response?.data?.message || err.message || "Failed to load quiz");
-  }
-};
-
+  };
 
   // handleSubmit: validate all answered then post
   const handleSubmit = async () => {
@@ -963,6 +988,8 @@ const openModal = async (quizOrId) => {
       setLoading(false);
     }
   };
+
+  //for assignment 
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -1246,7 +1273,7 @@ const openModal = async (quizOrId) => {
                       </span>
                       {!paid && (
                         <span className="text-sm text-gray-500 flex items-center gap-1">
-                          Locked 
+                          Locked
                         </span>
                       )}
                     </h2>
@@ -1556,7 +1583,7 @@ const openModal = async (quizOrId) => {
 
             <p className="font-semibold">
               <span className="font-bold text-gray-700">Occupation :</span>{" "}
-              {course.instructor?.profile?.skill || "No skills listed"}  
+              {course.instructor?.profile?.skill || "No skills listed"}
             </p>
 
             <p className="text-gray-600">
@@ -1866,9 +1893,8 @@ const openModal = async (quizOrId) => {
             Discover personalized course recommendations curated to match your
             interests and learning goals.
           </p>
-
         </div>
-          <Card all_course={all_course.slice(0, 3)} />
+        <Card all_course={all_course.slice(0, 3)} />
         <ToastContainer position="top-right" autoClose={1000} />
       </div>
     </>

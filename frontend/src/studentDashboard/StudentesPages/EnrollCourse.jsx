@@ -79,6 +79,7 @@ const EnrollCourse = () => {
 
     return (
       <div className="bg-white  rounded-lg shadow-md w-72 flex flex-col justify-between">
+        {console.log("purchases" , purchases)}
         <div className="relative cursor-pointer " onClick={()=>navigate(`/dashboard/enrollCourseDetails/${course._id}`)}>
           <img
             src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
