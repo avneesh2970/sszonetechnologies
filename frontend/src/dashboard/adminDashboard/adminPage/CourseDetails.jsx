@@ -545,7 +545,6 @@
 // export default AdminCourseDetails;
 
 
-// src/pages/Admin/AdminCourseDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaStar, FaRegStar, FaEdit, FaTrash } from "react-icons/fa";
@@ -563,6 +562,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ModuleForm from "../../../Instructor-courseUpload/ModuleForm";
 import LessonForm from "../../../courseUpload/LessonForm";
 import { FiX } from "react-icons/fi";
+import AdminQuizModal from "./AdminQuizModal";
 
 const AdminCourseDetails = () => {
   const location = useLocation();
@@ -574,7 +574,22 @@ const AdminCourseDetails = () => {
 
   const [openRemark, setOpenRemark] = useState(false);
 
-  const [openLessonId , setOpenLessonId] = useState(null)
+  const [openLessonId, setOpenLessonId] = useState(null);
+
+  //  assignment and submit
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [subStatus, setSubStatus] = useState(null);
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  // Quiz
+  const [showModal, setShowModal] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [answers, setAnswers] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
   // mainVideoUrl will control the top area (intro video by default)
   const [mainVideoUrl, setMainVideoUrl] = useState(
@@ -683,6 +698,167 @@ const AdminCourseDetails = () => {
     }
   };
 
+  // put this inside your CourseDetails component (replace your old openModal)
+  const openModal = async (quizOrId) => {
+    const base = import.meta.env.VITE_BACKEND_URL || "";
+
+    // helper: shallow search for a "questions" array anywhere in an object
+    function findQuestions(obj) {
+      if (!obj || typeof obj !== "object") return null;
+      if (Array.isArray(obj.questions)) return obj;
+      // search top-level keys
+      for (const k of Object.keys(obj)) {
+        const v = obj[k];
+        if (Array.isArray(v) && k.toLowerCase().includes("question")) {
+          // e.g. data.questions or data.quizQuestions
+          return { questions: v, ...obj };
+        }
+        if (v && typeof v === "object") {
+          // nested object (one level deep)
+          if (Array.isArray(v.questions)) return v;
+        }
+      }
+      return null;
+    }
+
+    try {
+      // if a fully-populated quiz object passed (has questions array), use it directly
+      if (
+        quizOrId &&
+        typeof quizOrId === "object" &&
+        Array.isArray(quizOrId.questions)
+      ) {
+        console.log(
+          "openModal: using passed-in populated quiz object",
+          quizOrId
+        );
+        setSelectedQuiz(quizOrId);
+        setAnswers(new Array(quizOrId.questions.length).fill(null));
+        setResult(null);
+        setShowModal(true);
+        return;
+      }
+
+      // extract id if an object was passed
+      const quizId = typeof quizOrId === "string" ? quizOrId : quizOrId?._id;
+      if (!quizId) {
+        toast.error("Invalid quiz id");
+        return;
+      }
+
+      // try two common endpoints (tolerant)
+      const endpoints = [
+        `${base}/api/quiz/${quizId}`,
+        `${base}/api/quizzes/${quizId}`,
+      ];
+
+      let resp = null;
+      let data = null;
+      for (const url of endpoints) {
+        try {
+          console.log("openModal: fetching quiz from", url);
+          resp = await axios.get(url, { withCredentials: true });
+          data = resp.data;
+          console.log("openModal: raw response for", url, resp);
+          // if we got something, break and inspect
+          if (data) break;
+        } catch (err) {
+          console.warn(
+            "openModal: fetch failed for",
+            url,
+            err?.response?.status || err.message
+          );
+          // continue to try next endpoint
+        }
+      }
+
+      if (!data) {
+        throw new Error("No response from quiz endpoints");
+      }
+
+      // possible shapes:
+      // 1) { success: true, quiz: { ... } }
+      // 2) { quiz: { ... } }
+      // 3) { ...quizFields... } (quiz object directly)
+      // 4) { data: { quiz: {...} } } etc.
+
+      // try to extract the quiz object
+      let quizCandidate = data.quiz || data.data?.quiz || data.data || data;
+
+      // If quizCandidate still has wrapper keys (e.g. { success:true, quiz: {...} }), search deeper
+      if (!Array.isArray(quizCandidate?.questions)) {
+        const maybe =
+          findQuestions(data) ||
+          findQuestions(data.quiz) ||
+          findQuestions(data.data) ||
+          findQuestions(quizCandidate);
+        if (maybe) {
+          // maybe is object that contains questions
+          quizCandidate = maybe;
+        }
+      }
+
+      // final check
+      if (!quizCandidate || !Array.isArray(quizCandidate.questions)) {
+        console.error(
+          "openModal: could not find questions in the server response. Full response:",
+          data
+        );
+        toast.error(
+          "Quiz data missing questions — check server response (see console)."
+        );
+        return;
+      }
+
+      // success — set state
+      setSelectedQuiz(quizCandidate);
+      setAnswers(new Array(quizCandidate.questions.length).fill(null));
+      setResult(null);
+      setShowModal(true);
+    } catch (err) {
+      console.error("openModal error:", err);
+      toast.error(
+        err.response?.data?.message || err.message || "Failed to load quiz"
+      );
+    }
+  };
+
+  //for assignment
+  useEffect(() => {
+    const fetchStatus = async () => {
+      if (!selectedAssignment?._id) return;
+      setStatusLoading(true);
+      setMsg("");
+
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/assignments/${
+            selectedAssignment._id
+          }/my-status`,
+          {
+            withCredentials: true, // ✅ include cookies
+          }
+        );
+
+        if (!res.data.success)
+          throw new Error(res.data.message || "Failed to load status");
+
+        setSubStatus(res.data);
+      } catch (err) {
+        setMsg(
+          err.response?.data?.message ||
+            err.message ||
+            "Could not fetch submission status"
+        );
+        setSubStatus(null);
+      } finally {
+        setStatusLoading(false);
+      }
+    };
+
+    fetchStatus();
+  }, [selectedAssignment]);
+
   const averageRating =
     course.reviews && course.reviews.length > 0
       ? (
@@ -738,16 +914,16 @@ const AdminCourseDetails = () => {
 
               <div className="flex items-center gap-2"></div>
             </div>
-
-            <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
+            <h4 className="font-medium mt-2">Lesson:</h4>
+            <ul className=" pl-5 space-y-1 text-sm mt-2">
               {module.lessons?.length > 0 ? (
                 module.lessons.map((lesson) => (
                   <LessonVideoPlayer
                     key={lesson._id}
                     lesson={lesson}
                     modules={updatedCourse.modules}
-                    isOpen = {openLessonId === lesson._id}
-                    onToggle = {() => {
+                    isOpen={openLessonId === lesson._id}
+                    onToggle={() => {
                       const willOpen = openLessonId !== lesson._id;
                       setOpenLessonId(willOpen ? lesson._id : null);
                       setMainVideoUrl(
@@ -764,6 +940,100 @@ const AdminCourseDetails = () => {
                 </li>
               )}
             </ul>
+            <div className="mt-4">
+              <h4 className="font-medium">Quizzes:</h4>
+              <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
+                {module.quizzes?.length > 0 ? (
+                  module.quizzes.map((q) => (
+                    <li
+                      key={q._id}
+                      className={`flex justify-between items-center cursor-pointer hover:underline hover:text-blue-500`}
+                      onClick={() => {
+                        // keep your openModal behavior
+                        openModal(q);
+                      }}
+                    >
+                      <div className="flex items-center gap-2">{q.title}</div>
+                      <span> Quiz Details</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-400 italic">
+                    No Quiz in this module.
+                  </li>
+                )}
+              </ul>
+              <AdminQuizModal
+                isOpen={showModal}
+                quiz={selectedQuiz}
+                onClose={() => {
+                  setShowModal(false);
+                  setSelectedQuiz(null);
+                }}
+              />
+            </div>
+
+            {/* Assignments */}
+            <div className="mt-4">
+              <h4 className="font-medium">Assignments:</h4>
+              <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
+                {module.assignments?.length > 0 ? (
+                  module.assignments.map((assignment) => (
+                    <li
+                      key={assignment._id}
+                      className="flex justify-between items-center cursor-pointer hover:underline hover:text-blue-500"
+                      onClick={() => {
+                        setSelectedAssignment(assignment);
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        {assignment.title}
+                      </div>
+                      <span>full-details</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-400 italic">
+                    No assignments in this module.
+                  </li>
+                )}
+              </ul>
+              {selectedAssignment && (
+                <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50">
+                  <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+                    {/* Close */}
+                    <button
+                      onClick={() => {
+                        setSelectedAssignment(null);
+                        setSubStatus(null);
+                        setFile(null);
+                        setMsg("");
+                      }}
+                      className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
+                    >
+                      ✖
+                    </button>
+
+                    {/* Assignment Info */}
+                    <h2 className="text-xl font-bold mb-2">
+                      {selectedAssignment.title}
+                    </h2>
+                    <p className="text-gray-700 mb-4">
+                      {selectedAssignment.summary}
+                    </p>
+
+                    <h3 className="font-semibold mb-2">Questions:</h3>
+                    <ul className="list-decimal pl-5 space-y-2 text-gray-600">
+                      {selectedAssignment.questions?.map((q, index) => (
+                        <li key={index}>{q.questionText || q}</li>
+                      ))}
+                    </ul>
+
+                    <div className="border-t my-4" />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -845,64 +1115,65 @@ const AdminCourseDetails = () => {
       </div>
     ),
 
-    Remark : (
+    Remark: (
       <div className="mb-8">
-  <h2 className="text-xl font-semibold mt-6">Remarks :</h2>
+        <h2 className="text-xl font-semibold mt-6">Remarks :</h2>
 
-  {course.remarks?.length > 0 ? (
-    <div className="mt-3 space-y-6">
-      {/* ✅ Pending Remarks */}
-      <div>
-        <h3 className="font-medium text-red-600">Pending</h3>
-        <ul className="mt-2 space-y-2">
-          {course.remarks
-            .filter((r) => r.status === "Pending")
-            .map((r) => (
-              <li
-                key={r._id}
-                className="border border-gray-400 p-2 rounded-md "
-              >
-                <p>{r.courseRemark}</p>
-                {/* <span className="text-sm text-gray-500">
+        {course.remarks?.length > 0 ? (
+          <div className="mt-3 space-y-6">
+            {/* ✅ Pending Remarks */}
+            <div>
+              <h3 className="font-medium text-red-600">Pending</h3>
+              <ul className="mt-2 space-y-2">
+                {course.remarks
+                  .filter((r) => r.status === "Pending")
+                  .map((r) => (
+                    <li
+                      key={r._id}
+                      className="border border-gray-400 p-2 rounded-md "
+                    >
+                      <p>{r.courseRemark}</p>
+                      {/* <span className="text-sm text-gray-500">
                   Status: {r.status}
                 </span> */}
-              </li>
-            ))}
-          {course.remarks.filter((r) => r.status === "Pending").length === 0 && (
-            <p className="text-sm text-gray-400">No pending remarks.</p>
-          )}
-        </ul>
-      </div>
+                    </li>
+                  ))}
+                {course.remarks.filter((r) => r.status === "Pending").length ===
+                  0 && (
+                  <p className="text-sm text-gray-400">No pending remarks.</p>
+                )}
+              </ul>
+            </div>
 
-      {/* ✅ Done Remarks */}
-      <div>
-        <h3 className="font-medium text-green-600"> Done</h3>
-        <ul className="mt-2 space-y-2">
-          {course.remarks
-            .filter((r) => r.status === "Done")
-            .map((r) => (
-              <li
-                key={r._id}
-                className="border border-gray-400 p-2 rounded-md "
-              >
-                <p>{r.courseRemark}</p>
-                {/* <span className="text-sm text-gray-500">
+            {/* ✅ Done Remarks */}
+            <div>
+              <h3 className="font-medium text-green-600"> Done</h3>
+              <ul className="mt-2 space-y-2">
+                {course.remarks
+                  .filter((r) => r.status === "Done")
+                  .map((r) => (
+                    <li
+                      key={r._id}
+                      className="border border-gray-400 p-2 rounded-md "
+                    >
+                      <p>{r.courseRemark}</p>
+                      {/* <span className="text-sm text-gray-500">
                   Status: {r.status}
                 </span> */}
-              </li>
-            ))}
-          {course.remarks.filter((r) => r.status === "Done").length === 0 && (
-            <p className="text-sm text-gray-400">No done remarks.</p>
-          )}
-        </ul>
+                    </li>
+                  ))}
+                {course.remarks.filter((r) => r.status === "Done").length ===
+                  0 && (
+                  <p className="text-sm text-gray-400">No done remarks.</p>
+                )}
+              </ul>
+            </div>
+          </div>
+        ) : (
+          <p>No remarks yet.</p>
+        )}
       </div>
-    </div>
-  ) : (
-    <p>No remarks yet.</p>
-  )}
-</div>
-
-    )
+    ),
   };
 
   return (
@@ -956,22 +1227,24 @@ const AdminCourseDetails = () => {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12">
+      <div className="flex flex-col lg:flex-row gap-8 px-6 md:px-12 my-12">
         <div className="flex-1">
           <div className="flex gap-4 border-b mb-6 overflow-x-auto">
-            {["Overview", "Curriculum", "Instructor", "Review" , "Remark"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-2 md:px-4 px-3 font-medium ${
-                  activeTab === tab
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "border-transparent text-gray-600 hover:text-blue-500"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+            {["Overview", "Curriculum", "Instructor", "Review", "Remark"].map(
+              (tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`pb-2 md:px-4 px-3 font-medium ${
+                    activeTab === tab
+                      ? "border-b-2 border-blue-500 text-blue-500"
+                      : "border-transparent text-gray-600 hover:text-blue-500"
+                  }`}
+                >
+                  {tab}
+                </button>
+              )
+            )}
           </div>
           <div>{content[activeTab]}</div>
         </div>
@@ -986,10 +1259,7 @@ const AdminCourseDetails = () => {
           <p className="text-xl font-semibold mb-2"> This Course Includes </p>
           <div className="flex flex-col gap-2 text-gray-600">
             <p>✅ {course?.overview?.videoHours || 5}hrs on-demand video</p>
-            <p>
-              ✅ Instructor:{" "}
-              { course.instructor.name}
-            </p>
+            <p>✅ Instructor: {course.instructor.name}</p>
             <p>
               ✅ Language:{" "}
               {course?.overview?.overviewLanguage || "Hindi,English"}

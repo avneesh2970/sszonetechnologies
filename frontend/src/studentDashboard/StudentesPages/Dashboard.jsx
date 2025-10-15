@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { useStudentAuth } from "./studentAuth";
 import logo from "../../assets/image/logo.png";
@@ -17,10 +17,118 @@ import {
 } from "react-icons/md";
 import { BiBookBookmark } from "react-icons/bi";
 import StuTopBar from "../stuTopBar";
+import axios from "axios";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useStudentAuth();
+  const navigate = useNavigate();
+
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchAllCourses = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/instructor-courses`,
+          { signal: controller.signal }
+        );
+
+        // ✅ Only include published courses
+        const publishedCourses = (res.data.courses || []).filter(
+          (course) => course.status === "Published"
+        );
+
+        setCourses(publishedCourses);
+
+        // If you need wishlist logic, call it here (define fetchWishlist above)
+        // fetchWishlist();
+      } catch (err) {
+        if (err.name === "CanceledError" || err.name === "AbortError") return;
+        console.error("Error fetching courses", err);
+      }
+    };
+
+    fetchAllCourses();
+    return () => controller.abort();
+  }, []); // empty dependencies: run once on mount
+
+  /* ---------- Search & Autocomplete ---------- */
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const searchRef = useRef(null);
+
+  // debounce the query (200ms)
+  useEffect(() => {
+    const id = setTimeout(
+      () => setDebouncedQuery(searchQuery.trim().toLowerCase()),
+      200
+    );
+    return () => clearTimeout(id);
+  }, [searchQuery]);
+
+  /* filtered list updates whenever courses or debouncedQuery changes */
+  const filteredCourseTitles = useMemo(() => {
+    const q = debouncedQuery;
+    // Show all courses when the input is empty (so focus shows full list)
+    if (q === "") {
+      return courses || [];
+    }
+    return (courses || []).filter((c) =>
+      (c.title || "").toLowerCase().includes(q)
+    );
+  }, [courses, debouncedQuery]);
+
+  // keep activeIndex in range and reset when filtered results change
+  useEffect(() => {
+    setActiveIndex((idx) => {
+      if (filteredCourseTitles.length === 0) return -1;
+      return Math.max(Math.min(idx, filteredCourseTitles.length - 1), -1);
+    });
+  }, [filteredCourseTitles]);
+
+  /* click-outside to close dropdown */
+  useEffect(() => {
+    const onDocMouse = (e) => {
+      if (!searchRef.current) return;
+      if (!searchRef.current.contains(e.target)) {
+        setShowDropdown(false);
+        setActiveIndex(-1);
+      }
+    };
+    document.addEventListener("mousedown", onDocMouse);
+    return () => document.removeEventListener("mousedown", onDocMouse);
+  }, []);
+
+  /* keyboard handlers: navigate list & Enter to open */
+  const handleInputKeyDown = (e) => {
+    if (!showDropdown) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.min(i + 1, filteredCourseTitles.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (activeIndex >= 0 && activeIndex < filteredCourseTitles.length) {
+        const course = filteredCourseTitles[activeIndex];
+        if (course) {
+          // programmatic navigation (safer with keyboard)
+          setSearchQuery("");
+          setShowDropdown(false);
+          setActiveIndex(-1);
+          navigate(`/dashboard/stuAllCourse/${course._id}`, { state: course });
+        }
+      }
+    } else if (e.key === "Escape") {
+      setShowDropdown(false);
+      setActiveIndex(-1);
+    }
+  };
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -73,13 +181,68 @@ const Dashboard = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="relative hidden sm:block">
+          {/* Search + autocomplete */}
+          <div ref={searchRef} className="relative hidden sm:block w-[320px]">
             <input
               type="text"
-              placeholder="Search for course..."
-              className="border px-3 py-1.5 rounded-2xl pl-10 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-44 md:w-56"
+              value={searchQuery}
+              placeholder="Search…"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowDropdown(true);
+                setActiveIndex(-1); // reset keyboard selection while typing
+              }}
+              onFocus={() => setShowDropdown(true)}
+              onKeyDown={handleInputKeyDown}
+              className="w-full border px-3 py-1.5 rounded-md pl-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              aria-autocomplete="list"
+              aria-expanded={showDropdown}
+              aria-controls="course-search-list"
+              aria-activedescendant={
+                activeIndex >= 0 ? `course-item-${activeIndex}` : undefined
+              }
             />
+
             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+            {showDropdown && (
+              <div className="absolute left-0 right-0 mt-1 z-50 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                {filteredCourseTitles.length === 0 ? (
+                  <div className="p-3 text-sm text-gray-500">
+                    No courses found.
+                  </div>
+                ) : (
+                  <ul id="course-search-list" className="divide-y">
+                    {filteredCourseTitles.map((course, i) => (
+                      <li
+                        key={course._id ?? i}
+                        className="px-0"
+                        // prevent the input from blurring before the click registers
+                        
+                      >
+                        <Link
+                          to={`/dashboard/stuAllCourse/${course._id}`}
+                          state={course}
+                          onClick={() => {
+                            // clear input and close dropdown after selecting
+                            setSearchQuery("");
+                            setShowDropdown(false);
+                            
+                            
+                          }}
+                          id={`course-item-${i}`}
+                          className={`block px-3 py-2 text-sm hover:bg-gray-50 ${
+                            i === activeIndex ? "bg-gray-100" : ""
+                          }`}
+                        >
+                          {course.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-1">

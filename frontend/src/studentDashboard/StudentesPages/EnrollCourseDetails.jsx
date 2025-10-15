@@ -667,6 +667,21 @@ export default function StudentCourseDetail() {
                           </li>
                         )}
                       </ul>
+                      <QuizModal
+                        isOpen={showModal}
+                        quiz={selectedQuiz}
+                        onClose={() => {
+                          setShowModal(false);
+                          setSelectedQuiz(null);
+                          setAnswers([]);
+                          setResult(null);
+                        }}
+                        answers={answers}
+                        setAnswers={setAnswers}
+                        onSubmit={handleSubmit}
+                        loading={loading}
+                        result={result}
+                      />
                     </div>
 
                     {/* Assignments */}
@@ -694,6 +709,151 @@ export default function StudentCourseDetail() {
                           </li>
                         )}
                       </ul>
+                      {selectedAssignment && (
+                        <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50">
+                          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+                            {/* Close */}
+                            <button
+                              onClick={() => {
+                                setSelectedAssignment(null);
+                                setSubStatus(null);
+                                setFile(null);
+                                setMsg("");
+                              }}
+                              className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
+                            >
+                              ✖
+                            </button>
+
+                            {/* Assignment Info */}
+                            <h2 className="text-xl font-bold mb-2">
+                              {selectedAssignment.title}
+                            </h2>
+                            <p className="text-gray-700 mb-4">
+                              {selectedAssignment.summary}
+                            </p>
+
+                            <h3 className="font-semibold mb-2">Questions:</h3>
+                            <ul className="list-decimal pl-5 space-y-2 text-gray-600">
+                              {selectedAssignment.questions?.map((q, index) => (
+                                <li key={index}>{q.questionText || q}</li>
+                              ))}
+                            </ul>
+
+                            <div className="border-t my-4" />
+
+                            {/* 🔹 Status */}
+                            <div className="mb-3">
+                              <h4 className="font-semibold">Your submission</h4>
+                              {statusLoading ? (
+                                <p className="text-sm text-gray-500 mt-1">
+                                  Loading status…
+                                </p>
+                              ) : subStatus ? (
+                                <div className="text-sm mt-1 space-y-1">
+                                  <p>
+                                    Status:{" "}
+                                    <span
+                                      className={
+                                        subStatus.status === "completed"
+                                          ? "text-green-600 font-medium"
+                                          : "text-yellow-700 font-medium"
+                                      }
+                                    >
+                                      {subStatus.status || "pending"}
+                                    </span>
+                                  </p>
+                                  {subStatus.submittedAt && (
+                                    <p className="text-gray-600">
+                                      Submitted:{" "}
+                                      {new Date(
+                                        subStatus.submittedAt
+                                      ).toLocaleString()}
+                                    </p>
+                                  )}
+                                  {subStatus.pdfUrl && (
+                                    <div className="flex flex-col sm:flex-row gap-2">
+                                      <p className="font-medium text-slate-700">
+                                        PDF:
+                                      </p>
+                                      <div className="flex gap-3">
+                                        <a
+                                          href={subStatus.pdfUrl}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="text-blue-600 underline"
+                                        >
+                                          View
+                                        </a>
+                                        <a
+                                          href={subStatus.pdfUrl}
+                                          download
+                                          className="text-green-600 underline"
+                                        >
+                                          Download
+                                        </a>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <p className="text-sm text-gray-500 mt-1">
+                                  No submission yet (pending).
+                                </p>
+                              )}
+                            </div>
+
+                            {/* 🔹 Upload Form */}
+                            <div className="space-y-2">
+                              <label className="block text-sm font-medium">
+                                Upload PDF
+                              </label>
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                onChange={onFileChange}
+                                className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                              />
+                              {file && (
+                                <p className="text-xs text-gray-500">
+                                  Selected: {file.name} (
+                                  {(file.size / (1024 * 1024)).toFixed(2)} MB)
+                                </p>
+                              )}
+
+                              {msg && (
+                                <p
+                                  className={`text-sm ${
+                                    msg.startsWith("✅")
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }`}
+                                >
+                                  {msg}
+                                </p>
+                              )}
+
+                              <div className="flex items-center gap-2 pt-2">
+                                <button
+                                  disabled={uploading || !file}
+                                  onClick={onSubmit}
+                                  className={`px-4 py-2 rounded-md text-white ${
+                                    uploading || !file
+                                      ? "bg-blue-300 cursor-not-allowed"
+                                      : "bg-blue-600 hover:bg-blue-700"
+                                  }`}
+                                >
+                                  {uploading
+                                    ? "Submitting…"
+                                    : subStatus?.status === "completed"
+                                    ? "Re-submit PDF"
+                                    : "Submit PDF"}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -953,7 +1113,7 @@ export default function StudentCourseDetail() {
 
       {/* Course Info + Tabs */}
       <div className="p-6">
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 relative overflow-hidden">
+        <div className="bg-white rounded-2xl  border border-slate-200 p-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full -translate-y-16 translate-x-16 opacity-60"></div>
           <h1 className="text-4xl font-bold text-slate-900 mb-6 leading-tight">
             {course.title}
@@ -1002,7 +1162,7 @@ export default function StudentCourseDetail() {
         <div className="max-w-7xl mx-auto px-0 lg:px-0 mt-8">
           <div className="flex flex-col lg:flex-row gap-12">
             <div className="flex-1 min-w-0">
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8">
+              <div className="bg-white rounded-xl  border border-slate-200 mb-8">
                 <div className="flex border-b border-slate-200 overflow-x-auto">
                   {[
                     "Overview",
@@ -1043,7 +1203,7 @@ export default function StudentCourseDetail() {
 
             {/* Sidebar */}
             <aside className="lg:w-96 flex-shrink-0">
-              <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 sticky top-8">
+              <div className="bg-white rounded-2xl  border border-slate-200 p-8 sticky top-8">
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-slate-900 mb-6">
                     This Course Includes

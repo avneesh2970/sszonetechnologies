@@ -15,50 +15,28 @@ const LessonVideoPlayer = ({ lesson, modules, isOpen, onToggle }) => {
 
   return (
     <>
-      <li className=" rounded-lg border-b p-4 my-4">
-        {/* Title and Buttons */}
-        <div className="flex justify-between items-center">
-          <div className="font-semibold text-lg text-gray-800">
-            {lesson.lessonTitle}
-            {/* <span className="text-sm text-gray-500 ml-2">
-              ({formattedTime})
-            </span> */}
-          </div>
-          
-        </div>
+      <li className="rounded-lg   ">
+  <div className="flex justify-between items-center">
+    {/* Lesson title itself acts as button */}
+    <div
+      onClick={() => {
+        onToggle();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }}
+      className={`cursor-pointer transition ${
+        isOpen
+          ? "text-blue-600 font-semibold" // active (video visible)
+          : "text-gray-800 hover:text-blue-500 font-medium" // inactive hover effect
+      }`}
+    >
+      {lesson.lessonTitle}
+    </div>
+  </div>
 
-        {/* Content */}
-        <p className="text-gray-600 my-1">{lesson.lessonContent}</p>
+  {/* Optional lesson content */}
+  
+</li>
 
-        {/* Video Toggle */}
-        <button
-          onClick={()=>{
-            onToggle() , scrollTo(0 , 0) }}
-          className=" text-white bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded-md text-sm"
-        >
-          {isOpen ? "Hide Video" : "Watch Course Video"}
-        </button>
-
-        {/* Video (kept - will still show inside the lesson list when isOpen true) */}
-        {/* {isOpen && (
-          <div className="mt-4">
-            {lesson.lessonVideoSource &&
-            ReactPlayer.canPlay(lesson.lessonVideoSource) ? (
-              <ReactPlayer
-                url={lesson.lessonVideoSource}
-                controls
-                width="100%"
-                height="360px"
-                style={{ borderRadius: "10px", overflow: "hidden" }}
-              />
-            ) : (
-              <p className="text-red-500 text-sm mt-2">
-                ⚠️ Invalid or missing video URL.
-              </p>
-            )}
-          </div>
-        )} */}
-      </li>
     </>
   );
 };

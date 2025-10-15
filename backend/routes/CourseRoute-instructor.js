@@ -158,7 +158,7 @@ router.get("/", async (req, res) => {
         populate: [
           { path: "lessons" },
           { path: "quizzes" },
-          { path: "assignments" }, 
+          { path: "assignments" },   
         ],
       })
       .populate("remarks")

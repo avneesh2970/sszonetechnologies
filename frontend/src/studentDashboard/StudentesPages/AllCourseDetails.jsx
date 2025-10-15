@@ -913,8 +913,10 @@ export default function StudentCourseFullDetails() {
   const { user, fetchCartItems } = useStudentAuth();
   const userId = user?.id || user?._id || "anon";
 
+  console.log("cykoRavish" , location.state)
   // Primary course state: prefer location.state (all-course view), else fetch
   const [course, setCourse] = useState(location.state || null);
+  
 
   // UI + player states
   const [activeTab, setActiveTab] = useState("Overview");
@@ -973,39 +975,39 @@ export default function StudentCourseFullDetails() {
   const collapseAll = () => setExpandedModules(new Set());
 
   // helper: fetch course if not provided via location.state
-  useEffect(() => {
-    if (course) return;
-    const fetchCourseById = async () => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/courses/${id}`,
-          { withCredentials: true }
-        );
-        setCourse(data);
-        if (data?.introVideo?.videoUrl)
-          setActiveVideoUrl(data.introVideo.videoUrl);
-      } catch (err) {
-        console.error("Failed to fetch course by id:", err);
-        // as fallback: try to find in purchases (enrolled view)
-        try {
-          const resp = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/api/payment/my-purchases`,
-            { withCredentials: true }
-          );
-          const purchasedCourses = resp.data.purchases.flatMap(
-            (p) => p.product
-          );
-          const matched = purchasedCourses.find((c) => c._id === id);
-          setCourse(matched || null);
-          if (matched?.introVideo?.videoUrl)
-            setActiveVideoUrl(matched.introVideo.videoUrl);
-        } catch (err2) {
-          console.error("Also failed to fetch purchases:", err2);
-        }
-      }
-    };
-    fetchCourseById();
-  }, [id, course]);
+  // useEffect(() => {
+  //   if (course) return;
+  //   const fetchCourseById = async () => {
+  //     try {
+  //       const { data } = await axios.get(
+  //         `${import.meta.env.VITE_BACKEND_URL}/api/courses/${id}`,
+  //         { withCredentials: true }
+  //       );
+  //       setCourse(data);
+  //       if (data?.introVideo?.videoUrl)
+  //         setActiveVideoUrl(data.introVideo.videoUrl);
+  //     } catch (err) {
+  //       console.error("Failed to fetch course by id:", err);
+  //       // as fallback: try to find in purchases (enrolled view)
+  //       try {
+  //         const resp = await axios.get(
+  //           `${import.meta.env.VITE_BACKEND_URL}/api/payment/my-purchases`,
+  //           { withCredentials: true }
+  //         );
+  //         const purchasedCourses = resp.data.purchases.flatMap(
+  //           (p) => p.product
+  //         );
+  //         const matched = purchasedCourses.find((c) => c._id === id);
+  //         setCourse(matched || null);
+  //         if (matched?.introVideo?.videoUrl)
+  //           setActiveVideoUrl(matched.introVideo.videoUrl);
+  //       } catch (err2) {
+  //         console.error("Also failed to fetch purchases:", err2);
+  //       }
+  //     }
+  //   };
+  //   fetchCourseById();
+  // }, [id, course]);
 
   // fetch reviews for course
   const fetchReviews = async (courseId) => {
