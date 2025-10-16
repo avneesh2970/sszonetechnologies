@@ -905,7 +905,6 @@ import { getTotalLessons, percent } from "./utils/totals";
  *   progress slider, mark-as-done on video end, add-to-cart, paid check, review modal.
  */
 
-
 export default function StudentCourseFullDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -913,10 +912,9 @@ export default function StudentCourseFullDetails() {
   const { user, fetchCartItems } = useStudentAuth();
   const userId = user?.id || user?._id || "anon";
 
-  console.log("cykoRavish" , location.state)
+  console.log("cykoRavish", location.state);
   // Primary course state: prefer location.state (all-course view), else fetch
   const [course, setCourse] = useState(location.state || null);
-  
 
   // UI + player states
   const [activeTab, setActiveTab] = useState("Overview");
@@ -1341,7 +1339,7 @@ export default function StudentCourseFullDetails() {
   const formatName = (name) => {
     if (!name) return "";
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  };  
+  };
 
   const handleShare = async () => {
     try {
@@ -1395,8 +1393,7 @@ export default function StudentCourseFullDetails() {
       console.error("Share failed:", error);
       toast.error("Could not share course");
     }
-
-  }
+  };
 
   // average rating from reviews state (fetched)
   const averageRating =
@@ -1408,7 +1405,6 @@ export default function StudentCourseFullDetails() {
   if (!course) {
     return <p className="text-center text-gray-500 mt-6">Loading course...</p>;
   }
-
 
   // ---------- Tab contents ----------
   const OverviewTab = (
@@ -1557,76 +1553,72 @@ export default function StudentCourseFullDetails() {
 
                             return (
                               <>
-                               
-                              <li
-                                key={lesson._id}
-                                className=""
-                              >
-                                <div className="flex justify-between items-center">
-                                  <div
-                                    // title acts as the toggle now
-                                    className={`font-medium transition cursor-pointer ${
-                                      openLessonId === lesson._id
-                                        ? "text-blue-600 font-semibold"
-                                        : "text-gray-800 hover:text-blue-500"
-                                    }`}
-                                    onClick={() => {
-                                      if (!paid) {
-                                        toast.info(
-                                          "This module is locked. Please enroll to access the lessons."
+                                <li key={lesson._id} className="">
+                                  <div className="flex justify-between items-center">
+                                    <div
+                                      // title acts as the toggle now
+                                      className={`font-medium transition cursor-pointer ${
+                                        openLessonId === lesson._id
+                                          ? "text-blue-600 font-semibold"
+                                          : "text-gray-800 hover:text-blue-500"
+                                      }`}
+                                      onClick={() => {
+                                        if (!paid) {
+                                          toast.info(
+                                            "This module is locked. Please enroll to access the lessons."
+                                          );
+                                          return;
+                                        }
+
+                                        const willOpen =
+                                          openLessonId !== lesson._id; // toggle
+                                        // keep the showVideo map for backward compatibility elsewhere
+                                        setShowVideo((prev) => ({
+                                          ...prev,
+                                          [lesson._id]: willOpen,
+                                        }));
+                                        setOpenLessonId(
+                                          willOpen ? lesson._id : null
                                         );
-                                        return;
-                                      }
+                                        setCurrentLessonId(
+                                          willOpen ? lesson._id : null
+                                        );
 
-                                      const willOpen =
-                                        openLessonId !== lesson._id; // toggle
-                                      // keep the showVideo map for backward compatibility elsewhere
-                                      setShowVideo((prev) => ({
-                                        ...prev,
-                                        [lesson._id]: willOpen,
-                                      }));
-                                      setOpenLessonId(
-                                        willOpen ? lesson._id : null
-                                      );
-                                      setCurrentLessonId(
-                                        willOpen ? lesson._id : null
-                                      );
+                                        setActiveVideoUrl(
+                                          willOpen
+                                            ? lesson.lessonVideoSource ||
+                                                course?.introVideo?.videoUrl ||
+                                                null
+                                            : course?.introVideo?.videoUrl ||
+                                                null
+                                        );
 
-                                      setActiveVideoUrl(
-                                        willOpen
-                                          ? lesson.lessonVideoSource ||
-                                              course?.introVideo?.videoUrl ||
-                                              null
-                                          : course?.introVideo?.videoUrl || null
-                                      );
+                                        // mark started in progress store
+                                        setProgress(userId, course._id, {
+                                          started: true,
+                                        });
 
-                                      // mark started in progress store
-                                      setProgress(userId, course._id, {
-                                        started: true,
-                                      });
+                                        // scroll to the top/player
+                                        window.scrollTo({
+                                          top: 0,
+                                          behavior: "smooth",
+                                        });
+                                      }}
+                                    >
+                                      {/* {lidx + 1}. {lesson.lessonTitle} */}
+                                      {lesson.lessonTitle}
+                                    </div>
 
-                                      // scroll to the top/player
-                                      window.scrollTo({
-                                        top: 0,
-                                        behavior: "smooth",
-                                      });
-                                    }}
-                                  >
-                                    {/* {lidx + 1}. {lesson.lessonTitle} */}
-                                     {lesson.lessonTitle}
-                                    
+                                    {/* show lock icon when disabled */}
+                                    {!paid && (
+                                      <FiLock className="text-gray-400 text-sm" />
+                                    )}
                                   </div>
-
-                                  {/* show lock icon when disabled */}
-                                  {!paid && (
-                                    <FiLock className="text-gray-400 text-sm" />
-                                  )}
-                                </div>
-{/* 
+                                  {/* 
                                 <p className="text-gray-600 text-sm mt-2">
                                   {lesson.lessonContent}
                                 </p> */}
-                              </li>
+                                </li>
                               </>
                             );
                           })
@@ -2280,7 +2272,6 @@ export default function StudentCourseFullDetails() {
                   ))}
                 </div>
               </div>
-              
 
               {/* <div className="pt-6 border-t border-slate-200">
                 <div className="flex items-center gap-4">
