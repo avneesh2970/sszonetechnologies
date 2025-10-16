@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import img1 from "../../../assets/image/img1.png";
-import { Link } from "react-router-dom";
-import { FaBook, FaClock, FaRegStar, FaTimes } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaArrowRight, FaBook, FaClock, FaRegStar, FaTimes } from "react-icons/fa";
 import { HiOutlineClock } from "react-icons/hi";
 import axios from "axios";
 import useAuth from "./hooks/useAuth";
@@ -18,7 +18,12 @@ const TabButton = ({ label, active, onClick }) => (
 );
 
 const InstructorCourse = () => {
-  const [activeTab, setActiveTab] = useState("Draft");
+  const [activeTab, setActiveTab] = useState("Published"); 
+  const navigate = useNavigate() 
+
+  const handleCreateCourse = () => {
+    navigate("/instructor/courses-add-instructor");
+  };
 
   //fetch course of instructor
   const { courses, fetchInstructorCourses } = useAuth();
@@ -35,10 +40,18 @@ const InstructorCourse = () => {
   return (
     <>
       <div className="p-6 font-sans">
-        <h1 className="text-2xl font-bold mb-4">
+        <div className="flex md:flex-row flex-col justify-between">
+          <h1 className="text-2xl font-bold mb-4">
           Courses{" "}
           <span className=" font-semibold">({filteredCoursesMain.length})</span>
         </h1>
+        <button
+          onClick={handleCreateCourse}
+          className="px-6 py-2 bg-indigo-600 w-fit text-white rounded-lg flex items-center gap-2 shadow hover:opacity-90 transition"
+        >
+          Create a New Course <FaArrowRight />
+        </button>
+        </div>
         <div className="flex space-x-6 border-b pb-2">
           <TabButton
             label="Published"

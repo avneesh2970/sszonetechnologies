@@ -18,7 +18,7 @@ const CourseIntroVideo = ({ courseId }) => {
       });
 
       toast.success(res.data.message || "Intro video added successfully!");
-      setVideoUrl(""); // reset input
+      // setVideoUrl(""); 
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Error adding intro video");

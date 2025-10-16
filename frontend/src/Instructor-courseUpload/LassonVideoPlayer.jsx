@@ -58,14 +58,14 @@ const LessonVideoPlayer = ({ lesson, modules , onLessonDeleted }) => {
 
   return (
     <>
-      <li className="bg-white rounded-lg shadow-sm p-4 my-4">
+      <li className="">
         {/* Title and Buttons */}
         <div className="flex justify-between items-center">
-          <div className=" font-semibold text-gray-800">
+          <div className={` font-semibold  ${showVideo ? "text-blue-500" : ""} `}  onClick={() => setShowVideo(!showVideo)}>
             {lesson.lessonTitle}
-            <span className="text-sm text-gray-500 ml-2">
+            {/* <span className="text-sm text-gray-500 ml-2">
               ({formattedTime})
-            </span>
+            </span> */}
           </div>
           <div className="flex gap-3">
             <button
@@ -85,16 +85,6 @@ const LessonVideoPlayer = ({ lesson, modules , onLessonDeleted }) => {
           </div>
         </div>
 
-        {/* Content */}
-        <p className="text-gray-600 mt-2">{lesson.lessonContent}</p>
-
-        {/* Video Toggle */}
-        <button
-          onClick={() => setShowVideo(!showVideo)}
-          className="mt-3 text-white bg-blue-600 hover:bg-blue-700 px-4 py-1 rounded-md text-sm"
-        >
-          {showVideo ? "Hide Video" : "Watch Course Video"}
-        </button>
 
         {/* Video */}
         {showVideo && (

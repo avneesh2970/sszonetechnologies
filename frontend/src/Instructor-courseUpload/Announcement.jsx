@@ -396,13 +396,7 @@ export default function AnnouncementEditor({
     <div className={`w-full ${className}`}>
       <form onSubmit={handleSubmit} className="border rounded-lg overflow-hidden shadow-sm bg-white">
         <div className="p-3 border-b">
-          <input
-            value={title}
-            // onChange={(e) => setTitle(e.target.value)}
-            placeholder="Announcement title"
-            className="w-full p-2 border rounded focus:outline-none"
-            aria-label="Announcement title"
-          />
+          
         </div>
 
         {/* Toolbar */}

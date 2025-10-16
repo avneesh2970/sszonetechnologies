@@ -19,6 +19,7 @@ import QuizForm from "../../../Instructor-courseUpload/UploadQuiz";
 import AddAssignment from "../../../Instructor-courseUpload/Assignment";
 import InsAnnouncement from "../../../Instructor-courseUpload/Announcement";
 import InstructorCourseSubmissions from "./OrderHistory";
+import AdminQuizModal from "../../adminDashboard/adminPage/AdminQuizModal";
 
 const InstructorCourseDetails = () => {
   const location = useLocation();
@@ -47,7 +48,14 @@ const InstructorCourseDetails = () => {
   const [subStatus, setSubStatus] = useState(null);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState(""); 
+
+   const [showModal, setShowModal] = useState(false);
+    const [selectedQuiz, setSelectedQuiz] = useState(null);
+    const [answers, setAnswers] = useState([]);
+    // const [loading, setLoading] = useState(false);
+    const [result, setResult] = useState(null);
+  
 
   // Fetch student submission status when popup opens
   useEffect(() => {
@@ -253,6 +261,131 @@ const InstructorCourseDetails = () => {
     } catch (error) {
       toast.error("Failed to update remark status: " + error.message);
     }
+  };  
+
+  // put this inside your CourseDetails component (replace your old openModal)
+  const openModal = async (quizOrId) => {
+    const base = import.meta.env.VITE_BACKEND_URL || "";
+
+    // helper: shallow search for a "questions" array anywhere in an object
+    function findQuestions(obj) {
+      if (!obj || typeof obj !== "object") return null;
+      if (Array.isArray(obj.questions)) return obj;
+      // search top-level keys
+      for (const k of Object.keys(obj)) {
+        const v = obj[k];
+        if (Array.isArray(v) && k.toLowerCase().includes("question")) {
+          // e.g. data.questions or data.quizQuestions
+          return { questions: v, ...obj };
+        }
+        if (v && typeof v === "object") {
+          // nested object (one level deep)
+          if (Array.isArray(v.questions)) return v;
+        }
+      }
+      return null;
+    }
+
+    try {
+      // if a fully-populated quiz object passed (has questions array), use it directly
+      if (
+        quizOrId &&
+        typeof quizOrId === "object" &&
+        Array.isArray(quizOrId.questions)
+      ) {
+        console.log(
+          "openModal: using passed-in populated quiz object",
+          quizOrId
+        );
+        setSelectedQuiz(quizOrId);
+        setAnswers(new Array(quizOrId.questions.length).fill(null));
+        setResult(null);
+        setShowModal(true);
+        return;
+      }
+
+      // extract id if an object was passed
+      const quizId = typeof quizOrId === "string" ? quizOrId : quizOrId?._id;
+      if (!quizId) {
+        toast.error("Invalid quiz id");
+        return;
+      }
+
+      // try two common endpoints (tolerant)
+      const endpoints = [
+        `${base}/api/quiz/${quizId}`,
+        `${base}/api/quizzes/${quizId}`,
+      ];
+
+      let resp = null;
+      let data = null;
+      for (const url of endpoints) {
+        try {
+          console.log("openModal: fetching quiz from", url);
+          resp = await axios.get(url, { withCredentials: true });
+          data = resp.data;
+          console.log("openModal: raw response for", url, resp);
+          // if we got something, break and inspect
+          if (data) break;
+        } catch (err) {
+          console.warn(
+            "openModal: fetch failed for",
+            url,
+            err?.response?.status || err.message
+          );
+          // continue to try next endpoint
+        }
+      }
+
+      if (!data) {
+        throw new Error("No response from quiz endpoints");
+      }
+
+      // possible shapes:
+      // 1) { success: true, quiz: { ... } }
+      // 2) { quiz: { ... } }
+      // 3) { ...quizFields... } (quiz object directly)
+      // 4) { data: { quiz: {...} } } etc.
+
+      // try to extract the quiz object
+      let quizCandidate = data.quiz || data.data?.quiz || data.data || data;
+
+      // If quizCandidate still has wrapper keys (e.g. { success:true, quiz: {...} }), search deeper
+      if (!Array.isArray(quizCandidate?.questions)) {
+        const maybe =
+          findQuestions(data) ||
+          findQuestions(data.quiz) ||
+          findQuestions(data.data) ||
+          findQuestions(quizCandidate);
+        if (maybe) {
+          // maybe is object that contains questions
+          quizCandidate = maybe;
+        }
+      }
+
+      // final check
+      if (!quizCandidate || !Array.isArray(quizCandidate.questions)) {
+        console.error(
+          "openModal: could not find questions in the server response. Full response:",
+          data
+        );
+        toast.error(
+          "Quiz data missing questions — check server response (see console)."
+        );
+        return;
+      }
+
+      // success — set state
+      setSelectedQuiz(quizCandidate);
+      setAnswers(new Array(quizCandidate.questions.length).fill(null));
+      setResult(null);
+      setShowModal(true);
+    } catch (err) {
+      console.error("openModal error:", err);
+      toast.error(
+        err.response?.data?.message || err.message || "Failed to load quiz"
+      );
+    }
   };
 
   const content = {
@@ -420,53 +553,37 @@ const InstructorCourseDetails = () => {
             {/* Assignments Section */}
             <div className="mt-4">
               <h4 className="text-sm font-medium text-gray-700">
-                Assignments:
+                Quizzes:
               </h4>
               <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
-                {module.assignments?.length > 0 ? (
-                  module.assignments.map((assignment) => (
+                {module.quizzes?.length > 0 ? (
+                  module.quizzes.map((q) => (
                     <li
-                      key={assignment._id}
-                      className="flex justify-between cursor-pointer  hover:underline hover:text-blue-500"
-                      onClick={() => setSelectedAssignment(assignment)} // open popup
+                      key={q._id}
+                      className={`flex justify-between items-center cursor-pointer hover:underline hover:text-blue-500`}
+                      onClick={() => {
+                        // keep your openModal behavior
+                        openModal(q);
+                      }}
                     >
-                      {assignment.title} <span>full-details</span>
+                      <div className="flex items-center gap-2">{q.title}</div>
+                      <span> Quiz Details</span>
                     </li>
                   ))
                 ) : (
                   <li className="text-gray-400 italic">
-                    No assignments in this module.
+                    No Quiz in this module.
                   </li>
                 )}
               </ul>
-              {selectedAssignment && (
-                <div className="fixed inset-0 bg-black/20 bg-opacity-50 flex justify-center items-center z-50">
-                  <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
-                    {/* Close button */}
-                    <button
-                      onClick={() => setSelectedAssignment(null)}
-                      className="absolute top-2 right-2 text-gray-600 hover:text-red-600 text-xl"
-                    >
-                      ✖
-                    </button>
-
-                    {/* Assignment Details */}
-                    <h2 className="text-xl font-bold mb-2">
-                      {selectedAssignment.title}
-                    </h2>
-                    <p className="text-gray-700 mb-4">
-                      {selectedAssignment.summary}
-                    </p>
-
-                    <h3 className="font-semibold mb-2">Questions:</h3>
-                    <ul className="list-decimal pl-5 space-y-2 text-gray-600">
-                      {selectedAssignment.questions?.map((q, index) => (
-                        <li key={index}>{q.questionText}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
+               <AdminQuizModal
+                              isOpen={showModal}
+                              quiz={selectedQuiz}
+                              onClose={() => {
+                                setShowModal(false);
+                                setSelectedQuiz(null);
+                              }}
+                            />
             </div>
 
             {/* new assignment with form submit  */}
@@ -526,7 +643,7 @@ const InstructorCourseDetails = () => {
                     <div className="border-t my-4" />
 
                     {/* Status */}
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                       <h4 className="font-semibold">Your submission</h4>
                       {statusLoading ? (
                         <p className="text-sm text-gray-500 mt-1">
@@ -571,10 +688,10 @@ const InstructorCourseDetails = () => {
                           No submission yet (pending).
                         </p>
                       )}
-                    </div>
+                    </div> */}
 
                     {/* Upload form */}
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <label className="block text-sm font-medium">
                         Upload PDF
                       </label>
@@ -620,7 +737,8 @@ const InstructorCourseDetails = () => {
                             : "Submit PDF"}
                         </button>
                       </div>
-                    </div>
+                    </div> */}
+                    
                   </div>
                 </div>
               )}
@@ -783,7 +901,7 @@ const InstructorCourseDetails = () => {
 
   return (
     <>
-      <div className="relative p-3">
+      <div className="relative ">
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
@@ -995,3 +1113,4 @@ const InstructorCourseDetails = () => {
 };
 
 export default InstructorCourseDetails;
+

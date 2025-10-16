@@ -40,32 +40,32 @@ const AdminOutlet = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-const searchRef = useRef(null);
+  const searchRef = useRef(null);
 
-/* filtered list updates whenever courses or searchQuery changes */
-const filteredCourseTitles = useMemo(() => {
-  const q = String(searchQuery).trim().toLowerCase();
-  if (q === "") {
-    // decide: return all courses when empty or return []
-    // returning all helps the admin quickly pick from list when they focus the input.
-    return courses;
-  }
-  return (courses || []).filter((c) =>
-    (c.title || "").toLowerCase().includes(q)
-  );
-}, [courses, searchQuery]);
-
-/* click-outside handler to close dropdown reliably */
-useEffect(() => {
-  const onDocMouse = (e) => {
-    if (!searchRef.current) return;
-    if (!searchRef.current.contains(e.target)) {
-      setShowDropdown(false);
+  /* filtered list updates whenever courses or searchQuery changes */
+  const filteredCourseTitles = useMemo(() => {
+    const q = String(searchQuery).trim().toLowerCase();
+    if (q === "") {
+      // decide: return all courses when empty or return []
+      // returning all helps the admin quickly pick from list when they focus the input.
+      return courses;
     }
-  };
-  document.addEventListener("mousedown", onDocMouse);
-  return () => document.removeEventListener("mousedown", onDocMouse);
-}, []);
+    return (courses || []).filter((c) =>
+      (c.title || "").toLowerCase().includes(q)
+    );
+  }, [courses, searchQuery]);
+
+  /* click-outside handler to close dropdown reliably */
+  useEffect(() => {
+    const onDocMouse = (e) => {
+      if (!searchRef.current) return;
+      if (!searchRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", onDocMouse);
+    return () => document.removeEventListener("mousedown", onDocMouse);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -251,53 +251,55 @@ useEffect(() => {
         </div>
 
         <div className="flex items-center space-x-4">
-          
           {/* Search + autocomplete */}
-<div ref={searchRef} className="relative hidden sm:block w-[320px]">
-  <input
-    type="text"
-    value={searchQuery}
-    placeholder="Search…"
-    onChange={(e) => {
-      setSearchQuery(e.target.value);
-      setShowDropdown(true);
-    }}
-    onFocus={() => setShowDropdown(true)}
-    className="w-full border px-3 py-1.5 rounded-md pl-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  />
+          <div ref={searchRef} className="relative hidden sm:block w-[320px]">
+            <input
+              type="text"
+              value={searchQuery}
+              placeholder="Search…"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
+              className="w-full border px-3 py-1.5 rounded-md pl-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
 
-  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
 
-  {showDropdown && (
-    <div className="absolute left-0 right-0 mt-1 z-50 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
-      {filteredCourseTitles.length === 0 ? (
-        <div className="p-3 text-sm text-gray-500">No courses found.</div>
-      ) : (
-        <ul className="divide-y">
-          {filteredCourseTitles.map((course, i) => (
-            <li key={course._id ?? i} className="px-0">
-  <button
-    type="button"
-    onClick={() => {
-      // navigate and pass the course object as state (more explicit & reliable)
-      navigate(`/admin/adminCourseDetails/${course._id}`, { state: course });
-      setSearchQuery("");
-      setShowDropdown(false);
-      setSidebarOpen(false); // optional: close sidebar on mobile
-    }}
-    className="w-full text-left block px-3 py-2 text-sm hover:bg-gray-50"
-  >
-    {course.title}
-  </button>
-</li>
-
-          ))}
-        </ul>
-      )}
-    </div>
-  )}
-</div>
-
+            {showDropdown && (
+              <div className="absolute left-0 right-0 mt-1 z-50 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                {filteredCourseTitles.length === 0 ? (
+                  <div className="p-3 text-sm text-gray-500">
+                    No courses found.
+                  </div>
+                ) : (
+                  <ul className="divide-y">
+                    {filteredCourseTitles.map((course, i) => (
+                      <li key={course._id ?? i} className="px-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            // navigate and pass the course object as state (more explicit & reliable)
+                            navigate(
+                              `/admin/adminCourseDetails/${course._id}`,
+                              { state: course }
+                            );
+                            setSearchQuery("");
+                            setShowDropdown(false);
+                            setSidebarOpen(false); // optional: close sidebar on mobile
+                          }}
+                          className="w-full text-left block px-3 py-2 text-sm hover:bg-gray-50"
+                        >
+                          {course.title}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
 
           <button
             className="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700"
