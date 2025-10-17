@@ -4,18 +4,39 @@ import { useStudentAuth } from "./studentAuth"; // adjust path
 import { getProgress, setProgress } from "./utils/ProgressStore"; // same store as before
 import { getTotalLessons, percent } from "./utils/totals";        // same helpers
 
+
+function shortWords(text = "", words = 4) {
+  const parts = (text || "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= words) return text;
+  return parts.slice(0, words).join(" ") + "...";
+}
+
 // Small card per course with a range slider
 function CourseProgressRow({ course, userId, onChanged }) {
   const total = getTotalLessons(course);
   const { started, completedLessons } = getProgress(userId, course._id);
   const pct = percent(completedLessons, total);
 
+  const displayTitle = shortWords(course.title, 4); // change 4 -> 5 if you prefer 5 words
+
+
   return (
     
     <div className="">
   {/* Course title + % */}
   <div className="flex items-center justify-between">
-    <div className="font-medium text-slate-800 truncate">{course.title}  <span className="text-xs ml-1 text-gray-400 font-normal"> {completedLessons}/{total} lessons</span></div>
+    <div className="min-w-0">
+          <div
+            className="font-medium text-slate-800 text-sm md:text-base break-words"
+            title={course.title} // shows full title on hover
+          >
+            {displayTitle}
+          </div>
+
+          <div className="text-xs text-gray-400 mt-0.5">
+            {completedLessons}/{total} lessons
+          </div>
+        </div>
     <div className="text-sm font-medium text-blue-600">{pct}%</div>
   </div>
 

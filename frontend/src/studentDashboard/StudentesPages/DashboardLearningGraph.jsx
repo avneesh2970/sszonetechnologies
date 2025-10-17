@@ -116,14 +116,15 @@ export default function DashboardLearningGraph() {
       {/* Stacked bar: Per-course breakdown */}
       <div className="p-4 rounded-xl border border-gray-400 bg-white shadow-sm">
         <div className=" mb-3">
-          <h3 className="text-lg font-semibold text-slate-800">Per-Course Progress</h3>
+          <h3 className="text-lg font-semibold text-slate-800">Per-Course Progress </h3>
           <span className="text-xs text-slate-500">Completed vs Remaining</span>
         </div>
 
-        <div className="h-64 w-full">
+      <div className="h-64 w-full">
           
           <DashboardCourseProgress/>
         </div>
+
       </div>
     </div>
   );

@@ -133,7 +133,7 @@ const Overview = () => {
         <div className="xl:col-span-2 bg-white rounded-xl   p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">
-              Learning Progress
+              Learning Progress 
             </h3>
           </div>
           <DashboardLearningGraph />

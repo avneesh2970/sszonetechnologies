@@ -145,11 +145,11 @@ const Dashboard = () => {
     },
     { to: "/dashboard/allCourse", icon: <FaBookOpen />, label: " All Courses" },
     { to: "/dashboard/myQuiz", icon: <MdQuiz />, label: "My Quiz" },
-    {
-      to: "/dashboard/assignments",
-      icon: <BiBookBookmark />,
-      label: "Assignments",
-    },
+    // {
+    //   to: "/dashboard/assignments",
+    //   icon: <BiBookBookmark />,
+    //   label: "Assignments",
+    // },
     { to: "/dashboard/myOrder", icon: <FaDollarSign />, label: "My Order" },
     { to: "/dashboard/profile", icon: <MdPerson />, label: "My Profile" },
     { to: "/dashboard/review", icon: <MdRateReview />, label: "Reviews" },
