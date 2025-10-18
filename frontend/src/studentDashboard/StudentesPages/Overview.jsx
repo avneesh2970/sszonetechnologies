@@ -139,44 +139,7 @@ const Overview = () => {
           <DashboardLearningGraph />
         </div>
 
-        {/* Popular Courses */}
-        {/* <div className="bg-white rounded-xl  border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Popular Courses
-            </h3>
-            <button className="text-blue-600 text-sm font-medium hover:text-blue-700">
-              View All
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {feedbacks.map((course, index) => (
-              <div
-                key={index}
-                className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 cursor-pointer group"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                    {course.course}
-                  </h4>
-                  <div className="flex items-center space-x-1">
-                    <FaStar className="w-4 h-4 text-yellow-400" />
-                    <span className="text-sm text-gray-600">
-                      {course.rating}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span className="flex items-center space-x-1">
-                    <FaUserGraduate className="w-3 h-3" />
-                    <span>{course.enrolled}</span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div> */}
+       
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ function CourseProgressRow({ course, userId, onChanged }) {
   <div className="flex items-center justify-between">
     <div className="min-w-0">
           <div
-            className="font-medium text-slate-800 text-sm md:text-base break-words"
+            className="font-medium text-slate-800 text-sm md:text-base break-words cursor-pointer"
             title={course.title} // shows full title on hover
           >
             {displayTitle}

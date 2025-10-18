@@ -120,7 +120,7 @@ export default function DashboardLearningGraph() {
           <span className="text-xs text-slate-500">Completed vs Remaining</span>
         </div>
 
-      <div className="h-64 w-full">
+      <div className="h-64 w-full overflow-y-scroll scrollbar-thin-custom pr-2">
           
           <DashboardCourseProgress/>
         </div>

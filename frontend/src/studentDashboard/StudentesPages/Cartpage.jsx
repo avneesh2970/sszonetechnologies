@@ -4,10 +4,11 @@ import { IoMdClose } from "react-icons/io";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
-import { useCartContext } from "../context/CartContext";
+// import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
+import { useCartContext } from "../../context/CartContext";
 
-function CartItems() {
+
+function CartPage() {
   // const [cartItems, setCartItems] = useState([]);
   const { cartItems, fetchCartItems } = useCartContext();
   const [promoCode, setPromoCode] = useState("");
@@ -296,4 +297,4 @@ function CartItems() {
   );
 }
 
-export default CartItems;
+export default CartPage;
