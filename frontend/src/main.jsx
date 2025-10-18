@@ -180,13 +180,13 @@ const router = createBrowserRouter([
       { path: "announcement", element: <Announcement /> },
       { path: "blogs", element: <AdminBlogs /> },
       { path: "blogdetail/:id", element: <AdminBlogDetailPage /> },
-      
+      { path : "instructor-signup" , element : <InstructorSignup />},
       { path: "setting", element: <AdminSettings /> },
       { path: "logout", element: <AdminLogout /> },
     ],
   },
   { path: "/admin/login", element: <Login /> },
-  { path: "/instructor/signup", element: <InstructorSignup /> },
+  // { path: "/instructor/signup", element: <InstructorSignup /> },
   { path: "/instructor/login", element: <InstructorLogin /> },
 ]);
 

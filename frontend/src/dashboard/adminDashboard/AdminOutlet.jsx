@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useNavigate, NavLink, Link } from "react-router-dom";
-import { FaSearch, FaBars, FaTimes, FaCreditCard } from "react-icons/fa";
+import { FaSearch, FaBars, FaTimes, FaCreditCard, FaUser } from "react-icons/fa";
 import {
   MdDashboard,
   MdMessage,
@@ -158,7 +158,7 @@ const AdminOutlet = () => {
             <span>Reviews</span>
           </NavLink>
 
-          <NavLink
+          {/* <NavLink
             to="/admin/quizAttempt"
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
@@ -167,7 +167,7 @@ const AdminOutlet = () => {
           >
             <MdQuiz />
             <span>Quiz Attempt</span>
-          </NavLink>
+          </NavLink> */}
 
           {/* <NavLink
             to="/admin/category"
@@ -211,6 +211,17 @@ const AdminOutlet = () => {
           >
             <FaCreditCard />
             <span>Blogs</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/instructor-signup"
+            onClick={() => setSidebarOpen(false)}
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            <FaUser />
+            <span>Add Instructor </span>
           </NavLink>
 
           <hr className="my-4" />
