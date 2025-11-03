@@ -188,7 +188,7 @@ export default function InstructorSignUp() {
             type="submit"
             disabled={loading}
             className={`w-full mt-2 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-white ${
-              loading ? "bg-teal-300 cursor-not-allowed" : "bg-teal-600 hover:bg-teal-700"
+              loading ? "bg-blue-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
             {loading ? (

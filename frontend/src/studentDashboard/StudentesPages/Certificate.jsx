@@ -1,69 +1,92 @@
-import React from "react";
-import logo from "../../assets/image/logo.png"
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import axios from "axios";
+import { useReactToPrint } from "react-to-print";
+import { useStudentAuth } from "./studentAuth";
+import { getProgress } from "./utils/ProgressStore";
 
-const Certificate = ({
-  name = "xyz",
-  id = "NN/N/164/970",
-  role = "Data Analyst",
-  company = "SSZone",
-  startDate = "SEPTEMBER 15, 2024",
-  endDate = "DECEMBER 15, 2024",  
+const CertificatePage = () => {
+  const location = useLocation();
+  const { id } = useParams();
+  const { user } = useStudentAuth();
 
-}) =>  
-   {
-    
+  const [course, setCourse] = useState(location.state || null);
+
+  const certRef = useRef(null);
+
+  const handlePrint = useReactToPrint({
+    contentRef: certRef,
+    documentTitle: `Certificate-${user?.name}-${course?.title}`,
+    pageStyle: `
+      @page { size: A4 portrait; margin: 12mm; }
+      @media print {
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .no-print { display: none !important; }
+      }
+    `,
+  });
+
+  useEffect(() => {
+    if (!course) {
+      axios
+        .get(`${import.meta.env.VITE_BACKEND_URL}/api/courses/${id}`)
+        .then((res) => setCourse(res.data));
+    }
+  }, [course, id]);
+
+  if (!course) return <p>Loading Certificate...</p>;
+
   return (
-    <div className="flex justify-center items-center bg-gray-200 min-h-screen p-10">
-      <div className="relative w-[900px] h-[600px] bg-white shadow-2xl border-8 border-blue-800 rounded-xl overflow-hidden">
-        {/* Left Blue Wave */}
-        {/* <div className="absolute left-0 top-0 h-full w-[120px] bg-gradient-to-b from-blue-800 to-blue-400"></div> */}
-
-        {/* Header Section */}
-        <div className="  text-center mt-2">
-          <h2 className="text-4xl font-bold text-blue-800 uppercase tracking-wide">
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="flex justify-center mt-4">
+        <div
+          ref={certRef}
+          className="bg-white border-2 border-blue-500 w-[800px] p-10 text-center shadow-xl"
+        >
+          <h1 className="text-4xl font-extrabold mb-3 tracking-wide">
             Certificate of Completion
-          </h2>
-        <img src={logo} alt="logo" className="flex justify-center" />
-        </div>
+          </h1>
 
-        {/* Body Content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-10">
-          <p className="text-gray-600 text-lg mt-10">This is Presented To</p>
-          <h1 className="text-4xl font-bold text-blue-900 mt-2 border-b">{name}</h1>
-          <p className="text-sm text-gray-500 mt-1">ID - {id}</p>
-
-          <p className="mt-6 text-gray-700 text-lg leading-relaxed max-w-3xl">
-            Has successfully completed internship on{" "}
-            <span className="font-semibold">{role}</span> at{" "}
-            <span className="font-semibold text-blue-800">{company}</span> for a
-            span of three months from{" "}
-            <span className="font-semibold">{startDate}</span> to{" "}
-            <span className="font-semibold">{endDate}</span>.
+          <p className="text-lg text-gray-600 mb-6 font-medium">
+            This certificate is proudly presented to
           </p>
-        </div>
 
-        {/* Footer Section */}
-        <div className="absolute bottom-10 flex justify-between w-[80%] left-1/2 -translate-x-1/2 text-center">
-          <div>
-            <p className="text-sm font-semibold text-gray-700">#StartupIndia</p>
-            <p className="text-xs text-gray-500 mt-1">Team Leader</p>
-          </div>
+          <h2 className="text-4xl font-bold text-blue-700 uppercase mb-4">
+            {user?.name}
+          </h2>
 
-          <div className="text-center">
-            <p className="font-semibold text-gray-700">Chief Executive Officer</p>
-            <p className="text-xs text-gray-500 mt-1">{company}</p>
+          <p className="text-lg text-gray-700 mb-4">
+            for successfully completing the professional training program titled
+          </p>
+
+          <h3 className="text-2xl font-semibold text-green-700 mb-6 italic">
+            “{course?.title}”
+          </h3>
+
+          <p className="text-base text-gray-700 max-w-[600px] mx-auto leading-relaxed">
+            This certification acknowledges the dedication, hard work, and
+            commitment demonstrated in mastering the skills and knowledge
+            covered throughout the course. The participant has shown outstanding
+            performance and competence in completing all required modules and
+            assessments.
+          </p>
+
+          <div className="mt-12 text-sm text-gray-500">
+            <p>Authorized Signature</p>
+            <p className="border-t border-gray-400 w-40 mx-auto mt-2"></p>
           </div>
         </div>
-
-        {/* Seal Icon */}
-        <div className="absolute right-8 bottom-8">
-          <div className="h-20 w-20 rounded-full border-4 border-blue-700 flex items-center justify-center">
-            <span className="text-blue-700 font-bold text-lg">Seal</span>
-          </div>
-        </div>
+      </div>
+      <div className="text-end">
+        <button
+          onClick={handlePrint}
+          className="no-print px-4 py-2 bg-blue-600 text-white rounded-md "
+        >
+          Print / Save as PDF
+        </button>
       </div>
     </div>
   );
 };
 
-export default Certificate;
+export default CertificatePage;

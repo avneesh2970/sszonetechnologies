@@ -87,68 +87,7 @@ const InstructorCourseDetails = () => {
     fetchStatus();
   }, [selectedAssignment]);
 
-  // Validate PDF file
-  const onFileChange = (e) => {
-    setMsg("");
-    const f = e.target.files?.[0];
-    if (!f) return setFile(null);
-
-    if (f.type !== "application/pdf") {
-      setMsg("Only PDF files are allowed.");
-      e.target.value = "";
-      return setFile(null);
-    }
-    if (f.size > 10 * 1024 * 1024) {
-      setMsg("File too large. Max 10MB.");
-      e.target.value = "";
-      return setFile(null);
-    }
-    setFile(f);
-  };
-
-  // Submit assignment PDF
-  const onSubmit = async () => {
-    if (!selectedAssignment?._id) return;
-    if (!file) {
-      setMsg("Please choose a PDF file first.");
-      return;
-    }
-
-    setUploading(true);
-    setMsg("");
-
-    try {
-      const form = new FormData();
-      form.append("pdf", file);
-
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/assignments/${
-          selectedAssignment._id
-        }/submit`,
-        {
-          method: "POST",
-          credentials: "include", // ✅ include cookies automatically
-          body: form,
-        }
-      );
-
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Submission failed");
-
-      setMsg("✅ Assignment submitted successfully.");
-      setFile(null);
-      setSubStatus((prev) => ({
-        ...(prev || {}),
-        status: "completed",
-        pdfUrl: data.submission?.pdfUrl || prev?.pdfUrl,
-        submittedAt: data.submission?.submittedAt || new Date().toISOString(),
-      }));
-    } catch (err) {
-      setMsg(err.message || "Submission error");
-    } finally {
-      setUploading(false);
-    }
-  };
+  
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -905,7 +844,7 @@ const InstructorCourseDetails = () => {
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-6 left-6 bg-white/80 hover:bg-white text-gray-800 md:font-medium md:px-4 md:py-2 px-2 py-0.5 rounded-full shadow-md flex items-center gap-2 transition"
+          className="absolute top-6 left-6 bg-white/80 hover:bg-white text-gray-800 md:font-medium md:px-4 md:py-2 px-2 py-0.5 rounded-full shadow-md flex items-center gap-2 transition cursor-pointer"
         >
           ← Back
         </button>

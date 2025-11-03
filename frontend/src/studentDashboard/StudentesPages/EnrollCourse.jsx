@@ -79,8 +79,13 @@ const EnrollCourse = () => {
 
     return (
       <div className="bg-white  rounded-lg shadow-md w-72 flex flex-col justify-between">
-        {console.log("purchases" , purchases)}
-        <div className="relative cursor-pointer " onClick={()=>navigate(`/dashboard/enrollCourseDetails/${course._id}`)}>
+        {console.log("purchases", purchases)}
+        <div
+          className="relative cursor-pointer "
+          onClick={() =>
+            navigate(`/dashboard/enrollCourseDetails/${course._id}`)
+          }
+        >
           <img
             src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
             alt={course.title}
@@ -156,14 +161,15 @@ const EnrollCourse = () => {
             </button>
           ) : (
             <button
-  onClick={() =>
-    navigate(`/dashboard/certificates/${course._id}`, { state: course })
-  }
-  className="mt-3 w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition cursor-pointer"
->
-  Download Certificate
-</button>
-
+              onClick={() =>
+                navigate(`/dashboard/certificates/${course._id}`, {
+                  state: course,
+                })
+              }
+              className="mt-3 w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition cursor-pointer"
+            >
+              Download Certificate
+            </button>
           )}
         </div>
       </div>
