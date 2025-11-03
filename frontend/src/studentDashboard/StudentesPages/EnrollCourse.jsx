@@ -156,11 +156,14 @@ const EnrollCourse = () => {
             </button>
           ) : (
             <button
-              onClick={() => navigate(`/dashboard/certificates/${course._id}`)}
-              className="mt-3 w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition cursor-pointer"
-            >
-              Download Certificate
-            </button>
+  onClick={() =>
+    navigate(`/dashboard/certificates/${course._id}`, { state: course })
+  }
+  className="mt-3 w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition cursor-pointer"
+>
+  Download Certificate
+</button>
+
           )}
         </div>
       </div>

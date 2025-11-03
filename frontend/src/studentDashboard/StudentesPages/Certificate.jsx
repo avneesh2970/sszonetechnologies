@@ -7,8 +7,11 @@ const Certificate = ({
   role = "Data Analyst",
   company = "SSZone",
   startDate = "SEPTEMBER 15, 2024",
-  endDate = "DECEMBER 15, 2024",
-}) => {
+  endDate = "DECEMBER 15, 2024",  
+
+}) =>  
+   {
+    
   return (
     <div className="flex justify-center items-center bg-gray-200 min-h-screen p-10">
       <div className="relative w-[900px] h-[600px] bg-white shadow-2xl border-8 border-blue-800 rounded-xl overflow-hidden">
