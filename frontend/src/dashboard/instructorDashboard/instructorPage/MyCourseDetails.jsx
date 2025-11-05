@@ -48,14 +48,13 @@ const InstructorCourseDetails = () => {
   const [subStatus, setSubStatus] = useState(null);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [msg, setMsg] = useState(""); 
+  const [msg, setMsg] = useState("");
 
-   const [showModal, setShowModal] = useState(false);
-    const [selectedQuiz, setSelectedQuiz] = useState(null);
-    const [answers, setAnswers] = useState([]);
-    // const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState(null);
-  
+  const [showModal, setShowModal] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [answers, setAnswers] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
   // Fetch student submission status when popup opens
   useEffect(() => {
@@ -87,7 +86,68 @@ const InstructorCourseDetails = () => {
     fetchStatus();
   }, [selectedAssignment]);
 
-  
+  // Validate PDF file
+  const onFileChange = (e) => {
+    setMsg("");
+    const f = e.target.files?.[0];
+    if (!f) return setFile(null);
+
+    if (f.type !== "application/pdf") {
+      setMsg("Only PDF files are allowed.");
+      e.target.value = "";
+      return setFile(null);
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      setMsg("File too large. Max 10MB.");
+      e.target.value = "";
+      return setFile(null);
+    }
+    setFile(f);
+  };
+
+  // Submit assignment PDF
+  const onSubmit = async () => {
+    if (!selectedAssignment?._id) return;
+    if (!file) {
+      setMsg("Please choose a PDF file first.");
+      return;
+    }
+
+    setUploading(true);
+    setMsg("");
+
+    try {
+      const form = new FormData();
+      form.append("pdf", file);
+
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/assignments/${
+          selectedAssignment._id
+        }/submit`,
+        {
+          method: "POST",
+          credentials: "include", // ✅ include cookies automatically
+          body: form,
+        }
+      );
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || "Submission failed");
+
+      setMsg("✅ Assignment submitted successfully.");
+      setFile(null);
+      setSubStatus((prev) => ({
+        ...(prev || {}),
+        status: "completed",
+        pdfUrl: data.submission?.pdfUrl || prev?.pdfUrl,
+        submittedAt: data.submission?.submittedAt || new Date().toISOString(),
+      }));
+    } catch (err) {
+      setMsg(err.message || "Submission error");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -200,7 +260,7 @@ const InstructorCourseDetails = () => {
     } catch (error) {
       toast.error("Failed to update remark status: " + error.message);
     }
-  };  
+  };
 
   // put this inside your CourseDetails component (replace your old openModal)
   const openModal = async (quizOrId) => {
@@ -491,9 +551,7 @@ const InstructorCourseDetails = () => {
 
             {/* Assignments Section */}
             <div className="mt-4">
-              <h4 className="text-sm font-medium text-gray-700">
-                Quizzes:
-              </h4>
+              <h4 className="text-sm font-medium text-gray-700">Quizzes:</h4>
               <ul className="list-disc pl-5 space-y-1 text-sm mt-2">
                 {module.quizzes?.length > 0 ? (
                   module.quizzes.map((q) => (
@@ -515,14 +573,14 @@ const InstructorCourseDetails = () => {
                   </li>
                 )}
               </ul>
-               <AdminQuizModal
-                              isOpen={showModal}
-                              quiz={selectedQuiz}
-                              onClose={() => {
-                                setShowModal(false);
-                                setSelectedQuiz(null);
-                              }}
-                            />
+              <AdminQuizModal
+                isOpen={showModal}
+                quiz={selectedQuiz}
+                onClose={() => {
+                  setShowModal(false);
+                  setSelectedQuiz(null);
+                }}
+              />
             </div>
 
             {/* new assignment with form submit  */}
@@ -580,104 +638,6 @@ const InstructorCourseDetails = () => {
                     </ul>
 
                     <div className="border-t my-4" />
-
-                    {/* Status */}
-                    {/* <div className="mb-3">
-                      <h4 className="font-semibold">Your submission</h4>
-                      {statusLoading ? (
-                        <p className="text-sm text-gray-500 mt-1">
-                          Loading status…
-                        </p>
-                      ) : subStatus ? (
-                        <div className="text-sm mt-1 space-y-1">
-                          <p>
-                            Status:{" "}
-                            <span
-                              className={
-                                subStatus.status === "completed"
-                                  ? "text-green-600 font-medium"
-                                  : "text-yellow-700 font-medium"
-                              }
-                            >
-                              {subStatus.status || "pending"}
-                            </span>
-                          </p>
-                          {subStatus.submittedAt && (
-                            <p className="text-gray-600">
-                              Submitted:{" "}
-                              {new Date(subStatus.submittedAt).toLocaleString()}
-                            </p>
-                          )}
-                          {subStatus.pdfUrl && (
-                            <p>
-                              PDF:{" "}
-                              <a
-                                className="text-blue-600 underline break-all"
-                                href={subStatus.pdfUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                View / Download
-                              </a>
-                            </p>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500 mt-1">
-                          No submission yet (pending).
-                        </p>
-                      )}
-                    </div> */}
-
-                    {/* Upload form */}
-                    {/* <div className="space-y-2">
-                      <label className="block text-sm font-medium">
-                        Upload PDF
-                      </label>
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        onChange={onFileChange}
-                        className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                      />
-                      {file && (
-                        <p className="text-xs text-gray-500">
-                          Selected: {file.name} (
-                          {(file.size / (1024 * 1024)).toFixed(2)} MB)
-                        </p>
-                      )}
-
-                      {msg && (
-                        <p
-                          className={`text-sm ${
-                            msg.startsWith("✅")
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {msg}
-                        </p>
-                      )}
-
-                      <div className="flex items-center gap-2 pt-2">
-                        <button
-                          disabled={uploading || !file}
-                          onClick={onSubmit}
-                          className={`px-4 py-2 rounded-md text-white ${
-                            uploading || !file
-                              ? "bg-blue-300 cursor-not-allowed"
-                              : "bg-blue-600 hover:bg-blue-700"
-                          }`}
-                        >
-                          {uploading
-                            ? "Submitting…"
-                            : subStatus?.status === "completed"
-                            ? "Re-submit PDF"
-                            : "Submit PDF"}
-                        </button>
-                      </div>
-                    </div> */}
-                    
                   </div>
                 </div>
               )}
@@ -844,7 +804,7 @@ const InstructorCourseDetails = () => {
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-6 left-6 bg-white/80 hover:bg-white text-gray-800 md:font-medium md:px-4 md:py-2 px-2 py-0.5 rounded-full shadow-md flex items-center gap-2 transition cursor-pointer"
+          className="absolute top-6 left-6 bg-white/80 hover:bg-white text-gray-800 md:font-medium md:px-4 md:py-2 px-2 py-0.5 rounded-full shadow-md flex items-center gap-2 transition"
         >
           ← Back
         </button>

@@ -1,5 +1,5 @@
 import React from "react";
-import { FaPhoneAlt } from "react-icons/fa";
+import { FaPhoneAlt, FaYoutube } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";
 import { FaFacebookSquare } from "react-icons/fa";
 import { MdOutlineEmail } from "react-icons/md";
@@ -87,18 +87,22 @@ const Footer = () => {
             <p className="text-lg  text-white mb-4">Social Media</p>
             <div className="flex  space-x-3">
               <div className="flex gap-4 text-xl text-gray-600">
-                <a href="https://facebook.com" target="_blank" rel="noreferrer">
+                <a href="https://www.facebook.com/sszone.in" target="_blank" rel="noreferrer">
                   <FaFacebookF className="hover:text-blue-600 transition-colors text-white" />
                 </a>
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/sszone_technologies"
                   target="_blank"
                   rel="noreferrer"
                 >
                   <FaInstagram className="hover:text-pink-500 transition-colors text-white" />
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noreferrer">
-                  <FaTwitter className="hover:text-sky-500 transition-colors text-white" />
+                <a
+                  href="https://www.youtube.com/@sszonetechnologies"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FaYoutube className="hover:text-red-500 transition-colors text-white" />
                 </a>
               </div>
             </div>

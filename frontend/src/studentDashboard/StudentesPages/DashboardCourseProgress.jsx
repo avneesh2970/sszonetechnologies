@@ -42,19 +42,23 @@ function CourseProgressRow({ course, userId, onChanged }) {
 
   {/* Progress bar */}
   <input
-    type="range"
-    min={0}
-    max={total || 1}
-    step={1}
-    value={completedLessons}
-    onChange={(e) => {
-      const v = Math.max(0, Math.min(total, e.target.valueAsNumber || 0));
-      setProgress(userId, course._id, { started: true, completedLessons: v });
-      onChanged?.();
-    }}
-    className="w-full accent-blue-600 cursor-pointer"
-    disabled={total === 0}
-  />
+  type="range"
+  min={0}
+  max={total || 1}
+  step={1}
+  value={completedLessons}
+  onChange={(e) => {
+    const v = Math.max(0, Math.min(total, e.target.valueAsNumber || 0));
+    setProgress(userId, course._id, { started: true, completedLessons: v });
+    onChanged?.();
+  }}
+  disabled={total === 0}
+  className="course-progress"
+  style={{
+    // percent fill for CSS to consume
+    '--pct': `${Math.max(0, Math.min(100, ((completedLessons / (total || 1)) * 100))) }%`,
+  }}
+/>
 
   {/* Lesson count */}
   {/* <div className="text-xs text-slate-500">

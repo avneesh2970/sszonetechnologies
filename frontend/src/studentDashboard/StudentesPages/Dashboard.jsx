@@ -19,7 +19,7 @@ import {
   MdExpandMore,
   MdExpandLess,
 } from "react-icons/md";
-import { BiBookBookmark } from "react-icons/bi";
+import { BiBookBookmark ,  BiMessageSquareDetail} from "react-icons/bi";
 import StuTopBar from "../stuTopBar";
 import { Heart, ShoppingCart } from "lucide-react";
 import axios from "axios";
@@ -30,7 +30,7 @@ const Dashboard = () => {
   const [smallMenuOpen, setSmallMenuOpen] = useState(false);
   const { user } = useStudentAuth();
   const navigate = useNavigate();
-  const { cartItems, fetchCartItems } = useCartContext();
+  const { cartItems , wishlistItems , fetchCartItems, fetchWishlist } = useCartContext();
 
   const [courses, setCourses] = useState([]);
 
@@ -164,8 +164,8 @@ const Dashboard = () => {
   ];
 
   const navLinks = [
-    { to: "/dashboard/wishlist", icon: <FaRegHeart />, label: "Wishlist" },
-    { to: "/dashboard/message", icon: <MdMessage />, label: "Messages" },
+    // { to: "/dashboard/wishlist", icon: <FaRegHeart />, label: "Wishlist" },
+    { to: "/dashboard/message", icon: < BiMessageSquareDetail />, label: "Messages" },
   ];
 
   return (
@@ -248,10 +248,24 @@ const Dashboard = () => {
                 `relative p-2 rounded ${isActive ? activeClass : " "}`
               }
             >
-              <ShoppingCart className="w-6 h-6" />
+              <ShoppingCart className="w-5 h-5" />
               {cartItems.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
                   {cartItems.length}
+                </span>
+              )}
+            </NavLink>  
+
+            <NavLink
+              to="/dashboard/wishlist"
+              className={({ isActive }) =>
+                `relative p-2 rounded ${isActive ? activeClass : " "}`
+              }
+            >
+              <FaRegHeart className="w-5 h-5" />
+              {wishlistItems.length > 0 && (
+                <span className="absolute -top-1.5 -right-1 bg-red-600 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                  {wishlistItems.length}
                 </span>
               )}
             </NavLink>
@@ -264,7 +278,7 @@ const Dashboard = () => {
                   end
                   className={({ isActive }) =>
                     `flex items-center justify-center p-2 rounded-full transition-colors duration-200 
-                      hover:text-blue-600 hover:bg-blue-50 text-xl md:text-2xl 
+                      hover:text-blue-600 hover:bg-blue-50 text-xl 
                       ${isActive ? " bg-blue-100 text-blue-600" : ""}`
                   }
                 >
@@ -305,6 +319,11 @@ const Dashboard = () => {
                     >
                       <FaRegHeart />
                       <span>Wishlist</span>
+                      {wishlistItems.length > 0 && (
+                        <span className="absolute right-3 top-2 bg-red-600 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                          {wishlistItems.length}
+                        </span>
+                      )}
                     </NavLink>
                   </li>
                   <li>
@@ -387,7 +406,7 @@ const Dashboard = () => {
         </main>
       </div>
 
-      <ToastContainer autoClose={2000} />
+      <ToastContainer autoClose={1000} />
     </>
   );
 };

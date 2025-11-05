@@ -85,9 +85,11 @@ function Navbaar() {
         { withCredentials: true }
       );
       setUser(res.data.user);
-      toast.success("Login successful ✅");
       setShowLogin(false);
       setLoginData({ email: "", password: "" });
+      fetchCartItems() 
+      fetchWishlist()
+      toast.success("Login successful ✅");
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed ❌");
     }

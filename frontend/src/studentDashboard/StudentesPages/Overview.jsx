@@ -10,6 +10,7 @@ import { useStudentAuth } from "./studentAuth";
 import useCourseCounts from "./utils/courseCount";
 import DashboardCourseProgress from "./DashboardCourseProgress";
 import DashboardLearningGraph from "./DashboardLearningGraph";
+import { Link } from "react-router-dom";
 
 // Mock data for demonstration
 
@@ -98,6 +99,7 @@ const Overview = () => {
           {stats.map((item, index) => {
             const IconComponent = item.icon;
             return (
+              <Link  to ='enrollCourse'>
               <div
                 key={index}
                 className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
@@ -123,6 +125,7 @@ const Overview = () => {
                   </p>
                 </div>
               </div>
+              </Link>
             );
           })}
         </div>

@@ -37,3 +37,63 @@ body {
   scrollbar-width: none;     /* Firefox */
 }
 
+
+.course-progress {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #2563eb var(--pct), #e5e7eb var(--pct));
+  appearance: none;                /* Reset default styles */
+  -webkit-appearance: none;
+  cursor: default;                 /* Looks non-interactive */
+  pointer-events: none;            /* Prevent drag/change */
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+.course-progress::-webkit-slider-runnable-track {
+  height: 10px;
+  background: transparent;         /* we’re drawing with the element bg */
+  border-radius: 999px;
+}
+.course-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 0; height: 0;             /* hide thumb */
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Firefox */
+.course-progress::-moz-range-track {
+  height: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+}
+.course-progress::-moz-range-progress {
+  background: #2563eb;
+  height: 10px;
+  border-radius: 999px;
+}
+.course-progress::-moz-range-thumb {
+  width: 0; height: 0;             /* hide thumb */
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* IE/Old Edge fallback: shows a neutral bar */
+.course-progress::-ms-track {
+  height: 10px;
+  color: transparent;
+  background: transparent;
+  border-color: transparent;
+}
+.course-progress::-ms-fill-lower {
+  background: #2563eb;
+  border-radius: 999px;
+}
+.course-progress::-ms-fill-upper {
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+

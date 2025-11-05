@@ -8,10 +8,13 @@ import { MdCurrencyRupee } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
+import { HiOutlineClock } from "react-icons/hi";
+import { useCartContext } from "../../context/CartContext";
 
 const StuWishlist = () => {
   
-  const { wishlistItems, fetchWishlist } = useStudentAuth();
+  // const { wishlistItems, fetchWishlist } = useStudentAuth();
+  const { cartItems , wishlistItems , fetchCartItems, fetchWishlist } = useCartContext();
   // console.log("wishlistitems" , wishlistItems)
 
   const [deletingId, setDeletingId] = useState(null);
@@ -22,9 +25,9 @@ const StuWishlist = () => {
       await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/wishlist/${id}`, {
         withCredentials: true,
       });
-      toast.success("Removed from wishlist");
       fetchWishlist();
       setDeletingId(null);
+      toast.success("Removed from wishlist");
     } catch (err) {
       console.error(err);
       toast.error("Failed to remove item");
@@ -46,88 +49,105 @@ const StuWishlist = () => {
     <div className="p-6">
       <h2 className="text-2xl font-semibold mb-4">Wishlist</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {wishlistItems.map((course, index) => (
-          <div
-            key={course._id || index}
-            className="max-w-[400px] max-h-[499px] border-1 rounded-[12px] p-4 border-[#E3E3E3] hover:border-[#296AD2] flex flex-col gap-4"
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+  {wishlistItems.map((item, index) => {
+    const course = item.course || {};
+    const totalLessons =
+      (course.modules || []).reduce((sum, m) => sum + (m.lessons?.length || 0), 0) || 0;
+
+    return (
+      <div
+        key={item._id || index}
+        className="group bg-white rounded-xl border border-gray-200 hover:shadow-xl hover:border-gray-300 transition-all duration-300 overflow-hidden flex flex-col h-full"
+      >
+        {/* Thumbnail */}
+        <div className="relative overflow-hidden">
+          <Link to={`/dashboard/stuAllCourse/${course._id}`} state={course}>
+            <img
+              src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail || ""}`}
+              alt={course.title || "Course"}
+              // onError={(e) => { e.currentTarget.src = "/fallback.jpg"; }}
+              className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          </Link>
+
+          {/* Duration badge (matches reference style) */}
+          <div className="absolute top-3 left-3">
+            <span className="inline-flex items-center gap-1 bg-white/90 backdrop-blur-sm text-gray-700 px-2.5 py-1 rounded-full text-xs font-medium shadow-sm">
+              <HiOutlineClock className="w-3 h-3" />
+              {course.additionalInfo?.duration
+                ? `${course.additionalInfo.duration.hour}h ${course.additionalInfo.duration.minute}m`
+                : "N/A"}
+            </span>
+          </div>
+
+          {/* Wishlist remove (filled heart) */}
+          <button
+            onClick={() => deleteWishlistItems(item._id)}
+            disabled={deletingId === item._id}
+            className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-sm transition-all duration-200 hover:bg-white hover:scale-110 disabled:opacity-60"
+            aria-label="Remove from wishlist"
+            title="Remove from wishlist"
           >
-            {/* Course Thumbnail */}
-            <div className="relative w-full">
-              <img
-                src={`${import.meta.env.VITE_BACKEND_URL}${course.course?.thumbnail || ""}`}
-                alt={course.course?.title || "Course"}
-                onError={(e) => (e.target.src = "/fallback.jpg")}
-                className="rounded-[12px] w-full h-[200px] object-cover"
-              />
-              <div className="absolute top-2 left-4 bg-[#296AD2] py-2 px-[21px] rounded-[40px] flex gap-2 items-center">
-                <FaRegClock className="text-white" />
-                <p className="text-[14px] font-normal text-white">
-                  {course.course?.additionalInfo?.duration
-                    ? `${course.course.additionalInfo.duration.hour}h ${course.course.additionalInfo.duration.minute}m`
-                    : "N/A"}
-                </p>
-              </div>
-              <button
-                onClick={() => deleteWishlistItems(course._id)}
-                disabled={deletingId === course._id}
-                className="cursor-pointer absolute top-2 right-4 bg-[#ffffff] rounded-full p-2 disabled:opacity-50"
-              >
-                <FaHeart className="text-red-600" />
-              </button>
+            {deletingId === item._id ? (
+              // Simple spinner
+              <svg className="animate-spin h-4 w-4 text-red-500" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+            ) : (
+              <FaHeart className="w-4 h-4 text-red-500" />
+            )}
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="px-5 py-3 flex-1 flex flex-col">
+          <Link to={`/dashboard/stuAllCourse/${course._id}`} state={course}>
+            <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 line-clamp-2 mb-1">
+              {course.title || "Untitled course"}
+            </h3>
+          </Link>
+
+          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-2">
+            {course.description || "No description available."}
+          </p>
+
+          <div className="flex items-center justify-between mb-2 text-sm">
+            <div className="flex items-center gap-1 text-gray-500">
+              <TiDocumentText className="w-4 h-4" />
+              <span>{totalLessons} Lessons</span>
             </div>
 
-            {/* Course Info */}
-            <div className="font-[Manrope] pb-2">
-              <h3 className="pb-3 font-semibold text-[20px] text-[#292929]">
-                {course.course?.title || "N/A"}
-              </h3>
-              <p className="pb-3 font-normal text-[16px] text-[#6F6F6F]">
-                {course.course?.description || "N/A"}
-              </p>
-              <div className="flex justify-between">
-                <div className="flex items-center gap-1">
-                  <TiDocumentText />
-                  <p className="font-semibold text-[16px] text-[#292929]">
-                    {course.course?.modules?.reduce(
-                      (sum, module) => sum + (module.lessons?.length || 0),
-                      0
-                    ) || 0}{" "}
-                    Lessons
-                  </p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FaRegStar className="text-[#F04438E5]" />
-                  <p className="font-semibold text-[16px]">
-                    {course.course?.rating || 0}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Price and Enroll */}
-            <div className="flex justify-between items-center font-[Manrope]">
-              <div className="flex items-center">
-                <MdCurrencyRupee className="text-[#F04438] text-[20px]" />
-                <p className="font-semibold text-[20px] text-[#F04438]">
-                  {course.course?.discountPrice ||
-                    course.course?.regularPrice ||
-                    0}
-                </p>
-              </div>
-              <Link
-                to={`/courseDetailsOverview/${course.course?._id}`}
-                state={course.course}
-              >
-                <button className="cursor-pointer py-3 px-6 border-1 hover:bg-[#296AD2] hover:text-white border-[#296AD2] text-[#296AD2] font-medium text-[16px] rounded-[4px]">
-                  Enroll Now
-                </button>
-              </Link>
+            <div className="flex items-center gap-1">
+              <FaRegStar className="w-4 h-4 text-amber-400" />
+              <span className="text-gray-700 font-medium">{course.rating ?? "New"}</span>
             </div>
           </div>
-        ))}
+
+          {/* Footer pinned */}
+          <div className="mt-auto flex items-center justify-between pt-2 border-t border-gray-100">
+            <div className="flex items-center gap-1">
+              <span className="text-xl font-bold text-gray-900">
+                ₹{course.discountPrice ?? course.regularPrice ?? 0}
+              </span>
+            </div>
+
+            <Link
+              to={`/dashboard/stuAllCourse/${course._id}`}
+              state={course}
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+            >
+              View Details
+            </Link>
+          </div>
+        </div>
       </div>
-      <ToastContainer />
+    );
+  })}
+</div>
+
+      <ToastContainer autoClose={1000} />
     </div>
   );
 };
