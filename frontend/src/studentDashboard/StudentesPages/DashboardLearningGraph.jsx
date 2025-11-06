@@ -74,9 +74,9 @@ export default function DashboardLearningGraph() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {/* Donut: Overall progress */}
-      <div className="p-4 rounded-xl border border-gray-400 bg-white shadow-sm">
+      <div className="p-4 rounded-xl bg-gray-100 ">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-slate-800">Overall Learning Progress</h3>
+          <h3 className="text-lg font-medium text-slate-800">Overall Learning Progress</h3>
           <div className="text-sm text-slate-600">
             {completedAll}/{totalLessonsAll} lessons
           </div>
@@ -114,9 +114,9 @@ export default function DashboardLearningGraph() {
       </div>
 
       {/* Stacked bar: Per-course breakdown */}
-      <div className="p-4 rounded-xl border border-gray-400 bg-white shadow-sm">
+      <div className="p-4 rounded-xl  bg-gray-100">
         <div className=" mb-3">
-          <h3 className="text-lg font-semibold text-slate-800">Per-Course Progress </h3>
+          <h3 className="text-lg font-medium text-slate-800">Per-Course Progress </h3>
           <span className="text-xs text-slate-500">Completed vs Remaining</span>
         </div>
 

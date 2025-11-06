@@ -67,7 +67,7 @@ const Overview = () => {
       // change: "+1 this week",
       // changeColor: "text-green-600"
     },
-  ];  
+  ];
 
   return (
     <div className="  p-6">
@@ -99,32 +99,31 @@ const Overview = () => {
           {stats.map((item, index) => {
             const IconComponent = item.icon;
             return (
-              <Link  to ='enrollCourse'>
-              <div
-                key={index}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div
-                    className={`p-3 rounded-lg ${item.bgColor} group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    <IconComponent className={`w-6 h-6 ${item.textColor}`} />
-                  </div>
-                  <div className={`h-3 w-3 rounded-full ${item.color}`}></div>
-                </div>
+              <Link to="enrollCourse">
+                <div
+                  key={index}
+                  className="bg-white rounded-xl   p-6 hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    {/* <div className={`h-3 w-3 rounded-full ${item.color}`}></div> */}
 
-                <div className="space-y-2">
-                  <p className="text-gray-500 text-sm font-medium">
-                    {item.title}
-                  </p>
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    {item.value}
-                  </h3>
-                  <p className={`text-xs font-medium ${item.changeColor}`}>
-                    {item.change}
-                  </p>
+                    <div className="space-y-2">
+                      <p className="text-gray-500 text-sm font-medium">
+                        {item.title}
+                      </p>
+                      <h3 className="text-3xl font-bold ">{item.value}</h3>
+                      <p className={`text-xs font-medium ${item.changeColor}`}>
+                        {item.change}
+                      </p>
+                    </div>
+
+                    <div
+                      className={`p-3 rounded-lg ${item.bgColor} group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <IconComponent className={`w-6 h-6 ${item.textColor}`} />
+                    </div>
+                  </div>
                 </div>
-              </div>
               </Link>
             );
           })}
@@ -135,14 +134,12 @@ const Overview = () => {
         {/* Course Progress Chart */}
         <div className="xl:col-span-2 bg-white rounded-xl   p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Learning Progress 
+            <h3 className="text-xl font-semibold text-gray-900">
+              Learning Progress
             </h3>
           </div>
           <DashboardLearningGraph />
         </div>
-
-       
       </div>
     </div>
   );
