@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useStudentAuth } from "./studentAuth";
 import { getProgress, setProgress } from "./utils/ProgressStore"; // <-- new
 import { getTotalLessons, percent } from "./utils/totals"; // <-- new
+import { FaBook, FaRegStar } from "react-icons/fa6";
 
 const TabButton = ({ label, active, onClick }) => (
   <button
@@ -77,9 +78,16 @@ const EnrollCourse = () => {
     const { started, completedLessons } = getProgress(userId, course._id);
     const pct = percent(completedLessons, totalLessons);
 
+    const averageRating =
+      course.reviews && course.reviews.length > 0
+        ? (
+            course.reviews.reduce((sum, review) => sum + review.rating, 0) /
+            course.reviews.length
+          ).toFixed(1)
+        : null;
+
     return (
       <div className="bg-white  rounded-lg shadow-md w-72 flex flex-col justify-between">
-        {console.log("purchases", purchases)}
         <div
           className="relative cursor-pointer "
           onClick={() =>
@@ -97,25 +105,31 @@ const EnrollCourse = () => {
             {course.categories || "Development"}
           </span>
 
-          <h2 className="text-md font-semibold mt-2">{course.title}</h2>
+          <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 line-clamp-2 mb-1">
+            {course.title}
+          </h3>
 
-          <div className="flex items-center justify-between text-sm text-gray-500 mt-1">
-            <div className="flex items-center">
-              <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center mr-2 text-sm font-bold uppercase">
-                {course.instructor?.name
-                  ? course.instructor.name.slice(0, 1).toUpperCase()
-                  : "NA"}
-              </div>
-              <span>{course.instructor?.name || "Unknown"}</span>
+          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-2">
+            {course.description}
+          </p>
+
+          <div className="flex items-center justify-between mb-2 text-sm">
+            <div className="flex items-center gap-1 text-gray-500">
+              <FaBook className="w-3 h-3" />
+              <span>{totalLessons} Lessons</span>
             </div>
-          </div>
 
-          <div className="flex justify-between text-sm text-gray-600 mt-2">
-            <span>📘 {totalLessons} Lessons</span>
-            <span>
-              ⏱ {course.additionalInfo?.duration?.hour || 0}h{" "}
-              {course.additionalInfo?.duration?.minute || 0}m
-            </span>
+            <div className="flex items-center gap-1">
+              <FaRegStar className="w-3 h-3 text-amber-400" />
+              <span className="text-gray-700 font-medium">
+                {averageRating || "New"}
+              </span>
+              {course.reviews && course.reviews.length > 0 && (
+                <span className="text-gray-400 ml-1">
+                  ({course.reviews.length})
+                </span>
+              )}
+            </div>
           </div>
 
           {showProgress && totalLessons > 0 && (
@@ -155,7 +169,7 @@ const EnrollCourse = () => {
           {!completedView ? (
             <button
               onClick={() => handleGoToCourse(course)}
-              className="mt-3 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition cursor-pointer"
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none w-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
             >
               {started ? "Continue Course" : "Go to Course"}
             </button>
@@ -166,7 +180,7 @@ const EnrollCourse = () => {
                   state: course,
                 })
               }
-              className="mt-3 w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition cursor-pointer"
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none w-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
             >
               Download Certificate
             </button>

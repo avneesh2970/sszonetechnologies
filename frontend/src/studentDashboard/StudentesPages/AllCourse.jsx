@@ -13,7 +13,7 @@ export const AllCourse = () => {
   const [all_course, setAll_course] = useState([]);
   const [wishlist, setWishlist] = useState([]); // ✅ added
   // const { wishlistItems, fetchWishlist } = useStudentAuth();
-  const {   wishlistItems , fetchWishlist } = useCartContext();
+  const { wishlistItems, fetchWishlist } = useCartContext();
 
   const categoriesButton = [
     "All Categories",
@@ -136,7 +136,9 @@ export const AllCourse = () => {
                       state={course}
                     >
                       <img
-                        src={`${import.meta.env.VITE_BACKEND_URL}${course.thumbnail}`}
+                        src={`${import.meta.env.VITE_BACKEND_URL}${
+                          course.thumbnail
+                        }`}
                         alt={course.title}
                         className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -154,7 +156,9 @@ export const AllCourse = () => {
                     <button
                       onClick={() => addToWishlist(course)}
                       className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full p-2 shadow-sm transition-all duration-200 hover:scale-110 cursor-pointer"
-                      aria-label={isWished ? "Remove from wishlist" : "Add to wishlist"}
+                      aria-label={
+                        isWished ? "Remove from wishlist" : "Add to wishlist"
+                      }
                     >
                       {isWished ? (
                         <FaHeart className="w-4 h-4 text-red-500" />
@@ -196,20 +200,20 @@ export const AllCourse = () => {
                           </span>
                         )}
                       </div>
-                    </div>
+                    </div>  
 
                     {/* Footer pinned to bottom */}
                     <div className="mt-auto flex items-center justify-between pt-2 border-t border-gray-100">
-                      <div className="flex items-center gap-2">
+                      {/* <div className="flex items-center gap-2">
                         <span className="text-xl font-bold text-gray-900">
                           ₹{course.discountPrice}
                         </span>
-                      </div>
+                      </div> */}
 
                       <Link
                         to={`/dashboard/stuAllCourse/${course._id}`}
                         state={course}
-                        className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                        className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none w-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                       >
                         View Details
                       </Link>

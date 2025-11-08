@@ -1,4 +1,285 @@
+// /* eslint-disable react/prop-types */
+// import {
+//   Bold,
+//   Italic,
+//   Strikethrough,
+//   Code,
+//   List,
+//   ListOrderedIcon as OrderedList,
+//   Quote,
+//   ImageIcon,
+//   LinkIcon,
+//   AlignLeftIcon as TextAlignLeft,
+//   AlignCenterIcon as TextAlignCenter,
+//   AlignRightIcon as TextAlignRight,
+//   AlignJustifyIcon as TextAlignJustify,
+//   UnderlineIcon,
+//   SuperscriptIcon,
+//   SubscriptIcon,
+//   HighlighterIcon as HighlightIcon,
+//   CodeIcon,
+// } from "lucide-react"
+
+
+// // import HeadingDropdown from "./HeadingDropdown";
+
+// const CustomMenuBar = ({ editor }) => {
+//   if (!editor) {
+//     return null
+//   }
+
+//   return (
+//     <div className="flex flex-wrap items-center bg-gray-100 border border-gray-300 rounded-md p-2">
+//       {/* Headings */}
+//       <div className="flex items-center mr-2">
+//         {/* <HeadingDropdown editor={editor} /> */}
+//       </div>
+
+//       {/* Text Styles */}
+//       <div className="flex items-center mr-2">
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleBold().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("bold") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Bold"
+//         >
+//           <Bold className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleItalic().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("italic") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Italic"
+//         >
+//           <Italic className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleStrike().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("strike") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Strikethrough"
+//         >
+//           <Strikethrough className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleCode().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("code") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Code"
+//         >
+//           <Code className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleUnderline().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("underline") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Underline"
+//         >
+//           <UnderlineIcon className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleSuperscript().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("superscript") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Superscript"
+//         >
+//           <SuperscriptIcon className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleSubscript().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("subscript") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Subscript"
+//         >
+//           <SubscriptIcon className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleHighlight().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("highlight") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Highlight"
+//         >
+//           <HighlightIcon className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("codeBlock") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Code Block"
+//         >
+//           <CodeIcon className="h-5 w-5" />
+//         </button>
+//       </div>
+
+//       {/* Lists */}
+//       <div className="flex items-center mr-2">
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleBulletList().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("bulletList") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Bullet List"
+//         >
+//           <List className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleOrderedList().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("orderedList") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Ordered List"
+//         >
+//           <OrderedList className="h-5 w-5" />
+//         </button>
+//       </div>
+
+//       {/* Blockquotes */}
+//       <div className="flex items-center mr-2">
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().toggleBlockquote().run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("blockquote") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Blockquote"
+//         >
+//           <Quote className="h-5 w-5" />
+//         </button>
+//       </div>
+
+//       {/* Horizontal Rule */}
+//       <div className="flex items-center mr-2">
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().setHorizontalRule().run()}
+//           className="p-2 rounded-md text-gray-700 hover:bg-gray-200"
+//           title="Horizontal Rule"
+//         >
+//           <hr className="w-5 border-t-2 border-gray-700" />
+//         </button>
+//       </div>
+
+//       {/* Image */}
+//       <div className="flex items-center mr-2">
+//         <button
+//           type="button"
+//           onClick={() => {
+//             const url = window.prompt("URL")
+//             if (url) {
+//               editor.chain().focus().setImage({ src: url }).run()
+//             }
+//           }}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("image") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Image"
+//         >
+//           <ImageIcon className="h-5 w-5" />
+//         </button>
+//       </div>
+
+//       {/* Link */}
+//       <div className="flex items-center mr-2">
+//         <button
+//           type="button"
+//           onClick={() => {
+//             const url = window.prompt("URL")
+//             if (url) {
+//               editor.chain().focus().setLink({ href: url }).run()
+//             }
+//           }}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive("link") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Link"
+//         >
+//           <LinkIcon className="h-5 w-5" />
+//         </button>
+//         {/* <button
+//           onClick={() => editor.chain().focus().unsetLink().run()}
+//           className="p-2 rounded-md text-gray-700 hover:bg-gray-200"
+//           title="Remove Link"
+//         >
+//           Unlink
+//         </button> */}
+//       </div>
+
+//       {/* Text Alignment */}
+//       <div className="flex items-center mr-2">
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().setTextAlign("left").run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive({ textAlign: "left" }) ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Align Left"
+//         >
+//           <TextAlignLeft className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().setTextAlign("center").run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive({ textAlign: "center" })
+//               ? "bg-gray-200 text-emerald-600"
+//               : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Align Center"
+//         >
+//           <TextAlignCenter className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().setTextAlign("right").run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive({ textAlign: "right" }) ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Align Right"
+//         >
+//           <TextAlignRight className="h-5 w-5" />
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+//           className={`p-2 rounded-md flex items-center ${
+//             editor.isActive({ textAlign: "justify" })
+//               ? "bg-gray-200 text-emerald-600"
+//               : "text-gray-700 hover:bg-gray-200"
+//           }`}
+//           title="Align Justify"
+//         >
+//           <TextAlignJustify className="h-5 w-5" />
+//         </button>
+//       </div>
+//     </div>
+//   )
+// }
+
+// export default CustomMenuBar
+
+
 /* eslint-disable react/prop-types */
+import { useState, useCallback } from "react";
 import {
   Bold,
   Italic,
@@ -9,6 +290,7 @@ import {
   Quote,
   ImageIcon,
   LinkIcon,
+  Link2Off,
   AlignLeftIcon as TextAlignLeft,
   AlignCenterIcon as TextAlignCenter,
   AlignRightIcon as TextAlignRight,
@@ -18,261 +300,498 @@ import {
   SubscriptIcon,
   HighlighterIcon as HighlightIcon,
   CodeIcon,
-} from "lucide-react"
-
-
-// import HeadingDropdown from "./HeadingDropdown";
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  MinusIcon,
+  Undo,
+  Redo,
+} from "lucide-react";
 
 const CustomMenuBar = ({ editor }) => {
+  const [showImageDialog, setShowImageDialog] = useState(false);
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkText, setLinkText] = useState("");
+
   if (!editor) {
-    return null
+    return null;
   }
 
+  // Handle image insertion
+  const handleImageInsert = useCallback(() => {
+    if (imageUrl) {
+      editor.chain().focus().setImage({ src: imageUrl }).run();
+      setImageUrl("");
+      setShowImageDialog(false);
+    }
+  }, [editor, imageUrl]);
+
+  // Handle link insertion
+  const handleLinkInsert = useCallback(() => {
+    if (linkUrl) {
+      // If there's selected text, just add the link
+      // If no selection and linkText is provided, insert text with link
+      if (linkText && !editor.state.selection.empty === false) {
+        editor
+          .chain()
+          .focus()
+          .insertContent(`<a href="${linkUrl}">${linkText}</a>`)
+          .run();
+      } else {
+        editor
+          .chain()
+          .focus()
+          .extendMarkRange("link")
+          .setLink({ href: linkUrl })
+          .run();
+      }
+      setLinkUrl("");
+      setLinkText("");
+      setShowLinkDialog(false);
+    }
+  }, [editor, linkUrl, linkText]);
+
+  // Remove link
+  const handleUnlink = useCallback(() => {
+    editor.chain().focus().unsetLink().run();
+  }, [editor]);
+
   return (
-    <div className="flex flex-wrap items-center bg-gray-100 border border-gray-300 rounded-md p-2">
-      {/* Headings */}
-      <div className="flex items-center mr-2">
-        {/* <HeadingDropdown editor={editor} /> */}
+    <>
+      <div className="flex flex-wrap items-center gap-1 bg-gray-100 border border-gray-300 rounded-md p-2">
+        {/* Undo/Redo */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editor.can().undo()}
+            className={`p-2 rounded-md flex items-center ${
+              !editor.can().undo()
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Undo"
+          >
+            <Undo className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editor.can().redo()}
+            className={`p-2 rounded-md flex items-center ${
+              !editor.can().redo()
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Redo"
+          >
+            <Redo className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Headings */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("heading", { level: 1 })
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Heading 1"
+          >
+            <Heading1 className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("heading", { level: 2 })
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Heading 2"
+          >
+            <Heading2 className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("heading", { level: 3 })
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Heading 3"
+          >
+            <Heading3 className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("heading", { level: 4 })
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Heading 4"
+          >
+            <Heading4 className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Text Styles */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("bold")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Bold (Ctrl+B)"
+          >
+            <Bold className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("italic")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Italic (Ctrl+I)"
+          >
+            <Italic className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("underline")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Underline (Ctrl+U)"
+          >
+            <UnderlineIcon className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("strike")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Strikethrough"
+          >
+            <Strikethrough className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleHighlight().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("highlight")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Highlight"
+          >
+            <HighlightIcon className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Code */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("code")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Inline Code"
+          >
+            <Code className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("codeBlock")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Code Block"
+          >
+            <CodeIcon className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Super/Subscript */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleSuperscript().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("superscript")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Superscript"
+          >
+            <SuperscriptIcon className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleSubscript().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("subscript")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Subscript"
+          >
+            <SubscriptIcon className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Lists */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("bulletList")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Bullet List"
+          >
+            <List className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("orderedList")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Numbered List"
+          >
+            <OrderedList className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Blockquote & HR */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("blockquote")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Blockquote"
+          >
+            <Quote className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            className="p-2 rounded-md text-gray-700 hover:bg-gray-200"
+            title="Horizontal Line"
+          >
+            <MinusIcon className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Text Alignment */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2 mr-1">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive({ textAlign: "left" })
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Align Left"
+          >
+            <TextAlignLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive({ textAlign: "center" })
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Align Center"
+          >
+            <TextAlignCenter className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive({ textAlign: "right" })
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Align Right"
+          >
+            <TextAlignRight className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive({ textAlign: "justify" })
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Justify"
+          >
+            <TextAlignJustify className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Image & Link */}
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setShowImageDialog(true)}
+            className="p-2 rounded-md flex items-center text-gray-700 hover:bg-gray-200"
+            title="Insert Image"
+          >
+            <ImageIcon className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowLinkDialog(true)}
+            className={`p-2 rounded-md flex items-center ${
+              editor.isActive("link")
+                ? "bg-gray-200 text-emerald-600"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+            title="Insert Link"
+          >
+            <LinkIcon className="h-4 w-4" />
+          </button>
+          {editor.isActive("link") && (
+            <button
+              type="button"
+              onClick={handleUnlink}
+              className="p-2 rounded-md flex items-center text-gray-700 hover:bg-gray-200"
+              title="Remove Link"
+            >
+              <Link2Off className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Text Styles */}
-      <div className="flex items-center mr-2">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("bold") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Bold"
-        >
-          <Bold className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("italic") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Italic"
-        >
-          <Italic className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("strike") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Strikethrough"
-        >
-          <Strikethrough className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleCode().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("code") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Code"
-        >
-          <Code className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("underline") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Underline"
-        >
-          <UnderlineIcon className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleSuperscript().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("superscript") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Superscript"
-        >
-          <SuperscriptIcon className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleSubscript().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("subscript") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Subscript"
-        >
-          <SubscriptIcon className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleHighlight().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("highlight") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Highlight"
-        >
-          <HighlightIcon className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("codeBlock") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Code Block"
-        >
-          <CodeIcon className="h-5 w-5" />
-        </button>
-      </div>
+      {/* Image Dialog */}
+      {showImageDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">Insert Image</h3>
+            <input
+              type="text"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="Enter image URL"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleImageInsert();
+                if (e.key === "Escape") setShowImageDialog(false);
+              }}
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowImageDialog(false);
+                  setImageUrl("");
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleImageInsert}
+                className="px-4 py-2 text-white bg-emerald-600 rounded-md hover:bg-emerald-700"
+              >
+                Insert
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Lists */}
-      <div className="flex items-center mr-2">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("bulletList") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Bullet List"
-        >
-          <List className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("orderedList") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Ordered List"
-        >
-          <OrderedList className="h-5 w-5" />
-        </button>
-      </div>
+      {/* Link Dialog */}
+      {showLinkDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">Insert Link</h3>
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="Enter URL (https://...)"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <input
+                type="text"
+                value={linkText}
+                onChange={(e) => setLinkText(e.target.value)}
+                placeholder="Link text (optional)"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleLinkInsert();
+                  if (e.key === "Escape") setShowLinkDialog(false);
+                }}
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLinkDialog(false);
+                  setLinkUrl("");
+                  setLinkText("");
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleLinkInsert}
+                className="px-4 py-2 text-white bg-emerald-600 rounded-md hover:bg-emerald-700"
+              >
+                Insert
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
-      {/* Blockquotes */}
-      <div className="flex items-center mr-2">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("blockquote") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Blockquote"
-        >
-          <Quote className="h-5 w-5" />
-        </button>
-      </div>
-
-      {/* Horizontal Rule */}
-      <div className="flex items-center mr-2">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          className="p-2 rounded-md text-gray-700 hover:bg-gray-200"
-          title="Horizontal Rule"
-        >
-          <hr className="w-5 border-t-2 border-gray-700" />
-        </button>
-      </div>
-
-      {/* Image */}
-      <div className="flex items-center mr-2">
-        <button
-          type="button"
-          onClick={() => {
-            const url = window.prompt("URL")
-            if (url) {
-              editor.chain().focus().setImage({ src: url }).run()
-            }
-          }}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("image") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Image"
-        >
-          <ImageIcon className="h-5 w-5" />
-        </button>
-      </div>
-
-      {/* Link */}
-      <div className="flex items-center mr-2">
-        <button
-          type="button"
-          onClick={() => {
-            const url = window.prompt("URL")
-            if (url) {
-              editor.chain().focus().setLink({ href: url }).run()
-            }
-          }}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive("link") ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Link"
-        >
-          <LinkIcon className="h-5 w-5" />
-        </button>
-        {/* <button
-          onClick={() => editor.chain().focus().unsetLink().run()}
-          className="p-2 rounded-md text-gray-700 hover:bg-gray-200"
-          title="Remove Link"
-        >
-          Unlink
-        </button> */}
-      </div>
-
-      {/* Text Alignment */}
-      <div className="flex items-center mr-2">
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive({ textAlign: "left" }) ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Align Left"
-        >
-          <TextAlignLeft className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive({ textAlign: "center" })
-              ? "bg-gray-200 text-emerald-600"
-              : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Align Center"
-        >
-          <TextAlignCenter className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive({ textAlign: "right" }) ? "bg-gray-200 text-emerald-600" : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Align Right"
-        >
-          <TextAlignRight className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-          className={`p-2 rounded-md flex items-center ${
-            editor.isActive({ textAlign: "justify" })
-              ? "bg-gray-200 text-emerald-600"
-              : "text-gray-700 hover:bg-gray-200"
-          }`}
-          title="Align Justify"
-        >
-          <TextAlignJustify className="h-5 w-5" />
-        </button>
-      </div>
-    </div>
-  )
-}
-
-export default CustomMenuBar
+export default CustomMenuBar;

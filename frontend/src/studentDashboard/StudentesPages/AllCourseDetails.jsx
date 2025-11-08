@@ -1195,7 +1195,7 @@ export default function StudentCourseFullDetails() {
               onClick={() => navigate(-1)}
             >
               <FaArrowLeft className="text-gray-400 group-hover:text-blue-600" />
-              <h3 className="text-xl font-semibold text-gray-400 group-hover:text-blue-600">
+              <h3 className="text-xl font-semibold text-gray-400 group-hover:text-blue-600 cursor-pointer">
                 Back
               </h3>
             </div>
