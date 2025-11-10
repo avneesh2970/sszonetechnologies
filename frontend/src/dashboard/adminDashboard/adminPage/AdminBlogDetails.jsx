@@ -8,7 +8,7 @@ const AdminBlogDetailPage = () => {
   const location = useLocation();
   const blog = location.state;
   const [recentBlogs, setRecentBlogs] = useState([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const fetchRecentBlogs = async () => {
     try {
@@ -35,12 +35,12 @@ const AdminBlogDetailPage = () => {
           className="w-full h-full object-cover"
         />
         <button
-      onClick={() => navigate(-1)}
-      className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition"
-    >
-      <ArrowLeft size={18} />
-      <span className="text-sm font-medium">Back</span>
-    </button>
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition"
+        >
+          <ArrowLeft size={18} />
+          <span className="text-sm font-medium">Back</span>
+        </button>
       </div>
 
       {/* Main Grid */}
@@ -96,12 +96,27 @@ const AdminBlogDetailPage = () => {
 
           {/* Content */}
           <article className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8">
-            <div
-              className="text-gray-700 leading-relaxed prose max-w-none"
-              dangerouslySetInnerHTML={{
-                __html: blog.content || "No content available",
-              }}
-            />
+            <div>
+              <style>{`
+    .blog-content h1 { font-size: 2.25em; font-weight: 700; margin: 1.5rem 0 1rem; }
+    .blog-content h2 { font-size: 1.875em; font-weight: 700; margin: 1.25rem 0 0.875rem; }
+    .blog-content h3 { font-size: 1.5em; font-weight: 600; margin: 1rem 0 0.75rem; }
+    .blog-content p { margin: 0.75rem 0; line-height: 1.75; }
+    .blog-content ul { list-style-type: disc; padding-left: 2rem; margin: 1rem 0; }
+    .blog-content ol { list-style-type: decimal; padding-left: 2rem; margin: 1rem 0; }
+    .blog-content li { margin: 0.375rem 0; line-height: 1.75; }
+    .blog-content blockquote { border-left: 4px solid #3b82f6; padding-left: 1rem; margin: 1.5rem 0; font-style: italic; }
+    .blog-content code { background: #f3f4f6; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+    .blog-content pre { background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin: 1.5rem 0; }
+    .blog-content img { max-width: 50%; border-radius: 0.5rem; margin: 1.5rem 0; }
+    .blog-content a { color: #3b82f6; text-decoration: underline; }
+  `}</style>
+
+              <div
+                className="blog-content"
+                dangerouslySetInnerHTML={{ __html: blog.content }}
+              />
+            </div>
           </article>
         </div>
 

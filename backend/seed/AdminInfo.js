@@ -7,7 +7,7 @@ const adminData = [
   {
     name: 'Ghost',
     email: 'ghost@gmail.com',
-    password: '123456',
+    password: '123456',   //121212
   },
 ];
 
