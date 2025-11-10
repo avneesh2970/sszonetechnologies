@@ -563,6 +563,7 @@ import ModuleForm from "../../../Instructor-courseUpload/ModuleForm";
 import LessonForm from "../../../courseUpload/LessonForm";
 import { FiX } from "react-icons/fi";
 import AdminQuizModal from "./AdminQuizModal";
+import { ArrowLeft } from "lucide-react";
 
 const AdminCourseDetails = () => {
   const location = useLocation();
@@ -1178,7 +1179,7 @@ const AdminCourseDetails = () => {
 
   return (
     <>
-      <div className="p-3  ">
+      <div className="p-3 relative ">
         {/* Show mainVideoUrl if playable, otherwise fallback to thumbnail image */}
         {mainVideoUrl && ReactPlayer.canPlay(mainVideoUrl) ? (
           <ReactPlayer
@@ -1194,7 +1195,14 @@ const AdminCourseDetails = () => {
             alt="Course Banner"
             className="h-[50vh] md:h-[70vh] w-full object-contain object-center rounded"
           />
-        )}
+        )} 
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition cursor-pointer"
+        >
+          <ArrowLeft size={18} />
+          <span className="text-sm font-medium">Back</span>
+        </button>
       </div>
 
       <div className="relative  ">

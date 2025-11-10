@@ -38,7 +38,9 @@ const BlogCard = () => {
         {blogs.map((relatedBlog) => (
           <Link
             key={relatedBlog._id}
-            to={`/blogs/${relatedBlog._id}`}
+            // to={`/blogs/${relatedBlog._id}`}
+            to={`/blogs/${relatedBlog.title.toLowerCase().replace(/\s+/g, '-')}`}
+            // title.toLowerCase().replace(/\s+/g, '-'); 
             state={relatedBlog}
             className="group"
           >

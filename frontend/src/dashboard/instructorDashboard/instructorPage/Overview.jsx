@@ -95,18 +95,8 @@ const InstructorOverview = () => {
               key={index}
               className="bg-white rounded-xl shadow border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div
-                  className={`p-3 rounded-lg ${item.bgColor} transition-transform duration-300`}
-                >
-                  <IconComponent className={`w-6 h-6 ${item.textColor}`} />
-                </div>
-                <div
-                  className={`h-3 w-3 rounded-full bg-gradient-to-r ${item.color}`}
-                ></div>
-              </div>
-
-              <div>
+              <div className="flex items-center justify-between "> 
+                <div>
                 <p className="text-gray-500 text-sm font-medium mb-1">
                   {item.title}
                 </p>
@@ -114,6 +104,15 @@ const InstructorOverview = () => {
                   {item.value}
                 </h3>
               </div>
+                <div
+                  className={`p-3 rounded-lg ${item.bgColor} transition-transform duration-300`}
+                >
+                  <IconComponent className={`w-6 h-6 ${item.textColor}`} />
+                </div>
+                
+              </div>
+
+              
             </div>
           );
         })}

@@ -110,7 +110,7 @@ const InstructorCourse = () => {
                 {/* Image Container */}
                 <div className="relative overflow-hidden">
                   <Link
-                    to={`/instructor/instructorCourseDetails/${course._id}`}
+                    to={`/instructor/instructorCourseDetails/${course.title.toLowerCase().trim().replace(/\s+/g, '-')}`}
                     state={course}
                   >
                     <img
@@ -137,7 +137,7 @@ const InstructorCourse = () => {
                 <div className="px-5 py-3 flex-1 flex flex-col">
                   {/* Title */}
                   <Link
-                    to={`/instructor/instructorCourseDetails/${course._id}`}
+                    to={`/instructor/instructorCourseDetails/${course.title.toLowerCase().trim().replace(/\s+/g , '-')}`}
                     state={course}
                     className="hover:no-underline"
                   >
@@ -186,7 +186,7 @@ const InstructorCourse = () => {
                     </div>
 
                     <Link
-                      to={`/instructor/instructorCourseDetails/${course._id}`}
+                      to={`/instructor/instructorCourseDetails/${course.title.toLowerCase().trim().replace(/\s+/g , '-')}`} //.toLowerCase().replace(/\s+/g, '-')
                       state={course}
                       className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 flex-shrink-0"
                     >

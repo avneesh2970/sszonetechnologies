@@ -161,7 +161,9 @@ const InstructorCourseDetails = () => {
         ❌ Course not found!
       </div>
     );
-  }
+  }  
+
+  
 
   const handleDeleteModule = async (moduleId) => {
     const confirmDelete = window.confirm(
@@ -897,13 +899,13 @@ const InstructorCourseDetails = () => {
           </div>
         </div>
 
-        <aside className="w-full md:w-[400px] flex-shrink-0  p-4 rounded-xl bg-white lg:-mt-43 -mt-10 ">
+        <aside className="w-full md:w-[400px] flex-shrink-0  p-4 rounded-xl bg-white lg:-mt-50 -mt-10 z-10">
           {/* <img src={video} alt="Demo Video" className="rounded-md mb-6" /> */}
           {course.introVideo?.videoUrl &&
             ReactPlayer.canPlay(course.introVideo.videoUrl) && (
               <div>
                 <h3 className="text-lg font-semibold mb-2">
-                  📽️ Course Intro Video
+                   Course Intro Video
                 </h3>
                 <ReactPlayer
                   url={course.introVideo.videoUrl}

@@ -276,7 +276,7 @@ const AdminCourse = () => {
                 {/* Image Container (fixed height) */}
                 <div className="relative overflow-hidden">
                   <Link
-                    to={`/admin/adminCourseDetails/${course._id}`}
+                    to={`/admin/adminCourseDetails/${course.title.toLowerCase().trim().replace(/\s+/g , '-')}`}
                     state={course}
                   >
                     <img
@@ -302,7 +302,7 @@ const AdminCourse = () => {
                 <div className="px-5 py-3 flex-1 flex flex-col">
                   {/* Title */}
                   <Link
-                    to={`/admin/adminCourseDetails/${course._id}`}
+                    to={`/admin/adminCourseDetails/${course.title.toLowerCase().trim().replace(/\s+/g , '-')}`}
                     state={course}
                   >
                     <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 line-clamp-2 mb-1">
@@ -356,7 +356,7 @@ const AdminCourse = () => {
                     </div>
 
                     <Link
-                      to={`/admin/adminCourseDetails/${course._id}`}
+                      to={`/admin/adminCourseDetails/${course.title.toLowerCase().trim().replace(/\s+/g , '-')}`}
                       state={course}
                       className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                     >

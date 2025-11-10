@@ -91,21 +91,22 @@ const AdminOverview = () => {
               key={index}
               className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
             >
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between ">
+                <div className="space-y-2">
+                <p className="text-gray-500 text-sm font-medium">{item.title}</p>
+                <h3 className="text-3xl  font-bold text-gray-900">
+                  {item.value}
+                </h3>
+              </div>
                 <div
                   className={`p-3 rounded-lg ${item.bgColor} group-hover:scale-110 transition-transform duration-300`}
                 >
                   <IconComponent className={`w-6 h-6 ${item.textColor}`} />
                 </div>
-                <div className={`h-3 w-3 rounded-full ${item.color}`}></div>
+                {/* <div className={`h-3 w-3 rounded-full ${item.color}`}></div> */}
               </div>
 
-              <div className="space-y-2">
-                <p className="text-gray-500 text-sm font-medium">{item.title}</p>
-                <h3 className="text-2xl font-bold text-gray-900">
-                  {item.value}
-                </h3>
-              </div>
+              
             </div>
           );
         })}
