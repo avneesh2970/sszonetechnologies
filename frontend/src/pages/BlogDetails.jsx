@@ -31,7 +31,7 @@ const BlogDetails = () => {
   const blogId = id;
   const location = useLocation();
   const blog = location.state;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   // const [recentblog] = useState([]);
 
   const [recentblogs, setRecentBlogs] = useState([]);
@@ -47,6 +47,7 @@ const BlogDetails = () => {
         `${import.meta.env.VITE_BACKEND_URL}/api/blogs`
       );
       setRecentBlogs(res.data);
+    
       // toast.success("Successfully fetch Blogs");
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -74,6 +75,7 @@ const BlogDetails = () => {
   };
 
   useEffect(() => {
+    
     if (blogId) {
       fetchComments();
       fetchRecentBlogs();
@@ -110,11 +112,10 @@ const BlogDetails = () => {
 
       setEmail(user.email || "");
     }
-  }, [user]);
+  }, [user ]);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-      
         <div className="relative w-full h-64 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden mb-6">
           <img
             src={`${import.meta.env.VITE_BACKEND_URL}/${blog.image}`}
@@ -122,13 +123,12 @@ const BlogDetails = () => {
             className="w-full h-full object-cover"
           />
           <button
-      onClick={() => navigate(-1)}
-      className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition"
-    >
-      <ArrowLeft size={18} />
-      <span className="text-sm font-medium">Back</span>
-    </button>
-          
+            onClick={() => navigate(-1)}
+            className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition"
+          >
+            <ArrowLeft size={18} />
+            <span className="text-sm font-medium">Back</span>
+          </button>
         </div>
 
         {/* Title & Info */}
@@ -177,7 +177,7 @@ const BlogDetails = () => {
                 </span>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            {/* <div className="flex items-center space-x-4 border bg-red">
               {blog.facebook && (
                 <a
                   href={blog.facebook}
@@ -218,7 +218,7 @@ const BlogDetails = () => {
                   <FaLinkedin className="w-4 h-4" />
                 </a>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -228,7 +228,7 @@ const BlogDetails = () => {
             {/* Article Content */}
             <article className="bg-white rounded-2xl  p-6 md:p-8">
               <div>
-              <style>{`
+                <style>{`
     .blog-content h1 { font-size: 2.25em; font-weight: 700; margin: 1.5rem 0 1rem; }
     .blog-content h2 { font-size: 1.875em; font-weight: 700; margin: 1.25rem 0 0.875rem; }
     .blog-content h3 { font-size: 1.5em; font-weight: 600; margin: 1rem 0 0.75rem; }
@@ -243,132 +243,134 @@ const BlogDetails = () => {
     .blog-content a { color: #3b82f6; text-decoration: underline; }
   `}</style>
 
-              <div
-                className="blog-content"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
-              />
-            </div>
+                <div
+                  className="blog-content"
+                  dangerouslySetInnerHTML={{ __html: blog.content }}
+                />
+              </div>
             </article>
 
             {/* Comments Section */}
-            <section className="bg-white rounded-2xl  p-6 md:p-10">
-              {!user ? (
-                // 🔒 Show login message if not logged in
-                <div className="text-center py-10">
-                  <p className="text-gray-600 mb-4">
-                    Please{" "}
-                    <Link
-                      to="/login"
-                      className="text-blue-600 hover:underline font-semibold"
-                    >
-                      login
-                    </Link>{" "}
-                    to post a comment.
-                  </p>
-                </div>
-              ) : (
-                // ✅ Show form if logged in
-                <form className="space-y-4 mb-4" onSubmit={handleSubmit}>
-                  {/* Hidden fields (still included in payload) */}
-                  <input type="hidden" value={firstName} />
-                  <input type="hidden" value={email} />
+            <section className="bg-white rounded-2xl p-6 md:p-10 relative">
+  {/* Comment Form */}
+  <form
+    className={`space-y-4 mb-4 relative rounded-xl border p-4 transition-all ${
+      !user
+        ? "bg-gray-200 border-gray-300 pointer-events-none opacity-70"
+        : "bg-white border-gray-200"
+    }`}
+    onSubmit={handleSubmit}
+  >
+    {/* Hidden fields */}
+    <input type="hidden" name="firstName" value={firstName || ""} />
+    <input type="hidden" name="email" value={email || ""} />
 
-                  {/* Comment Input */}
-                  <div className="flex items-start gap-3">
-                    {/* User Avatar */}
-                    <div className="w-10 h-10 rounded-full border border-gray-300 shadow-sm bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
-                      {user?.name?.slice(0, 1).toUpperCase()}
-                    </div>
+    <div className="flex items-start gap-3">
+      {/* User Avatar or Placeholder */}
+      <div className="w-10 h-10 rounded-full border border-gray-300 shadow-sm bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
+        {user?.name
+          ? user.name.slice(0, 1).toUpperCase()
+          : firstName
+          ? firstName.slice(0, 1).toUpperCase()
+          : "?"}
+      </div>
 
-                    {/* Textarea */}
-                    <textarea
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      placeholder="Share your thoughts..."
-                      rows="1"
-                      className="flex-1 px-4 py-3 border-b border-gray-400 outline-none resize-none placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    />
+      {/* Textarea */}
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder={
+          user ? "Share your thoughts..." : "Login required to comment"
+        }
+        rows="1"
+        name="comment"
+        className={`flex-1 px-4 py-3 border-b outline-none resize-none transition ${
+          !user
+            ? "bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300"
+            : "bg-white border-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+        }`}
+        disabled={!user}
+      />
 
-                    {/* Submit Button */}
-                    <button
-                      type="submit"
-                      disabled={!comment}
-                      className={`px-5 py-2 rounded-lg font-semibold transition-all ${
-                        !comment
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5"
-                      }`}
-                    >
-                      Post
-                    </button>
-                  </div>
-                </form>
-              )}
-              {/* Header */}
-              <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-xl  text-gray-400">Comments</h2>
-                {allcomment.length > 0 && (
-                  <span className="inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold border border-blue-200">
-                    {allcomment.length}
-                  </span>
-                )}
+      {/* Submit Button */}
+      <button
+        type="submit"
+        disabled={!user || !comment}
+        className={`px-5 py-2 rounded-lg font-semibold transition-all ${
+          !user || !comment
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5"
+        }`}
+      >
+        Post
+      </button>
+    </div>
+  </form>
+
+  {/* Header */}
+  <div className="flex items-center gap-3 mb-4">
+    <h2 className="text-xl text-gray-400">Comments</h2>
+    {allcomment.length > 0 && (
+      <span className="inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold border border-blue-200">
+        {allcomment.length}
+      </span>
+    )}
+  </div>
+
+  {/* Comments List */}
+  {allcomment.length > 0 ? (
+    <div className="mb-10 max-h-[400px] overflow-y-auto space-y-6 pr-2 scrollbar-thin-custom">
+      {allcomment.map((comment) => (
+        <div
+          key={comment._id}
+          className="border border-gray-200 rounded-xl p-4"
+        >
+          <div className="flex items-center gap-4">
+            {comment.avatar ? (
+              <img
+                src={comment.avatar}
+                alt="Commenter"
+                className="w-12 h-12 rounded-full object-cover border border-gray-300 shadow-sm"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full border border-gray-300 shadow-sm bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
+                {comment.firstName?.slice(0, 1).toUpperCase()}
               </div>
+            )}
 
-              {/* Comments List */}
-              {allcomment.length > 0 ? (
-                <div className="mb-10 max-h-[400px] overflow-y-auto space-y-6 pr-2 scrollbar-thin-custom">
-                  {allcomment.map((comment) => (
-                    <div
-                      key={comment._id}
-                      className="border border-gray-200 rounded-xl p-4 "
-                    >
-                      <div className="flex items-center gap-4">
-                        {comment.avatar ? (
-                          <img
-                            src={comment.avatar}
-                            alt="Commenter"
-                            className="w-12 h-12 rounded-full object-cover border border-gray-300 shadow-sm"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full border border-gray-300 shadow-sm bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
-                            {comment.firstName?.slice(0, 1).toUpperCase()}
-                          </div>
-                        )}
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h4 className="font-semibold text-gray-900 text-base">
+                  {comment.firstName}
+                </h4>
+                <span className="text-gray-400">•</span>
+                <time className="text-sm text-gray-500">
+                  {new Date(comment.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </time>
+              </div>
+              <p className="text-gray-700 leading-relaxed text-sm">
+                {comment.comment}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="text-center py-14 border border-gray-200 rounded-xl mb-10 bg-gray-50">
+      <p className="text-gray-600 font-medium">No comments yet</p>
+      <p className="text-gray-400 text-sm">
+        Be the first to share your thoughts!
+      </p>
+    </div>
+  )}
+</section>
 
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-gray-900 text-base">
-                              {comment.firstName}
-                            </h4>
-                            <span className="text-gray-400">•</span>
-                            <time className="text-sm text-gray-500">
-                              {new Date(comment.createdAt).toLocaleDateString(
-                                "en-US",
-                                {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                }
-                              )}
-                            </time>
-                          </div>
-                          <p className="text-gray-700 leading-relaxed text-sm">
-                            {comment.comment}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-14 border border-gray-200 rounded-xl mb-10 bg-gray-50">
-                  <p className="text-gray-600 font-medium">No comments yet</p>
-                  <p className="text-gray-400 text-sm">
-                    Be the first to share your thoughts!
-                  </p>
-                </div>
-              )}
-            </section>
+
           </div>
 
           {/* Sidebar */}

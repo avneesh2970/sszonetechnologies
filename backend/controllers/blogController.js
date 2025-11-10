@@ -3,7 +3,7 @@ const Blog = require('../models/blogModel');
 // Create Blog
 exports.createBlog = async (req, res) => {
   try {
-    const { title, date, author, tags, content , category, language, dribbble, linkedin, facebook, twitter, review, } = req.body;
+    const { title, date, author, tags, content,  } = req.body;
     const blog = new Blog({
       title,
       date,
@@ -11,13 +11,7 @@ exports.createBlog = async (req, res) => {
       tags: tags.split(',').map(tag => tag.trim()),
       content,
       image: req.file ? req.file.path : null,
-      category,
-      language,
-      dribbble,
-      linkedin,
-      facebook,
-      twitter,
-      review,
+      
     });
     await blog.save();
     res.status(201).json({ message: 'Blog uploaded successfully', blog });
@@ -42,7 +36,7 @@ exports.getAllBlogs = async (req, res) => {
 exports.updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, date, author, tags, content ,category, language, dribbble, linkedin, facebook, twitter, review, } = req.body;
+    const { title, date, author, tags, content  } = req.body;
 
     const updatedBlog = await Blog.findByIdAndUpdate(
       id,
@@ -53,13 +47,7 @@ exports.updateBlog = async (req, res) => {
         tags: tags?.split(',').map(tag => tag.trim()),
         content,
         ...(req.file && { image: req.file.path }),
-        category,
-      language,
-      dribbble,
-      linkedin,
-      facebook,
-      twitter,
-      review,
+        
       },
       { new: true } // Return updated document
     );
@@ -76,20 +64,30 @@ exports.updateBlog = async (req, res) => {
 };
 
 // Delete Blog
+// exports.deleteBlog = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const deletedBlog = await Blog.findByIdAndDelete(id);
+
+//     if (!deletedBlog) {
+//       return res.status(404).json({ message: 'Blog not found' });
+//     }
+
+//     res.status(200).json({ message: 'Blog deleted successfully' });
+//   } catch (error) {
+//     console.error('Error deleting blog:', error);
+//     res.status(500).json({ message: 'Failed to delete blog', error: error.message });
+//   }
+// };
 exports.deleteBlog = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const deletedBlog = await Blog.findByIdAndDelete(id);
-
-    if (!deletedBlog) {
-      return res.status(404).json({ message: 'Blog not found' });
-    }
-
-    res.status(200).json({ message: 'Blog deleted successfully' });
+    await Blog.findOneAndDelete({ _id: req.params.id });
+    res.status(200).json({ message: "Blog and image deleted successfully" });
   } catch (error) {
-    console.error('Error deleting blog:', error);
-    res.status(500).json({ message: 'Failed to delete blog', error: error.message });
+    console.error("Error deleting blog:", error);
+    res.status(500).json({ message: "Failed to delete blog", error: error.message });
   }
 };
+
 

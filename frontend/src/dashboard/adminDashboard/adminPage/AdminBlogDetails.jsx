@@ -36,7 +36,7 @@ const AdminBlogDetailPage = () => {
         />
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition"
+          className="absolute top-4 left-4 flex items-center gap-2 bg-white/80 hover:bg-white text-gray-800 px-3 py-2 rounded-full shadow-md transition cursor-pointer"
         >
           <ArrowLeft size={18} />
           <span className="text-sm font-medium">Back</span>

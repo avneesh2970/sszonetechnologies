@@ -70,16 +70,16 @@ const BlogCard = () => {
                   </time>
                 </div>
 
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
                   {relatedBlog.title}
                 </h3>
 
-                <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+                <p className="text-gray-600 text-sm line-clamp-2 mb-4">
                   {relatedBlog.content
                     ? `${relatedBlog.content
                         .replace(/<[^>]+>/g, "")
                         .slice(0, 120)}...`
-                    : "No preview available"}
+                    : "No preview available"} . . . 
                 </p>
 
                 <div className="flex items-center justify-between">

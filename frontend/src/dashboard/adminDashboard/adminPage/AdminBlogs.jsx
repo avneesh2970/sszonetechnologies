@@ -43,6 +43,7 @@ import {
   Redo,
 } from "lucide-react";
 import { FiUpload, FiX } from "react-icons/fi";
+import useAdminAuth from "./AdminAuth";
 
 // Custom Menu Bar Component
 const CustomMenuBar = ({ editor }) => {
@@ -608,13 +609,7 @@ const BlogModalPage = () => {
     author: "",
     tags: "",
     content: "",
-    category: "",
-    language: "",
-    dribbble: "",
-    linkedin: "",
-    facebook: "",
-    twitter: "",
-    review: "",
+   
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -664,16 +659,10 @@ const BlogModalPage = () => {
     setFormData({
       title: "",
       date: getTodayDate(),
-      author: "",
+      author: profile.firstName,
       tags: "",
       content: "",
-      category: "",
-      language: "",
-      dribbble: "",
-      linkedin: "",
-      facebook: "",
-      twitter: "",
-      review: "",
+      
     });
     setImage(null);
     setImagePreview(null);
@@ -746,13 +735,7 @@ const BlogModalPage = () => {
       author: blog.author,
       tags: Array.isArray(blog.tags) ? blog.tags.join(", ") : blog.tags,
       content: blog.content,
-      category: blog.category,
-      language: blog.language,
-      dribbble: blog.dribbble || "",
-      linkedin: blog.linkedin || "",
-      facebook: blog.facebook || "",
-      twitter: blog.twitter || "",
-      review: blog.review || "",
+     
     });
 
     setImagePreview(
@@ -803,12 +786,26 @@ const BlogModalPage = () => {
       console.error(error);
       toast.error("Failed to delete comment");
     }
-  };
+  };  
+
+  const { profile, fetchProfile } = useAdminAuth();
+  
+    
 
   useEffect(() => {
+    fetchProfile();
     fetchBlogs();
     fetchAllComments();
-  }, []);
+  }, []);   
+
+  useEffect(() => {
+  if (profile && profile.firstName) {
+    setFormData((prev) => ({
+      ...prev,
+      author: `${profile.firstName} ${profile.lastName || ""}`.trim(),
+    }));
+  }
+}, [profile]);
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
@@ -1010,7 +1007,7 @@ const BlogModalPage = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <input
                     type="text"
                     name="category"
@@ -1038,13 +1035,14 @@ const BlogModalPage = () => {
                     step="0.1"
                     className="p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition"
                   />
-                </div>
+                </div> */}
 
                 <input
                   type="text"
                   name="tags"
                   value={formData.tags}
                   onChange={handleChange}
+                  required
                   placeholder="Tags (comma-separated: tech, web, design)"
                   className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition"
                 />
@@ -1077,6 +1075,7 @@ const BlogModalPage = () => {
                         accept="image/*"
                         onChange={handleImageChange}
                         className="hidden"
+                        
                       />
                     </label>
                   </div>
@@ -1110,7 +1109,7 @@ const BlogModalPage = () => {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Social Links
                   </label>
@@ -1148,7 +1147,8 @@ const BlogModalPage = () => {
                       className="p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition"
                     />
                   </div>
-                </div>
+                </div> */}
+
               </div>
 
               <div className="mt-6 pt-6 border-t flex gap-3">
@@ -1176,15 +1176,15 @@ const BlogModalPage = () => {
 
       {/* Blog Posts Section */}
       <div className="mb-10">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-900">
+        <div className="flex justify-between flex-col md:flex-row md:items-center mb-6">
+          <h1 className="md:text-4xl text-2xl font-bold text-gray-900">
             Blog Management
           </h1>
           <button
             onClick={() => setShowModal(true)}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-md transition transform hover:scale-105"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white md:px-6 md:py-3 py-1.5 rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-md transition transform hover:scale-105 cursor-pointer mt-2"
           >
-            ➕ Create New Blog
+            + Create New Blog
           </button>
         </div>
 
@@ -1226,7 +1226,7 @@ const BlogModalPage = () => {
                     )}
                     {blog.tags?.length > 0 && (
                       <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-md">
-                        {blog.tags[0]}
+                        {blog.tags[0] || "Blog"}
                       </span>
                     )}
                   </div>
@@ -1259,17 +1259,17 @@ const BlogModalPage = () => {
                   </div>
                 </Link>
 
-                <div className="absolute top-3 right-3 flex gap-2 bg-white/95 backdrop-blur-sm rounded-full p-1.5 shadow-lg">
+                <div className="absolute top-3 right-3 flex  bg-white/95 backdrop-blur-sm rounded-full p-1.5 shadow-lg">
                   <button
                     onClick={() => handleEdit(blog)}
-                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition"
+                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition cursor-pointer"
                     title="Edit"
                   >
                     <FaEdit size={16} />
                   </button>
                   <button
                     onClick={() => handleDelete(blog._id)}
-                    className="p-2 text-red-600 hover:bg-red-100 rounded-full transition"
+                    className="p-2 text-red-600 hover:bg-red-100 rounded-full transition cursor-pointer"
                     title="Delete"
                   >
                     <FaTrash size={16} />
@@ -1357,7 +1357,7 @@ const BlogModalPage = () => {
 
       <ToastContainer
         position="top-right"
-        autoClose={2000}
+        autoClose={1000}
         hideProgressBar={false}
         closeOnClick
         pauseOnHover
