@@ -60,7 +60,7 @@ const InstructorCourse = () => {
             Create a New Course <FaArrowRight />
           </button>
         </div>
-        <div className="flex space-x-6 border-b pb-2">
+        <div className="flex space-x-6 border-b pb-2 ">
           <TabButton
             label="Published"
             active={activeTab === "Published"}

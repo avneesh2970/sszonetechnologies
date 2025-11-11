@@ -161,9 +161,7 @@ const InstructorCourseDetails = () => {
         ❌ Course not found!
       </div>
     );
-  }  
-
-  
+  }
 
   const handleDeleteModule = async (moduleId) => {
     const confirmDelete = window.confirm(
@@ -388,6 +386,31 @@ const InstructorCourseDetails = () => {
       );
     }
   };
+
+  // decode and convert player.cloudinary.com embed -> direct mp4 url
+  const normalizeCloudinaryUrl = (url) => {
+    try {
+      if (!url) return url;
+      const u = new URL(url);
+      // player.cloudinary.com/embed/?cloud_name=...&public_id=...
+      if (u.hostname.includes("player.cloudinary.com")) {
+        const params = Object.fromEntries(u.searchParams.entries());
+        const cloud = params.cloud_name || params.cloud;
+        const publicId = params.public_id || params.publicId;
+        if (!cloud || !publicId) return url;
+        // public_id may be URL-encoded (samples%2Felephants) -> decode
+        const decoded = decodeURIComponent(publicId);
+        return `https://res.cloudinary.com/${cloud}/video/upload/${decoded}.mp4`;
+      }
+
+      // also accept direct res.cloudinary.com links already
+      return url;
+    } catch (err) {
+      return url;
+    }
+  };
+
+  const playableUrl = normalizeCloudinaryUrl(course.introVideo.videoUrl);
 
   const content = {
     Overview: (
@@ -819,7 +842,7 @@ const InstructorCourseDetails = () => {
         />
       </div>
 
-      <div className="relative">
+      <div className="relative ">
         <div className="shadow-lg bg-white px-6 py-4 max-w-3xl md:mx-6 mx-auto rounded-xl  md:-mt-10">
           <h1 className="text-2xl font-bold mb-3">{course.title}</h1>
           <div className="flex flex-wrap md:flex-nowrap gap-6">
@@ -845,7 +868,7 @@ const InstructorCourseDetails = () => {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12">
+      <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 my-12 ">
         <div className="flex-1">
           <div className="flex gap-4 border-b mb-6 overflow-x-auto">
             {[
@@ -899,22 +922,21 @@ const InstructorCourseDetails = () => {
           </div>
         </div>
 
-        <aside className="w-full md:w-[400px] flex-shrink-0  p-4 rounded-xl bg-white lg:-mt-50 -mt-10 z-10">
+        <aside className="w-full md:w-[390px] flex-shrink-0  p-4 rounded-xl bg-white lg:-mt-50 -mt-10 z-10 ">
           {/* <img src={video} alt="Demo Video" className="rounded-md mb-6" /> */}
-          {course.introVideo?.videoUrl &&
-            ReactPlayer.canPlay(course.introVideo.videoUrl) && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">
-                   Course Intro Video
-                </h3>
-                <ReactPlayer
-                  url={course.introVideo.videoUrl}
-                  controls
-                  width="100%"
-                  height="360px"
-                />
-              </div>
-            )}
+
+          {playableUrl && ReactPlayer.canPlay(playableUrl) ? (
+            <ReactPlayer
+              url={playableUrl}
+              controls
+              width="100%"
+              height="360px"
+            />
+          ) : (
+            <p className="text-sm text-red-500">
+              Video URL not playable. Try direct Cloudinary file link.
+            </p>
+          )}
 
           <div className="flex items-center ">
             <MdCurrencyRupee className="h-6 w-6" />
@@ -1005,13 +1027,11 @@ const InstructorCourseDetails = () => {
               />
             )}
           </div>
-
-          <ToastContainer position="top-right" autoClose={2000} />
         </aside>
+        <ToastContainer position="top-right" autoClose={1000} />
       </div>
     </>
   );
 };
 
 export default InstructorCourseDetails;
-

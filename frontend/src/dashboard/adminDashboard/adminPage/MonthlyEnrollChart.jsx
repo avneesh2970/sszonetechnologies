@@ -67,17 +67,17 @@ const MonthlyEnrollmentsChart = () => {
         borderRadius: 8,
         barThickness: 30,
       },
-      {
-        type: "line",
-        label: "Trend",
-        data: monthlyData,
-        borderColor: "#ff6a00",
-        backgroundColor: "rgba(255,106,0,0.2)",
-        tension: 0.4,
-        fill: true,
-        pointRadius: 5,
-        pointBackgroundColor: "#ff6a00",
-      },
+      // {
+      //   type: "line",
+      //   label: "Trend",
+      //   data: monthlyData,
+      //   borderColor: "#ff6a00",
+      //   backgroundColor: "rgba(255,106,0,0.2)",
+      //   tension: 0.4,
+      //   fill: true,
+      //   pointRadius: 5,
+      //   pointBackgroundColor: "#ff6a00",
+      // },
     ],
   };
 
