@@ -388,29 +388,92 @@ const InstructorCourseDetails = () => {
   };
 
   // decode and convert player.cloudinary.com embed -> direct mp4 url
-  const normalizeCloudinaryUrl = (url) => {
-    try {
-      if (!url) return url;
-      const u = new URL(url);
-      // player.cloudinary.com/embed/?cloud_name=...&public_id=...
-      if (u.hostname.includes("player.cloudinary.com")) {
-        const params = Object.fromEntries(u.searchParams.entries());
-        const cloud = params.cloud_name || params.cloud;
-        const publicId = params.public_id || params.publicId;
-        if (!cloud || !publicId) return url;
-        // public_id may be URL-encoded (samples%2Felephants) -> decode
-        const decoded = decodeURIComponent(publicId);
-        return `https://res.cloudinary.com/${cloud}/video/upload/${decoded}.mp4`;
-      }
+  // const normalizeCloudinaryUrl = (url) => {
+  //   try {
+  //     if (!url) return url;
+  //     const u = new URL(url);
+  //     // player.cloudinary.com/embed/?cloud_name=...&public_id=...
+  //     if (u.hostname.includes("player.cloudinary.com")) {
+  //       const params = Object.fromEntries(u.searchParams.entries());
+  //       const cloud = params.cloud_name || params.cloud;
+  //       const publicId = params.public_id || params.publicId;
+  //       if (!cloud || !publicId) return url;
+  //       // public_id may be URL-encoded (samples%2Felephants) -> decode
+  //       const decoded = decodeURIComponent(publicId);
+  //       return `https://res.cloudinary.com/${cloud}/video/upload/${decoded}.mp4`;
+  //     }
 
-      // also accept direct res.cloudinary.com links already
-      return url;
-    } catch (err) {
-      return url;
+  //     // also accept direct res.cloudinary.com links already
+  //     return url;
+  //   } catch (err) {
+  //     return url;
+  //   }
+  // };
+  const normalizeVideoUrl = (url) => {
+  if (!url) return "";
+  if (url.includes("youtube.com/watch?v=")) {
+    const id = url.split("v=")[1]?.split("&")[0];
+    return `https://www.youtube.com/embed/${id}`;
+  }
+  if (url.includes("youtu.be/")) {
+    const id = url.split("youtu.be/")[1]?.split("?")[0];
+    return `https://www.youtube.com/embed/${id}`;
+  }
+  // if (url.includes("drive.google.com/file/d/")) {
+  //   const id = url.match(/\/d\/(.*?)\//)?.[1];
+  //   return id ? `https://drive.google.com/uc?export=preview&id=${id}` : url;
+  // }
+  if (url.includes("dropbox.com")) {
+    return url.replace(/\?dl=0/, "?raw=1").replace(/&dl=0/, "&raw=1").replace(/\?dl=1/, "?raw=1").replace(/&dl=1/, "&raw=1");
+  }
+  
+  if (url.includes("vimeo.com/")) {
+    const id = url.split("vimeo.com/")[1]?.split("?")[0];
+    return `https://player.vimeo.com/video/${id}`;
+  }
+
+ if (url.includes("drive.google.com")) {
+    // Check if it's a folder link
+    if (url.includes("/folders/")) {
+      return null; // Signal that this is invalid
     }
-  };
 
-  const playableUrl = normalizeCloudinaryUrl(course.introVideo.videoUrl);
+    // Check if it's a Docs video link (not supported)
+    if (url.includes("docs.google.com/videos")) {
+      return null; // Signal that this is invalid
+    }
+
+    // Extract file ID from various Drive URL formats
+    let fileId = null;
+    
+    // Format: /file/d/FILE_ID/view
+    const fileMatch = url.match(/\/file\/d\/([^\/\?]+)/);
+    if (fileMatch) {
+      fileId = fileMatch[1];
+    }
+    
+    // Format: ?id=FILE_ID
+    if (!fileId) {
+      const idMatch = url.match(/[?&]id=([^&]+)/);
+      if (idMatch) {
+        fileId = idMatch[1];
+      }
+    }
+
+    // Return proper embed URL
+    if (fileId) {
+      return `https://drive.google.com/file/d/${fileId}/preview`;
+    }
+  }
+
+  if (url.includes("docs.google.com/videos")) {
+  return toast.error("Google Docs video links cannot be embedded. Please upload or share a Google Drive video file instead.");
+}
+
+  return url;
+};
+
+  const playableUrl = normalizeVideoUrl(course?.introVideo?.videoUrl);
 
   const content = {
     Overview: (
@@ -852,7 +915,7 @@ const InstructorCourseDetails = () => {
             </div>
             <div className="flex-1">
               <h3 className="text-gray-500">Category</h3>
-              <p className="font-semibold"> {course.categories}</p>
+              <p className="font-semibold"> {course?.categories}</p>
             </div>
             <div className="flex-1">
               <h3 className="text-gray-500">Review</h3>
@@ -934,9 +997,22 @@ const InstructorCourseDetails = () => {
             />
           ) : (
             <p className="text-sm text-red-500">
-              Video URL not playable. Try direct Cloudinary file link.
+              Video URL not playable.
             </p>
           )}
+
+           {
+            playableUrl && 
+            <iframe
+              src={playableUrl}
+              className="w-full h-50 rounded-lg shadow"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+              title="Video Preview"
+            ></iframe>
+           }
+
+            
 
           <div className="flex items-center ">
             <MdCurrencyRupee className="h-6 w-6" />
@@ -1005,14 +1081,14 @@ const InstructorCourseDetails = () => {
           <div className="mt-4">
             <>
               <button
-                className="border w-full mt-4 p-1 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                className="border w-full mt-4 p-1 text-white bg-blue-500 rounded-lg hover:bg-blue-600 cursor-pointer"
                 onClick={() => setIsModalOpen(true)}
               >
                 Edit Course
               </button>
 
               <button
-                className="border w-full p-1 text-blue-500 rounded-lg mt-2"
+                className="border w-full p-1 text-blue-500 rounded-lg mt-2 cursor-pointer"
                 onClick={() => handleDeleteCourse(course._id)}
               >
                 Delete Course
