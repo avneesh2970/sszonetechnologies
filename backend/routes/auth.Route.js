@@ -18,7 +18,7 @@ const createToken = (user) => {
 
 // 🔹 Signup
 router.post("/signup", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -30,6 +30,7 @@ router.post("/signup", async (req, res) => {
     const newUser = await User.create({
       name,
       email,
+      phone,
       password: hashedPassword,
       role: "USER",
     });
@@ -101,7 +102,16 @@ router.get("/secure-data", auth, async (req, res) => {
 // auth.js route
 router.get("/me", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id)
+      .select("-password")
+      // .populate({
+      //   path: "purchasedCourse",
+      //   match: {}, // optional: add filters if needed
+      //   populate: [
+      //     { path: "product", model: "Course" }, // replace "Course" with your course model name if different
+          
+      //   ],
+      // });
     res.json({ user });
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch user" });
@@ -183,11 +193,10 @@ router.post("/forgot-password", async (req, res) => {
       `Your OTP IS ${otp}, It will expire in 5 minutes`
     );
 
-    
-    res.status(200).json({ message: `OTP sent to email ,  ${otp}` ,  });
+    res.status(200).json({ message: `OTP sent to email ,  ${otp}` });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Something went wrong", err});
+    res.status(500).json({ message: "Something went wrong", err });
   }
 });
 
@@ -201,14 +210,14 @@ router.post("/verify-otp", async (req, res) => {
       resetOTPExpire: { $gt: Date.now() },
     });
 
-    if (!user) return res.status(400).json({ message: "Invalid or expired OTP" });
+    if (!user)
+      return res.status(400).json({ message: "Invalid or expired OTP" });
 
     res.status(200).json({ message: "OTP verified successfully" });
   } catch (err) {
     res.status(500).json({ message: "Something went wrong" });
   }
 });
-
 
 // Reset password
 router.post("/reset-password", async (req, res) => {
@@ -239,11 +248,19 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-
 // Get all users
 router.get("/all", async (req, res) => {
   try {
-    const allUser = await User.find(); // fetch all users from DB
+    const allUser = await User.find()
+      .select("-password")
+      .populate({
+        path: "purchasedCourse",
+         match: { status: "paid" } , 
+        populate: [
+          { path: "product",  }, 
+          
+        ],
+      }); 
     res.status(200).json({
       success: true,
       users: allUser,
@@ -258,6 +275,5 @@ router.get("/all", async (req, res) => {
     });
   }
 });
-
 
 module.exports = router;

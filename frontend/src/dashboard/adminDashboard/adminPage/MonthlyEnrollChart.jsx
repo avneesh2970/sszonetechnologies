@@ -63,7 +63,7 @@ const MonthlyEnrollmentsChart = () => {
         type: "bar",
         label: "Enrollments",
         data: monthlyData,
-        backgroundColor: "rgba(54, 209, 220, 0.8)",
+        backgroundColor: "rgba(59, 130, 246, 1) ",
         borderRadius: 8,
         barThickness: 30,
       },

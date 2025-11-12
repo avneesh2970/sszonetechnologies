@@ -77,6 +77,7 @@ import UploadQuiz from "./Instructor-courseUpload/UploadQuiz.jsx";
 import { ToastContainer } from "react-toastify";
 import Certificate from "./studentDashboard/StudentesPages/Certificate.jsx";
 import Cartpage from "./studentDashboard/StudentesPages/Cartpage.jsx";
+import AllStudents from "./dashboard/adminDashboard/adminPage/AllStudents.jsx";
 
 
 const router = createBrowserRouter([
@@ -181,6 +182,7 @@ const router = createBrowserRouter([
       { path: "blogs", element: <AdminBlogs /> },
       { path: "blogdetail/:id", element: <AdminBlogDetailPage /> },
       { path : "instructor-signup" , element : <InstructorSignup />},
+      {path : "all-students" , element : <AllStudents/>}, 
       { path: "setting", element: <AdminSettings /> },
       { path: "logout", element: <AdminLogout /> },
     ],

@@ -221,7 +221,18 @@ const AdminOutlet = () => {
             }
           >
             <FaUser />
-            <span>Add Instructor </span>
+            <span>Instructor </span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/all-students"
+            onClick={() => setSidebarOpen(false)}
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            <FaUser />
+            <span>Students </span>
           </NavLink>
 
           <hr className="my-4" />

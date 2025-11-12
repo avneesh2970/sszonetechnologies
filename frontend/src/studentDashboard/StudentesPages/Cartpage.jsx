@@ -106,7 +106,7 @@ function CartPage() {
         {/* Cart List */}
         <div className="flex-1 space-y-6 max-h-[500px] overflow-auto">
           {cartItems.length === 0 ? (
-            <p className="font-semibold text-[18px] text-[#1C4ED9] pb-6">
+            <p className="font-semibold text-[18px] text-[#1C4ED9] pb-6 flex justify-center mt-10">
               Your cart is empty
             </p>
           ) : (

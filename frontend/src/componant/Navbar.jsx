@@ -14,7 +14,7 @@ import { IoClose } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import logo from "../assets/image/logo.png";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useStudentAuth } from "../studentDashboard/StudentesPages/studentAuth";
 import ForgotPasswordModal from "../studentDashboard/StudentesPages/ResetPassword";
 import { useCartContext } from "../context/CartContext";
@@ -28,10 +28,11 @@ function Navbaar() {
 
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [loginData, setLoginData] = useState({ email: "", password: "" , phone:"" });
   const [signupData, setSignupData] = useState({
     name: "",
     email: "",
+    phone : "",
     password: "",
   });
   const [showForgotModal, setShowForgotModal] = useState(false);
@@ -72,7 +73,7 @@ function Navbaar() {
       setShowSignup(false);
       setSignupData({ name: "", email: "", password: "" });
     } catch (err) {
-      toast.error(err.response?.data?.message || "Signup failed ❌");
+      toast.error(err.response?.data?.message || "Signup failed ");
     }
   };
 
@@ -89,9 +90,9 @@ function Navbaar() {
       setLoginData({ email: "", password: "" });
       fetchCartItems() 
       fetchWishlist()
-      toast.success("Login successful ✅");
+      toast.success("Login successful ");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed ❌");
+      toast.error(err.response?.data?.message || "Login failed ");
     }
   };
 
@@ -547,6 +548,21 @@ function Navbaar() {
                 />
               </div>
               <div className="flex flex-col">
+                <label className="mb-1 text-sm font-medium">
+                  Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="phone"
+                  required
+                  placeholder="Enter your phone"
+                  value={signupData.phone}
+                  onChange={(e) =>
+                    setSignupData({ ...signupData, phone: e.target.value })
+                  }
+                  className="border p-2 rounded"
+                />
+              </div>
+              <div className="flex flex-col">
                 <label className="mb-1 text-sm font-medium">Password</label>
                 <div className="relative w-full">
                   <input
@@ -600,6 +616,7 @@ function Navbaar() {
       {/* {showSignup && (
   <Signup onClose={() => setShowSignup(false)} />
 )} */}
+<ToastContainer autoClose={1000}/>
     </nav>
   );
 }

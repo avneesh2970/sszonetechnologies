@@ -32,7 +32,10 @@ const AllCoursesPage = () => {
         All Courses {courses.length}
       </h1>
 
-      {courses.map((course) => (
+      {
+        courses.map && 
+        <>
+        {courses.map((course) => (
         <div
           key={course._id}
           className="bg-white p-6 rounded-xl shadow space-y-6"
@@ -175,6 +178,8 @@ const AllCoursesPage = () => {
           </div>
         </div>
       ))}
+        </>
+      }
     </div>
   );
 };

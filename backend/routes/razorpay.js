@@ -5,6 +5,7 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Purchase = require("../models/PurchaseModel");
 const auth = require("../middleware/auth");
+const User = require('../models/authModel')
 
 const router = express.Router();
 
@@ -14,40 +15,6 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// Create order API
-// router.post("/create-order", auth, async (req, res) => {
-//   try {
-//     const { amount, cartItems } = req.body; // frontend sends amount & cart items
-//     console.log("cartItems" + cartItems);
-//     const userId = req.user.id; // ✅ get userId from auth middleware
-
-//     const options = {
-//       amount: amount * 100, // amount in paise
-//       currency: "INR",
-//       receipt: "receipt_" + Date.now(),
-//     };
-
-//     const order = await razorpay.orders.create(options);
-
-//     // Save purchase in MongoDB
-//     const newPurchase = await Purchase.create({
-//       user: userId,
-//       product: cartItems.map((item) => item.course._id), // array of course IDs
-//       amount,
-//       status: "created",
-//       currency: "INR",
-//       razorpay: { orderId: order.id },
-//       receipt: options.receipt,
-//     });
-
-//     res.status(200).json({ success: true, order, purchaseId: newPurchase._id });
-//   } catch (error) {
-//     console.log("error", error);
-
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// });
-// Create order API
 router.post("/create-order", auth, async (req, res) => {
   try {
     const { amount, cartItems } = req.body;
@@ -84,7 +51,11 @@ router.post("/create-order", auth, async (req, res) => {
       currency: "INR",
       razorpay: { orderId: order.id },
       receipt: options.receipt,
-    });
+    });  
+
+    await User.findByIdAndUpdate(req.user.id, {
+          $push: { purchasedCourse: newPurchase._id },
+        });
 
     res.status(200).json({ success: true, order, purchaseId: newPurchase._id });
   } catch (error) {
@@ -150,6 +121,7 @@ router.get("/my-purchases", auth, async (req, res) => {
   try {
     const userId = req.user.id;
     const purchases = await Purchase.find({ user: userId, status: "paid" })
+      .populate("user")
       .populate({
         path: "product",
         populate: [
